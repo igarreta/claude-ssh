@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "docker03": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=docker03", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
+    "gr-srv03": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.89.202.69", "--user=root", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
+    "ceres": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.64.121.121", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
+    "contabo1": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.72.195.90", "--port=1789", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
+    "cygnus": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.96.140.37", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
+    "living1": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.72.156.127", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
+    "raspberrypi1": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.111.232.99", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
+    "samba03": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.77.7.42", "--user=root", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
+    "github": {
+      "command": "/home/rsi/etc/github-mcp.sh",
+      "args": []
+    },
+    "notion": {
+      "command": "/home/rsi/etc/notion-mcp.sh",
+      "args": []
+    }
+  }
+}
