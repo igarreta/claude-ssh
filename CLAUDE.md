@@ -43,6 +43,18 @@ Some containers run on vmbr1 for reducing LAN IP usage
 
 More detailed information can be found in the docs directory of this repository
 
+## cygnus
+podman is installed, but must be run as sudo (sudo podman). It was configured to allow "sudo podman" without requestign the password
+
+```bash
+# Create dedicated sudoers file
+sudo visudo -f /etc/sudoers.d/podman-nopasswd
+```
+Add this line (replace `rsi` with your username):
+```
+rsi ALL=(ALL) NOPASSWD: /usr/bin/podman
+```
+
 ## Adding New MCP Servers
 
 1. Edit `~/.claude.json`
