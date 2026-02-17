@@ -54,3 +54,10 @@ Key points:
 ## When YAML Is Acceptable
 
 Only for sensors you do **not** control the publisher for, e.g. RTL-433 radio sensors, third-party devices without discovery support.
+
+## Existing YAML Sensors (TTato)
+
+TTato sensors (`TTato_mode`, `TTato_boiler`, etc.) are still YAML-defined and currently working.
+**Do not delete them from the HA UI** — they would land in `deleted_entities` and be unrecoverable without the unique_id trick.
+Migrate TTato to autodiscovery next time TTato.py is being modified anyway.
+Each field in the `TTato/status` JSON needs its own discovery message, but all share the same `device` block to appear grouped.
