@@ -16,6 +16,10 @@
       "command": "npx",
       "args": ["-y", "ssh-mcp", "--", "--host=100.72.195.90", "--port=1789", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
     },
+    "contabo2": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.77.125.40", "--port=1789", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
     "cygnus": {
       "command": "npx",
       "args": ["-y", "ssh-mcp", "--", "--host=100.96.140.37", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
@@ -38,6 +42,10 @@
     },
     "notion": {
       "command": "/home/rsi/etc/notion-mcp.sh",
+      "args": []
+    },
+    "homeassistant": {
+      "command": "/home/rsi/etc/homeassistant-mcp.sh",
       "args": []
     }
   }
