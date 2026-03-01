@@ -358,7 +358,7 @@ ls ~/findata/var/
 
 ---
 
-### PHASE 6 — NFS Mount Setup (as root on contabo2)
+### PHASE 6 — NFS Mount Setup (as rsi on contabo2)
 
 #### NFS over Tailscale — MTU Issue                                                                                                                            
                                                                                                                                                                                             
@@ -377,19 +377,21 @@ Solution: Always mount NFS shares over Tailscale with small block sizes and NFSv
 # By this point, gr-srv03 /etc/exports should have contabo2's Tailscale IP
 # Verify on gr-srv03 first: exportfs -v | grep contabo2
 
-mkdir -p /mnt/backup
+sudo mkdir -p /mnt/backup
 
 # Add to fstab (gr-srv03 Tailscale IP is 100.89.202.69)
-echo "# NFS over Tailscale: vers=3 + small rsize/wsize required due to WireGuard MTU limits" >> /etc/fstab
-echo "100.89.202.69:/mnt/backup_usb1/contabo2 /mnt/backup nfs vers=3,rsize=8192,wsize=8192,nofail,x-systemd.automount,x-systemd.device-timeout=10 0 0" >> /etc/fstab
-
-mount -a
-ls /mnt/backup  # should be accessible (empty is fine)
+echo "# NFS over Tailscale: vers=3 + small rsize/wsize required due to WireGuard MTU limits" | sudo tee -a /etc/fstab
+echo "100.89.202.69:/mnt/backup_usb1/contabo2 /mnt/backup nfs vers=3,rsize=8192,wsize=8192,nofail,x-systemd.automount,x-systemd.device-timeout=10 0 0" | sudo tee -a /etc/fstab
 
 # Fix ownership for rsi user
-chown rsi:rsi /mnt/backup 2>/dev/null || true
-```
+sudo chown rsi:rsi /mnt/backup 2>/dev/null || true
 
+sudo mount -a
+ls /mnt/backup  # should be accessible (empty is fine)
+
+
+```
+#### Phase 5 completed on 2026-03-01
 ---
 
 ### PHASE 7 — Python Environment for findata (as rsi on contabo2)
@@ -407,23 +409,36 @@ deactivate
 
 ---
 
-### PHASE 8 — Caddy Setup (as root on contabo2)
+### PHASE 8 — Caddy Setup (as rsi on contabo2)
 
 ```bash
-cat > /etc/caddy/Caddyfile << 'EOF'
+sudo tee /etc/caddy/Caddyfile << 'EOF'
 # n8n Webhook Server
-n8n.igarreta.net {
+n8n.igarreta.net {                                                                                                                                                                        
     reverse_proxy localhost:5678
-}
+}                                                                                                                                                                                         
 EOF
 
-systemctl enable caddy
+# Check there are no spaces before or after EOF
+
+sudo systemctl enable caddy
+
 # Don't start yet — wait until DNS is updated and n8n is running
 ```
+#### Phase 8 completed on 2026-03-01
 
 ---
 
 ### PHASE 9 — Start Docker Services (as rsi on contabo2)
+
+#### Phase 9 completed on 2026-03-01
+
+Notes:
+- `monitoring` docker network must be created manually before starting services: `docker network create monitoring`
+- notion submodule `mylogger` must be initialized: `git config submodule.mylogger.url git@github.com:igarreta/mylogger.git && git submodule update --init`
+- `~/notion/log/` directory must exist before starting notion_repeat
+- uptime-kuma compose was updated to use `monitoring` network as `external: true` (committed to docker-contabo1 repo)
+- api_feriados Tailscale auth key must be regenerated (old key from contabo1 is single-use); old node must be removed from Tailscale admin before registering new one
 
 Start in this order, verify each before proceeding:
 
