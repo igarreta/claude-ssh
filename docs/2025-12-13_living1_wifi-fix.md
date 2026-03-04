@@ -24,27 +24,32 @@
 
 ### Adaptador USB WiFi Externo
 
-**Hardware:**
-- Marca: Netmak
+**Hardware (actual - desde 2026-03-04):**
+- Chipset: Realtek RTL8188FTV (detectado; packaging indicaba MT7601UN pero el chip real es RTL8188FTV)
+- ID USB: 0bda:f179
+- Driver: rtl8xxxu (incluido en kernel, plug & play)
+- Interfaz: wlx00e0313f8b21
+- MAC: 00:e0:31:3f:8b:21
+- Estándar: 802.11n 2.4GHz
+
+**Resultados (2026-03-04):**
+- ✅ 0% pérdida de paquetes
+- ✅ Latencia: 4-31ms (avg 14ms)
+- ✅ Plug & play (sin instalación de driver)
+- Señal: -75dBm, Quality 35/70
+
+---
+
+### Hardware anterior (reemplazado 2026-03-04)
+
+**Hardware (hasta 2026-03-04):**
 - Chipset: Realtek RTL8821CU
 - ID USB: 0bda:c811
-- Driver: rtw_8821cu (incluido en kernel)
-- Interfaz: wlx00e032c0a2d6
+- Driver: rtw_8821cu
+- Interfaz: wlx00e0313f8b21
 - MAC: 00:e0:32:c0:a2:d6
-- Estándar: 802.11ac WiFi 5 (dual band)
 
-**Resultados:**
-- ✅ 0% pérdida de paquetes
-- ✅ Latencia: 13-24ms
-- ✅ Plug & play (detección automática)
-
-**Problema conocido (2026-03-01): Fallo de detección USB**
-El dongle dejó de ser detectado por el sistema tras varios reboots. `lsusb` no mostraba el dispositivo (0bda:c811) y `iwconfig wlx00e032c0a2d6` devolvía "No such device". Causas posibles:
-- Conector USB con desgaste físico / conexión intermitente
-- Puerto USB en estado de ahorro de energía
-- Hardware del dongle fallando
-
-**Solución:** Desconectar y reconectar el dongle físicamente. Usar iPhone USB tethering como fallback mientras se restablece la conexión. El dongle RTL8821CU es considerado hardware de reemplazo a corto plazo.
+**Motivo de reemplazo:** Errores frecuentes de conexión y fallos de detección USB tras varios reboots.
 
 ---
 
@@ -69,7 +74,7 @@ sudo reboot
 
 Si es necesario conectar manualmente:
 ```bash
-nmcli device wifi connect "INTERNET_HA" ifname wlx00e032c0a2d6
+nmcli device wifi connect "INTERNET_HA" ifname wlx00e0313f8b21
 ```
 
 ---
@@ -78,7 +83,7 @@ nmcli device wifi connect "INTERNET_HA" ifname wlx00e032c0a2d6
 
 ### Ver estado del adaptador USB:
 ```bash
-iwconfig wlx00e032c0a2d6
+iwconfig wlx00e0313f8b21
 ```
 
 ### Test de conectividad:
@@ -171,7 +176,7 @@ lsusb
 lshw -C network
 
 # Señal WiFi en tiempo real
-watch -n 1 'iwconfig wlx00e032c0a2d6 | grep -E "Quality|Signal"'
+watch -n 1 'iwconfig wlx00e0313f8b21 | grep -E "Quality|Signal|Bit Rate"'
 ```
 
 ### Gestión de NetworkManager
@@ -183,10 +188,10 @@ nmcli connection show
 nmcli device status
 
 # Conectar a red específica
-nmcli device wifi connect "SSID" ifname wlx00e032c0a2d6
+nmcli device wifi connect "SSID" ifname wlx00e0313f8b21
 
 # Desconectar
-nmcli device disconnect wlx00e032c0a2d6
+nmcli device disconnect wlx00e0313f8b21
 ```
 
 ### Gestión de módulos
@@ -204,7 +209,7 @@ modinfo rtw_8821cu
 ## RECOMENDACIONES FUTURAS
 
 ### Adaptadores USB WiFi recomendados:
-- Realtek RTL8821CU (actual - fallas de detección USB intermitentes ⚠️)
+- Realtek RTL8188FTV / rtl8xxxu (actual - funcionando ✅)
 - MediaTek MT7612U (altamente recomendado)
 - Intel AX200/AX210 (máxima compatibilidad)
 
@@ -220,5 +225,6 @@ modinfo rtw_8821cu
 ---
 
 **Documento creado:** 13/12/2025
+**Última actualización:** 04/03/2026 - Reemplazo de dongle a RTL8188FTV
 **Sistema operativo:** Linux Mint XFCE
 **Kernel:** 6.14.0-36-generic

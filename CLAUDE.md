@@ -21,6 +21,8 @@ It will be used to connect to different servers via ssh and use Claude to test, 
 - Use MCP SSH tools for normal commands (reading files, running scripts, short writes)
 - For writing files, use the `Write` tool locally to `/tmp/filename`, then `scp` it to the remote
 
+**NEVER use `cat >`, heredocs (`<< 'EOF'`), or `echo >` via MCP to write file contents.** These will always exceed the limit for any non-trivial file. Always use local `Write` + `scp`.
+
 ```bash
 scp -i ~/.ssh/id_ed25519_comet /tmp/filename user@host:/target/path
 # For non-standard port (e.g. contabo1):
