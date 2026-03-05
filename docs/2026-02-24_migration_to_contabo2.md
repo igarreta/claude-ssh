@@ -479,6 +479,48 @@ docker compose up -d
 docker ps | grep n8n
 ```
 
+### PHASE 9A — Install claude and connect VSCode
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Add to VSCode ssh configuration
+
+Phase 9A completed con 2026-03-07
+
+
+### PHASE 9B — Migrate findata
+
+mkdir -p /home/rsi/findata/log
+cd /home/rsi/findata && git submodule update --init --recursive
+
+Copy /home/rsi/findata/var/findata.csv and /home/rsi/findata/var/rofex.csv to contabo2
+
+
+### PHASE 9C — Crontab Setup (as rsi on contabo2)
+
+```bash
+# Review saved crontab
+cat ~/etc/crontab
+
+# Install (paths should be identical since same username/homedir structure)
+crontab -e
+# Paste:
+07 2 * * * ~/bin/backup.sh
+15 18 * * 1-5 /home/rsi/findata/.venv/bin/python3 /home/rsi/findata/bin/findata.py cron >> ~/findata/log/findata.log 2>&1
+10 8-23/2 * * * /usr/bin/docker compose -f /home/rsi/notion/compose.yaml up >> /home/rsi/notion/log/notion_repeat.log 2>&1
+30 3 * * * /home/rsi/n8n/bin/backup.sh >> /home/rsi/n8n/log/backup.log 2>&1
+
+crontab -l  # verify
+```
+
+Comment notion crontab entry in contabo1 to avoid duplication
+Comment findata crotab entry in contabo1 after verification
+
+
+#### Phase 9C completed on 2026-03-04
+
 ---
 
 ### PHASE 10 — Cutover Day: Volume Export/Import
@@ -554,23 +596,7 @@ docker exec -it n8n n8n import:credentials --separate --input=/home/node/.n8n/cr
 
 ---
 
-### PHASE 12 — Crontab Setup (as rsi on contabo2)
-
-```bash
-# Review saved crontab
-cat ~/etc/crontab
-
-# Install (paths should be identical since same username/homedir structure)
-crontab -e
-# Paste:
-# 07 2 * * * ~/bin/backup.sh
-# 15 18 * * 1-5 /home/rsi/findata/.venv/bin/python3 /home/rsi/findata/bin/findata.py cron >> ~/findata/log/findata.log 2>&1
-# 10 8-23/2 * * * /usr/bin/docker compose -f /home/rsi/notion/compose.yaml up >> /home/rsi/notion/log/notion_repeat.log 2>&1
-# 30 3 * * * /home/rsi/n8n/bin/backup.sh >> /home/rsi/n8n/log/backup.log 2>&1
-
-crontab -l  # verify
-```
-
+### PHASE 12 — 
 ---
 
 ### PHASE 13 — DNS Cutover (Namecheap)

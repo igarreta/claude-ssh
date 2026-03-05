@@ -144,6 +144,22 @@ Most SSH servers use Tailscale IP addresses (100.x.x.x). Ensure:
 1. Tailscale is running: `tailscale status`
 2. ACLs allow access from comet (100.125.21.4) to target machines
 
+## Direct SSH/SCP from comet
+
+MCP connectors do not verify host keys (ssh-mcp passes no `hostVerifier` to ssh2).
+Direct `ssh`/`scp` from the comet terminal does verify them via `~/.ssh/known_hosts`.
+
+When a new host is added or its Tailscale IP changes, run:
+```bash
+ssh-keyscan -H <ip> >> ~/.ssh/known_hosts
+```
+
+To re-scan all configured hosts at once:
+```bash
+ssh-keyscan -H 100.64.121.121 100.89.202.69 100.72.195.90 100.77.125.40 \
+  100.96.140.37 100.111.232.99 100.77.7.42 100.72.156.127 >> ~/.ssh/known_hosts
+```
+
 ## Troubleshooting
 
 ### SSH Connection Issues
