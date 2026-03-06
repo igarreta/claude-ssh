@@ -175,6 +175,9 @@ apt update && apt dist-upgrade -y
 apt autoremove && apt autoclean
 apt install -y curl git gnupg2 rsync tmux ufw fail2ban nfs-common python3-pip python3-venv wget mc htop
 
+# set timezone
+timedatectl set-timezone America/Argentina/Buenos_Aires
+
 # Create user
 adduser rsi
 usermod -aG sudo rsi
@@ -525,6 +528,8 @@ Comment findata crotab entry in contabo1 after verification
 
 ### PHASE 10 — Cutover Day: Volume Export/Import
 
+#### Phase 10 completed on 2026-03-05
+
 **This phase stops contabo1 services. Do it on Feb 27.**
 
 #### Step 1: Export volumes on contabo1
@@ -532,7 +537,7 @@ Comment findata crotab entry in contabo1 after verification
 # Stop containers for clean export
 docker stop uptime-kuma beszel portainer n8n
 
-# Export volumes
+# Export named volumes
 mkdir -p ~/bak
 for vol in uptime-kuma-data portainer_data n8n_n8n_data; do
   echo "Exporting $vol..."
@@ -542,22 +547,30 @@ for vol in uptime-kuma-data portainer_data n8n_n8n_data; do
     alpine tar czf /backup/${vol}.tar.gz -C /data .
   echo "Done: $vol → ~/bak/${vol}.tar.gz"
 done
+
+# Export beszel bind mount (uses ~/docker-contabo1/beszel/beszel_data/, not a named volume)
+tar czf ~/bak/beszel_data.tar.gz -C ~/docker-contabo1/beszel/beszel_data .
+
 ls -lh ~/bak/*.tar.gz
 ```
 
 #### Step 2: Copy volumes to contabo2
 ```bash
-# Run from contabo2
-rsync -av -e "ssh" rsi@contabo1:~/bak/*.tar.gz ~/bak/
+# Run from contabo2 (contabo1 uses port 1789)
+rsync -av -e "ssh -p 1789" rsi@CONTABO1_IP:~/bak/uptime-kuma-data.tar.gz \
+  rsi@CONTABO1_IP:~/bak/portainer_data.tar.gz \
+  rsi@CONTABO1_IP:~/bak/n8n_n8n_data.tar.gz \
+  rsi@CONTABO1_IP:~/bak/beszel_data.tar.gz \
+  ~/bak/
 ls -lh ~/bak/*.tar.gz
 ```
 
 #### Step 3: Stop and restore volumes on contabo2
 ```bash
 # Stop affected containers
-docker stop uptime-kuma portainer n8n 2>/dev/null
+docker stop uptime-kuma beszel portainer n8n 2>/dev/null
 
-# Restore volumes
+# Restore named volumes
 for vol in uptime-kuma-data portainer_data n8n_n8n_data; do
   echo "Restoring $vol..."
   docker volume create $vol 2>/dev/null || true
@@ -568,10 +581,14 @@ for vol in uptime-kuma-data portainer_data n8n_n8n_data; do
   echo "Done: $vol"
 done
 
+# Restore beszel bind mount
+tar xzf ~/bak/beszel_data.tar.gz -C ~/docker-contabo1/beszel/beszel_data/
+
 # Restart services
 cd ~/docker-contabo1/uptime-kuma && docker compose up -d
 cd ~/docker-contabo1/portainer && docker compose up -d
 cd ~/n8n && docker compose up -d
+cd ~/docker-contabo1/beszel && docker compose up -d
 
 # Verify all running
 docker ps
@@ -580,6 +597,8 @@ docker ps
 ---
 
 ### PHASE 11 — n8n Workflow Verification
+
+#### Phase 11 completed on 2026-03-05
 
 ```bash
 # Check n8n is accessible on Tailscale
@@ -600,6 +619,8 @@ docker exec -it n8n n8n import:credentials --separate --input=/home/node/.n8n/cr
 ---
 
 ### PHASE 13 — DNS Cutover (Namecheap)
+
+#### Phase 13 completed on 2026-03-05
 
 **Prerequisites before doing this:**
 - contabo2 public IP obtained
@@ -657,6 +678,8 @@ grep -r "contabo1" /etc/ /home/ 2>/dev/null
 ---
 
 ### PHASE 15 — Final Validation
+
+#### Phase 15 completed on 2026-03-05
 
 ```bash
 # On contabo2 — full verification
@@ -754,7 +777,7 @@ See resend configuration: `pip install resend`, use `RESEND_API_KEY` env var.
 
 2. **NFS before backup cron**: The backup cron runs at 2:07am. Make sure NFS is mounted and working before that runs on contabo2.
 
-3. **Caddy cert timing**: Start Caddy BEFORE updating DNS. Caddy needs to be listening on 80/443 when the first request hits after DNS propagation, or Let's Encrypt cert provisioning will fail.
+3. **Caddy cert timing**: Start Caddy BEFORE updating DNS. Caddy needs to be listening on 80/443 when the first request hits after DNS propagation, or Let's Encrypt cert provisioning will fail. If Caddy was already running but DNS only just switched (e.g. it was started days earlier pointing to the old server), the initial ACME challenge will have failed silently. Run `caddy reload --config /etc/caddy/Caddyfile` after the DNS cutover to trigger a fresh cert request. Port 443 will open within ~15 seconds once the cert is issued.
 
 4. **uptime-kuma data**: This volume has the most unique data (all monitor configurations). The volume export/import is the only way to preserve it. Verify it restored correctly before decommissioning contabo1.
 
@@ -765,3 +788,5 @@ See resend configuration: `pip install resend`, use `RESEND_API_KEY` env var.
 7. **sendgrid → resend**: Any service that used sendgrid.env needs to be updated to use resend.env. Check n8n workflows and any Python scripts for sendgrid references.
 
 8. **Docker group**: rsi must be in the docker group (`usermod -aG docker rsi`) and must log out/in for it to take effect. Use `newgrp docker` or start a new session.
+
+9. **notion_repeat cron log ownership**: The `notion_repeat.log` file must be owned by `rsi`, not `root`. If the first manual test run of `docker compose up` was done as root, it creates the log file as root-owned, causing the cron job (which runs as `rsi`) to silently fail with a permission denied on redirect. Fix: `rm ~/notion/log/notion_repeat.log && touch ~/notion/log/notion_repeat.log` (works because the log directory is owned by `rsi` with no sticky bit). Verify with: `ls -la ~/notion/log/`.
