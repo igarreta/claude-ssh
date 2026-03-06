@@ -25,7 +25,7 @@ All servers are Tailscale nodes. No password SSH auth in contabo1 or contabo2.
 
 ## Infrastructure Overview
 
-### contabo1 (source — being deleted Feb 27)
+### contabo1 (source — stopped 2026-03-06, to be deleted ~2026-03-20)
 - **OS**: Ubuntu (current)
 - **User**: rsi (UID 1004 based on NFS dir ownership)
 - **Docker containers running**:
