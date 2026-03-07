@@ -67,7 +67,7 @@ contabo1: a web based linux server running some Services, beeing deprecated
 contabo2: a web based linux server running some Services, replacing contabo1 in march 2026
 raspberrypi1: a raspberry pi for controlling the home heating
 homeassistant (104, 100.98.185.44): for home management, uses password auth (hassio user)
-living1: is another small nuc for entertainment purposes. Most of the time is disconnected
+living1: is another small nuc for entertainment purposes. Most of the time is disconnected. Tailscale IP: 100.72.156.127
 
 ## gr-srv03
 gr-srv03 runs in a GMTec NucBox G5 with  an N97 Intel processor and 12 GB of RAM
@@ -83,6 +83,24 @@ I has connected:
 Some containers run on vmbr1 for reducing LAN IP usage
 
 More detailed information can be found in the docs directory of this repository
+
+## living1
+Gigabyte MMLP3AP-00 mini PC (NUC-style), used for entertainment.
+- **OS**: Linux Mint 22.3 Zena (Ubuntu 24.04 base), Xfce 4.18
+- **Kernel**: 6.17.0-14-generic
+- **CPU**: Intel Core i3-4010U (dual core + HT, Haswell, 1.7 GHz)
+- **RAM**: 16 GiB
+- **Storage**: 240 GiB Kingston SSD (ext4, 33 GiB used)
+- **Display**: Dell S2725DS 2560x1440 via HDMI
+- **Network**:
+  - Ethernet: Realtek RTL8111 gigabit (enp3s0) — **primary connection at home**
+  - WiFi internal: Realtek RTL8723AE PCIe — blacklisted (`/etc/modprobe.d/blacklist-rtl8723ae.conf`)
+  - WiFi USB: Realtek RTL8188FTV (rtl8xxxu driver) — used at other locations
+    - Config: `/etc/modprobe.d/rtl8xxxu.conf` → `options rtl8xxxu dma_aggregation=1`
+    - Regulatory domain: `/etc/default/crda` → `REGDOMAIN=AR`
+- **Remote access**: AnyDesk (ID: 1451623058), Chrome Remote Desktop, Tailscale SSH
+- **sudo**: requires password (not passwordless)
+- Docs: `docs/2025-03-07_living1_description.md`, `docs/2025-12-13_living1_wifi-fix.md`
 
 ## cygnus
 podman is installed, but must be run as sudo (sudo podman). It was configured to allow "sudo podman" without requestign the password

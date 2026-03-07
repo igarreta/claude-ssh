@@ -224,7 +224,54 @@ modinfo rtw_8821cu
 
 ---
 
+## OPTIMIZACIÓN DRIVER RTL8188FTV EN RED DOMÉSTICA (2026-03-07)
+
+### Contexto
+living1 volvió a la red doméstica (GrEven, Deco X50). Con el driver rtl8xxxu por defecto,
+el throughput real era ~5 Mbps a pesar de excelente señal (-28 dBm, 70/70 calidad).
+
+### Diagnóstico
+- Bit Rate negociado: 39-52 Mbps (MCS 4-5, HT20) — bajo para la señal disponible
+- Throughput real (iperf3): ~5 Mbps — solo ~10% del rate negociado
+- RX bitrate desde el AP: 2 Mbps — limitación del driver rtl8xxxu sin agregación
+- `dmesg` mostró: `regulatory prevented using AP config, downgraded`
+- Dominio regulatorio no configurado (usaba default US/global)
+
+### Solución aplicada
+
+**1. Dominio regulatorio (Argentina):**
+```bash
+echo 'REGDOMAIN=AR' | sudo tee /etc/default/crda
+sudo iw reg set AR
+```
+
+**2. Parámetro de agregación DMA del driver:**
+```bash
+echo 'options rtl8xxxu dma_aggregation=1' | sudo tee /etc/modprobe.d/rtl8xxxu.conf
+```
+Nota: `ht40_2g=1` fue probado pero causó fallo de autenticación con el AP — no usar.
+
+**3. Recarga del módulo:**
+```bash
+sudo modprobe -r rtl8xxxu && sudo modprobe rtl8xxxu
+nmcli device connect wlx00e0313f8b21
+```
+
+### Resultado
+- RX bitrate: 2 Mbps → 13-26 Mbps (variable, suficiente para el uso)
+- Dominio regulatorio: AR activo en sesión, persiste via `/etc/default/crda` en reboot
+- Throughput mejorado pero limitado por el hardware (RTL8188FTV es 1T1R 2.4GHz únicamente)
+
+### Limitaciones conocidas
+- El RTL8188FTV con rtl8xxxu tiene RX inestable (fluctúa entre MCS 1-4)
+- No soporta 5 GHz — no puede aprovechar el Deco X50 en banda 5 GHz
+- La red doméstica (GrEven) tiene múltiple APs mesh en canal 3 → congestión co-canal
+- Puerto ethernet disponible (gigabit, probado a 945 Mbps) — **conexión principal en uso doméstico**
+- USB dongle RTL8188FTV reservado para uso en otras ubicaciones (hospital, etc.)
+
+---
+
 **Documento creado:** 13/12/2025
-**Última actualización:** 04/03/2026 - Reemplazo de dongle a RTL8188FTV
+**Última actualización:** 07/03/2026 - Optimización de driver rtl8xxxu en red doméstica
 **Sistema operativo:** Linux Mint XFCE
 **Kernel:** 6.14.0-36-generic
