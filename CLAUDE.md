@@ -70,6 +70,8 @@ homeassistant (104, 100.98.185.44): for home management, uses password auth (has
 living1: is another small nuc for entertainment purposes. Most of the time is disconnected. Tailscale IP: 100.72.156.127
 
 ## gr-srv03
+All scripts for gr-srv03 must be stored in `/opt/proxmox-grsrv03/` (git repo: `igarreta/proxmox-grsrv03`), organized in thematic subdirectories (e.g. `host-backup/`, `monitoring/`). Never place scripts in `/usr/local/bin` or `/usr/local/sbin` directly — symlink from there if needed.
+
 gr-srv03 runs in a GMTec NucBox G5 with  an N97 Intel processor and 12 GB of RAM
 On 2026-01-14 is running pve-manager/9.1.2/9d436f37a0ac4172
 Kernel is pinned to Linux 6.17.2-2-pve. I had hardware compatibility issues in the past, that can be found in the documentation
