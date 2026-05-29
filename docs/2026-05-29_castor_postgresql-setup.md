@@ -51,6 +51,35 @@ The SSH MCP connector uses the Tailscale IP. Entry in `/home/rsi/claude-ssh/.mcp
 }
 ```
 
+## PostgreSQL MCP connector (castor-pg)
+
+Allows Claude to query PostgreSQL directly via `@modelcontextprotocol/server-postgres`.
+
+**Network access:** PostgreSQL listens on `localhost` and `100.65.209.119` (Tailscale). Connections from the Tailscale range (`100.64.0.0/10`) are allowed in `pg_hba.conf` using `scram-sha-256` auth.
+
+Changes in `/etc/postgresql/17/main/postgresql.conf`:
+```
+listen_addresses = 'localhost,100.65.209.119'
+```
+
+Added to `/etc/postgresql/17/main/pg_hba.conf`:
+```
+host    all             mcp             100.64.0.0/10           scram-sha-256
+```
+
+**Credentials:**
+- User: `mcp` (non-superuser, full privileges on `postgres` database)
+- Connection URL stored in: `~/.ssh/castor-pg-url` (permissions 600)
+- Wrapper script: `~/etc/castor-pg-mcp.sh`
+
+Entry in `/home/rsi/claude-ssh/.mcp.json`:
+```json
+"castor-pg": {
+  "command": "/home/rsi/etc/castor-pg-mcp.sh",
+  "args": []
+}
+```
+
 ## Passwordless sudo
 
 `rsi` does not have passwordless sudo on castor. For privileged operations use `pct exec 205 -- <command>` from gr-srv03, which runs as root inside the container.
