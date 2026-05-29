@@ -28,6 +28,10 @@
       "command": "npx",
       "args": ["-y", "ssh-mcp", "--", "--host=100.65.209.119", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
     },
+    "castor-pg": {
+      "command": "/home/rsi/etc/castor-pg-mcp.sh",
+      "args": []
+    },
     "living1": {
       "command": "npx",
       "args": ["-y", "ssh-mcp", "--", "--host=100.72.156.127", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
