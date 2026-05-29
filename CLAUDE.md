@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Memory
+
+Save memory content as `docs/memory_<topic>.md` files in this repository (git-tracked). Keep `~/.claude/projects/` MEMORY.md as a short index only.
+
 ## General instructions
 I like concise responses, without excesive duplication.
 Respond as requested, do not extend with supossiotions about next steps. Do not add descriptions of possible alternatives before asking if they are required.
