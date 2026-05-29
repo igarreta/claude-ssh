@@ -37,6 +37,8 @@ Change in `/etc/postgresql/17/main/postgresql.conf`:
 data_directory = '/mnt/data/17/main'
 ```
 
+The original default data directory `/var/lib/postgresql/17/main` was removed after migration to free rootfs space. `/var/lib/postgresql/` is kept (owned by the postgres system user) as it is managed by the package.
+
 ## UID mapping note
 
 castor is an unprivileged LXC. The postgres user (UID 102, GID 107 inside container) maps to host UID **100102**, GID **100107**. When creating or moving the data directory on the host, ownership must be set accordingly. The parent directory (`/mnt/backup_usb1/data/castor/`) is `root:root 755` — postgres only needs access to its own `17/` subdirectory.
