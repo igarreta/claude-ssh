@@ -26,7 +26,7 @@
     },
     "castor": {
       "command": "npx",
-      "args": ["-y", "ssh-mcp", "--", "--host=10.0.100.11", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+      "args": ["-y", "ssh-mcp", "--", "--host=100.65.209.119", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
     },
     "living1": {
       "command": "npx",
