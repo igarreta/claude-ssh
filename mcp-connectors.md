@@ -20,6 +20,7 @@ SSH connectors use the `ssh-mcp` package to execute commands on remote machines.
 | contabo1 | 100.72.195.90 | rsi | 1789 | Contabo VPS (migrating to contabo2)|
 | contabo2 | 100.77.125.40 | rsi | 1789 | Contabo VPS |
 | cygnus | 100.96.140.37 | rsi | 22 | Cygnus server |
+| castor | 10.0.100.11 | rsi | 22 | PostgreSQL DB server |
 | raspberrypi1 | 100.111.232.99 | rsi | 22 | Raspberry Pi |
 | samba03 | 100.77.7.42 | root | 22 | Samba server |
 | living1 | 100.72.156.127 | rsi | 22 | stream to TV - not allways on |
