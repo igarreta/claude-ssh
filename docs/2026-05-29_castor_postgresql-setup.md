@@ -82,6 +82,6 @@ Entry in `/home/rsi/claude-ssh/.mcp.json`:
 }
 ```
 
-## Passwordless sudo
+## Privileged operations
 
-`rsi` does not have passwordless sudo on castor. For privileged operations use `pct exec 205 -- <command>` from gr-srv03, which runs as root inside the container.
+`rsi` requires a password for sudo on castor. Use `pct exec 205 -- <command>` from gr-srv03 instead, which runs as root inside the container.
