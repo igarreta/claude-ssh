@@ -9,6 +9,7 @@ All backup jobs run on gr-srv03 hardware. ceres and cygnus are LXCs sharing the 
 | Time | Machine | Job |
 |------|---------|-----|
 | 1:10 | homeassistant (104) | HA backup (~500 MB). Scheduled inside HA — not accessible via MCP. Rescheduled from 2:15 to avoid overlap. |
+| 1:30 | castor | pg-backup.sh (pg_dumpall → /mnt/data/dumps/, USB SSD, no disk wake needed) |
 | 1:30 | gr-srv03 | backup-config.sh daily |
 | 1:30 | cygnus | backup.sh (local copies) |
 | 1:45 | ceres | backup.sh |

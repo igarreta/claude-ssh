@@ -34,6 +34,17 @@ Unprivileged LXC: postgres UID 102 → host UID 100102, GID 107 → 100107. Host
 - **cygnus → castor** over vmbr1: `pg_hba.conf` rule `host all ingestion_api 10.0.100.10/32 scram-sha-256`. `ingestion_api` role given a password (TCP can't use peer). Verified port reachable from cygnus (10.0.100.10); psql not installed on cygnus so app-level auth test pending.
 - vmbr1-only chosen over Tailscale for cygnus link (more secure, no Tailscale dependency at boot).
 
+## Backup
+
+- **Method:** `pg_dumpall --clean --if-exists` runs daily on castor as root (via `su - postgres`)
+- **Script:** `/home/rsi/bin/pg-backup.sh` on castor
+- **Schedule:** `30 1 * * *` via `/etc/cron.d/pg-backup` (01:30 AM, before ceres restic at 03:00)
+- **Dump location (inside castor):** `/mnt/data/dumps/pg_dumpall_YYYYMMDD.sql.gz`
+- **Dump location (host/ceres):** `/mnt/backup_usb1/data/castor/dumps/`
+- **Retention on disk:** 14 days (2 weeks of dailies, managed by pg-backup.sh)
+- **Restic tag:** `castor-pg` in `backup-usb1-local.sh` on ceres; keep-daily 7, keep-weekly 4, keep-monthly 6
+- **dumps dir ownership (host):** UID/GID 100000 (= castor container root); postgres writes via su
+
 ## Operational notes
 
 - `rsi` requires a password for sudo — use `pct exec 205 -- <cmd>` from gr-srv03 for privileged ops (verified 2026-05-29)
