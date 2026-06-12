@@ -38,6 +38,7 @@ UUID=b52be7b7-1bd0-4281-8c16-87ceeca5b665 /mnt/backup_usb1 ext4 defaults,nofail,
 ```ini
 [Unit]
 Description=Backup USB Drive BACKUP_A
+TimeoutSec=10
 
 [Mount]
 What=UUID=ef8a4442-68a6-485c-992c-9fd79b183201
@@ -53,12 +54,13 @@ WantedBy=multi-user.target
 ```ini
 [Unit]
 Description=Backup USB Drive BACKUP_B
+TimeoutSec=10
 
 [Mount]
 What=UUID=2d0b0d7c-c5bd-4d8a-b477-29732001f6df
 Where=/mnt/backup_b
 Type=ext4
-Options=defaults,nofail,noatime
+Options=defaults,nofail,noatime,errors=remount-ro
 
 [Install]
 WantedBy=multi-user.target
@@ -68,6 +70,8 @@ WantedBy=multi-user.target
 - NO `DefaultDependencies`, `Before=`, or `After=` directives (these caused issues)
 - Simple, minimal configuration
 - `nofail` allows boot to continue if device missing
+- `TimeoutSec=10` prevents cron from hanging 90s (default) when no disk is present
+- `errors=remount-ro` on BACKUP_B (safer than `errors=continue` — remounts read-only on I/O error)
 
 ### 3. Udev Rules
 
@@ -182,12 +186,42 @@ lxc.mount.entry: /mnt/backup_b mnt/backup_b none bind,create=dir,slave 0 0
 The host root is `shared` (verified via `findmnt`), so mount/unmount events at `/mnt/backup_a` and `/mnt/backup_b` on the host automatically propagate into the running ceres container. **No container restart is needed after swapping drives.**
 
 ### Disk swap procedure
-1. Unplug the old drive → udev triggers `systemctl stop mnt-backup_X.mount`
-2. Plug in the new drive → udev triggers `systemctl start mnt-backup_X.mount`
-3. The new mount propagates into ceres automatically
-4. Next backup run picks up the correct drive
+
+Drives are automatically unmounted at 15:00 and remounted at 00:30 by cron (see Scheduled Unmount/Remount below). The swap window is 18:00–22:00, so the disk is always cleanly unmounted before swapping.
+
+1. Drive is unmounted at 15:00 by cron → safe to unplug any time after that
+2. Plug in the new drive between 18:00 and 22:00
+3. At 00:30 cron runs `systemctl start mnt-backup_X.mount` → mount propagates into ceres
+4. Next backup run (01:45+) picks up the correct drive
+
+No manual intervention needed.
 
 _Last updated: 2026-03-21 — switched to slave propagation after disk swap incident_
+_Updated: 2026-06-12 — added scheduled unmount/remount to eliminate hot-unplug risk_
+
+---
+
+## Scheduled Unmount/Remount (gr-srv03 crontab)
+
+To eliminate hot-unplug risk, the backup drives are unmounted on a schedule:
+
+```
+# Unmount at 15:00 so disk can be safely swapped (swap window 18:00-22:00)
+0 15 * * *  sudo systemctl stop mnt-backup_a.mount mnt-backup_b.mount
+
+# Remount at 00:30 before backup window; exits quietly if no disk present
+30 0 * * *  sudo systemctl start mnt-backup_a.mount; sudo systemctl start mnt-backup_b.mount; true
+```
+
+**Why `; true`**: if neither disk is present (disk was removed but not yet replaced), `systemctl start` exits with an error after `TimeoutSec=10`. The `; true` prevents cron from generating an error email — the missing-disk condition is handled by `lib-disk.sh` grace period logic.
+
+**Timing windows**:
+| Window | Activity |
+|--------|----------|
+| 00:30 | Remount attempt |
+| 01:45–03:30 | Backup jobs (ceres) |
+| 15:00 | Unmount |
+| 18:00–22:00 | Safe disk swap window |
 
 ---
 

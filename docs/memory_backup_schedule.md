@@ -4,6 +4,8 @@ All backup jobs run on gr-srv03 hardware. ceres and cygnus are LXCs sharing the 
 
 **Disk wake constraint**: gr-srv03 spins up backup HDDs (BACKUP_A/B, Toshiba) at 02:25 and 02:55. Drives spin down after ~10 min idle. Backup jobs must start within 10 min of their wake. Do not add jobs outside the 02:25–03:30 window without adding a corresponding wake entry in gr-srv03 crontab.
 
+**Scheduled unmount/remount**: gr-srv03 unmounts BACKUP_A/B at 15:00 and remounts at 00:30 daily. Disk swap window is 18:00–22:00. This eliminates hot-unplug risk. No manual intervention needed for weekly disk swaps.
+
 **Schedule (as of 2026-04-30):**
 
 | Time | Machine | Job |
@@ -14,9 +16,11 @@ All backup jobs run on gr-srv03 hardware. ceres and cygnus are LXCs sharing the 
 | 1:30 | cygnus | backup.sh (local copies) |
 | 1:45 | ceres | backup.sh |
 | 1:50 Mon | cygnus | gickup (GitHub backup via podman) |
+| 0:30 | gr-srv03 | remount BACKUP_A/B (if disk present) |
 | 2:25 | gr-srv03 | wake-backup-disks.sh |
 | 2:30 | ceres | backup-wdmycloud-local.sh (WDMyCloud → BACKUP_A/B) |
 | 2:55 | gr-srv03 | wake-backup-disks.sh |
+| 15:00 | gr-srv03 | unmount BACKUP_A/B (safe swap after this) |
 | 3:00 | ceres | backup-usb1-local.sh |
 | 3:08 | docker03 | rclone-copy to OneDrive |
 | 3:30 day 4 | ceres | backup-wdmycloud-s3.sh (WDMyCloud → AWS) |
