@@ -1,0 +1,5 @@
+# Renew Caddy's Tailscale TLS cert on cygnus (operator is rsi, so caddy can't
+# self-renew; this runs as root). Renews only when near expiry; reloads Caddy
+# only if the cert changed.
+MAILTO=""
+17 4 * * 1 root /usr/local/sbin/renew-caddy-cert.sh
