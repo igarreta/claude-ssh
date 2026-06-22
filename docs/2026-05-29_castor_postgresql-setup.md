@@ -61,13 +61,38 @@ Allows Claude to query PostgreSQL directly via `@modelcontextprotocol/server-pos
 
 Changes in `/etc/postgresql/17/main/postgresql.conf`:
 ```
-listen_addresses = 'localhost,100.65.209.119'
+listen_addresses = 'localhost,100.65.209.119,10.0.100.11'
 ```
 
 Added to `/etc/postgresql/17/main/pg_hba.conf`:
 ```
 host    all             mcp             100.64.0.0/10           scram-sha-256
 ```
+
+## vmbr1 client access (cygnus apps)
+
+Apps on cygnus (`10.0.100.10`) connect to the `homelab` DB over vmbr1, so
+`listen_addresses` **must include the vmbr1 IP `10.0.100.11`** (added 2026-06-22).
+Relevant `pg_hba.conf` rules:
+```
+host    all          ingestion_api   10.0.100.10/32   scram-sha-256
+host    homelab,rsi  grafana         10.0.100.10/32   scram-sha-256
+```
+
+Consumers (on cygnus): `data-ingestion-api` (user `ingestion_api`, db `homelab`)
+and grafana. If these can't reach the DB, check that `10.0.100.11` is still in
+`listen_addresses` (`sudo ss -ltn 'sport = :5432'`).
+
+> **`listen_addresses` changes require a `restart`, not a `reload`.**
+> `sudo systemctl restart postgresql@17-main`
+
+### Incident 2026-06-22 — vmbr1 IP missing from listen_addresses
+`listen_addresses` had reverted to `'localhost,100.65.209.119'` (no
+`10.0.100.11`), broken since ~June 4. PostgreSQL was up but only on loopback +
+Tailscale, so cygnus got "Connection refused" → `data-ingestion-api`
+crash-looped (RestartCount 2013) → `servidor_quetren_1` could not POST barrera
+events to it. Fix: re-added `10.0.100.11`, restarted PostgreSQL. Validated by a
+full castor reboot — config persists and the whole chain recovers automatically.
 
 **Credentials:**
 - User: `mcp` (non-superuser, full privileges on `postgres` database)
