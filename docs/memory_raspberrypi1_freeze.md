@@ -38,3 +38,10 @@ lockup on a low-RAM Pi 3B+ — watch it.
 ## Hardware
 Raspberry Pi 3 Model B Plus Rev 1.3, kernel 6.12.87+rpt-rpi-v8. Used for home heating control.
 Journald is persistent (`/var/log/journal`).
+
+## Fix (2026-06-25): hardware watchdog enabled
+The "no auto-recovery" gap is closed — systemd's built-in BCM2835 hardware watchdog is now
+armed (`/etc/systemd/system.conf.d/watchdog.conf`, `RuntimeWatchdogSec=10s`). If the kernel
+locks up hard enough that even PID 1 can't run, the SoC force-resets the board within ~15s
+instead of staying down indefinitely. Live-tested by forcing a real hardware reset — full
+details in `docs/2026-06-25_raspberrypi1_kernel-watchdog.md`.
