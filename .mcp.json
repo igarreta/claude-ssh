@@ -40,6 +40,10 @@
       "command": "npx",
       "args": ["-y", "ssh-mcp", "--", "--host=100.111.232.99", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
     },
+    "raspberrypi2z": {
+      "command": "npx",
+      "args": ["-y", "ssh-mcp", "--", "--host=100.92.195.47", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+    },
     "samba03": {
       "command": "npx",
       "args": ["-y", "ssh-mcp", "--", "--host=100.77.7.42", "--user=root", "--key=/home/rsi/.ssh/id_ed25519_comet"]

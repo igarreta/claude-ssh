@@ -22,6 +22,7 @@ SSH connectors use the `ssh-mcp` package to execute commands on remote machines.
 | cygnus | 100.96.140.37 | rsi | 22 | Cygnus server |
 | castor | 100.65.209.119 | rsi | 22 | PostgreSQL DB server |
 | raspberrypi1 | 100.111.232.99 | rsi | 22 | Raspberry Pi |
+| raspberrypi2z | 100.92.195.47 | rsi | 22 | Raspberry Pi Zero W, 433 MHz temp sensors |
 | samba03 | 100.77.7.42 | root | 22 | Samba server |
 | living1 | 100.72.156.127 | rsi | 22 | stream to TV - not allways on |
 
@@ -158,7 +159,7 @@ ssh-keyscan -H <ip> >> ~/.ssh/known_hosts
 To re-scan all configured hosts at once:
 ```bash
 ssh-keyscan -H 100.64.121.121 100.89.202.69 100.72.195.90 100.77.125.40 \
-  100.96.140.37 100.111.232.99 100.77.7.42 100.72.156.127 >> ~/.ssh/known_hosts
+  100.96.140.37 100.111.232.99 100.92.195.47 100.77.7.42 100.72.156.127 >> ~/.ssh/known_hosts
 ```
 
 ## Troubleshooting
