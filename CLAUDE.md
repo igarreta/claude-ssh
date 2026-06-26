@@ -70,7 +70,7 @@ samba03 (101): LXC running a Turnkey server. Is beeing deprecated for proxmox sh
 contabo1: a web based linux server running some Services, beeing deprecated
 contabo2: a web based linux server running some Services, replacing contabo1 in march 2026
 raspberrypi1: a raspberry pi for controlling the home heating
-raspberrypi2z (100.92.195.47): a Raspberry Pi Zero W, receives temperature readings from 433 MHz devices
+raspberrypi2z (100.92.195.47): a Raspberry Pi Zero W, receives temperature readings from 433 MHz devices via rtl_433 (protocol 19, Nexus/TFA sensors) → MQTT broker at 192.168.1.8:1883; topic prefix `rtl_433/test` (test, pending production rename); service `rtl433.service` (runs as rsi). BCM2835 watchdog auto-armed by systemd at 60s (no explicit config, unlike raspberrypi1). See docs/2026-06-26_raspberrypi2z_rtl433-setup.md
 homeassistant (104, 100.98.185.44): for home management, uses password auth (hassio user)
 living1: is another small nuc for entertainment purposes. Most of the time is disconnected. Tailscale IP: 100.72.156.127
 

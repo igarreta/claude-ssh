@@ -70,7 +70,6 @@ key strings, not just file presence — a "copy" can silently drop entries.
 
 - Decide whether to disable SSH password auth / passwordless sudo
   fleet-wide vs. just here.
-- Install rtl_433 + whatever forwards readings (MQTT to homeassistant?) once
-  the 433 MHz USB receiver is attached.
+- rtl_433 installed 2026-06-26: see docs/2026-06-26_raspberrypi2z_rtl433-setup.md
 - Consider unattended-upgrades for security patches, given this is a
   low-maintenance always-on sensor node.
