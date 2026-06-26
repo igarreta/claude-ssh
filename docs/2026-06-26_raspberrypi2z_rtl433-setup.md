@@ -62,20 +62,43 @@ On each start, `[R82XX] PLL not locked!` appears — this is a known benign RTL-
 
 ## Watchdog
 
-The BCM2835 hardware watchdog (`/dev/watchdog0`) is present on the Pi Zero W and **auto-detected by systemd** at boot:
+The BCM2835 hardware watchdog (`/dev/watchdog0`) is present on the Pi Zero W and **auto-detected by systemd** at boot via `/usr/lib/systemd/system.conf.d/40-rpi-enable-watchdog.conf` (`RuntimeWatchdogSec=1m`):
 
 ```
 systemd[1]: Using hardware watchdog 'Broadcom BCM2835 Watchdog timer', version 0, device /dev/watchdog0
 systemd[1]: Watchdog running with a hardware timeout of 1min.
 ```
 
-**Key difference from raspberrypi1**: On raspberrypi1, the watchdog was explicitly activated by adding `RuntimeWatchdogSec=10s` to `/etc/systemd/system.conf`. On raspberrypi2z, `RuntimeWatchdogSec` is commented out (default), but systemd still auto-arms the hardware watchdog with the hardware default timeout of **60 seconds**.
+**Limitation**: this watchdog only resets the board if systemd itself stops petting it (kernel panic / systemd freeze). A Wi-Fi driver freeze leaves systemd running, so the board stays hung indefinitely.
 
-Result: both hosts have the hardware watchdog armed, but with different timeouts (10s on pi1, 60s on pi2z). No explicit configuration was needed on pi2z.
+**Key difference from raspberrypi1**: raspberrypi1 has `RuntimeWatchdogSec=10s` explicitly set; raspberrypi2z relies on the RPi default drop-in at 60s.
+
+## Network watchdog
+
+Added 2026-06-26 after a Wi-Fi freeze hang (see `docs/2026-06-26_raspberrypi2z_wifi-watchdog.md`).
+
+The BCM43430 Wi-Fi firmware (version 7.45.98, July 2021 — latest available from Cypress/Infineon) is known to freeze intermittently, making the board unreachable while systemd keeps the hardware watchdog alive.
+
+**Timer**: `net-watchdog.timer` — runs every 5 minutes, pings 192.168.1.1 (router).
+
+Recovery sequence:
+- **Fail 1**: restart Wi-Fi via `nmcli radio wifi off/on`
+- **Fail 2**: `systemctl reboot`
+
+Source files: `raspberrypi2z/net-watchdog/` in this repo.  
+Logs: `journalctl -t net-watchdog`
+
+## Persistent journal
+
+Added 2026-06-26. Journal survives reboots for post-hang diagnosis.
+
+Config: `/etc/systemd/journald.conf.d/persistent.conf` → `Storage=persistent`  
+Source: `raspberrypi2z/journald/persistent.conf` in this repo.  
+After any future hang: `journalctl -b -1 | grep -i brcm`
 
 ## Hardware note
 
-RTL-SDR dongle connected directly to the Pi Zero W USB port (no powered hub). Ran stable for 12+ hours, so direct connection appears sufficient.
+RTL-SDR dongle connected directly to the Pi Zero W USB port (no powered hub). Ran stable for 12+ hours, so direct connection appears sufficient. Power supply is 2.5A — ruled out as cause of observed hangs.
 
 ## Pending
 
