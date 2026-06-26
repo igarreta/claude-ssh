@@ -73,7 +73,12 @@ systemd[1]: Watchdog running with a hardware timeout of 1min.
 
 Result: both hosts have the hardware watchdog armed, but with different timeouts (10s on pi1, 60s on pi2z). No explicit configuration was needed on pi2z.
 
+## Hardware note
+
+RTL-SDR dongle connected directly to the Pi Zero W USB port (no powered hub). Ran stable for 12+ hours, so direct connection appears sufficient.
+
 ## Pending
 
 - Change MQTT topic prefix from `rtl_433/test` to production prefix once end-to-end flow is validated.
 - Verify sensor readings are arriving at homeassistant/MQTT consumer.
+- **Oregon-THGR122N not forwarded to MQTT**: config has `protocol 19` (Nexus only). Oregon sensor IS received by the hardware (confirmed in manual run output) but filtered out. Need to find the Oregon-THGR122N protocol number and add it to the config. Suspect protocol 86 (Oregon Scientific V3) but needs verification on the Pi.
