@@ -1,0 +1,7 @@
+[Unit]
+Description=Network watchdog - reboot if router unreachable
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/net-watchdog.sh
