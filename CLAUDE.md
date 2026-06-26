@@ -70,9 +70,12 @@ samba03 (101): LXC running a Turnkey server. Is beeing deprecated for proxmox sh
 contabo1: a web based linux server running some Services, beeing deprecated
 contabo2: a web based linux server running some Services, replacing contabo1 in march 2026
 raspberrypi1: a raspberry pi for controlling the home heating
-raspberrypi2z (100.92.195.47): a Raspberry Pi Zero W, receives temperature readings from 433 MHz devices via rtl_433 (protocol 19, Nexus/TFA sensors) → MQTT broker at 192.168.1.8:1883; topic prefix `rtl_433/test` (test, pending production rename); service `rtl433.service` (runs as rsi). BCM2835 watchdog auto-armed by systemd at 60s (no explicit config, unlike raspberrypi1). See docs/2026-06-26_raspberrypi2z_rtl433-setup.md
+raspberrypi2z (100.92.195.47): a Raspberry Pi Zero W, receives temperature readings from 433 MHz devices via rtl_433 (protocol 19, Nexus/TFA sensors) → MQTT broker at 192.168.1.8:1883; topic prefix `rtl_433/test` (test, pending production rename); service `rtl433.service` (runs as rsi). BCM2835 watchdog auto-armed by systemd at 60s (no explicit config, unlike raspberrypi1). See docs/2026-06-26_raspberrypi2z_rtl433-setup.md. **sudo requires password** (passwordless sudo removed).
 homeassistant (104, 100.98.185.44): for home management, uses password auth (hassio user)
 living1: is another small nuc for entertainment purposes. Most of the time is disconnected. Tailscale IP: 100.72.156.127
+
+## raspberrypi2z
+Scripts and config for raspberrypi2z are stored in `raspberrypi2z/` in this repo, organized in thematic subdirectories (e.g. `net-watchdog/`, `journald/`). Deploy by copying files to their target paths on the Pi. See `docs/2026-06-26_raspberrypi2z_wifi-watchdog.md` for the Wi-Fi hang diagnosis and watchdog setup.
 
 ## gr-srv03
 All scripts for gr-srv03 must be stored in `/opt/proxmox-grsrv03/` (git repo: `igarreta/proxmox-grsrv03`), organized in thematic subdirectories (e.g. `host-backup/`, `monitoring/`). Never place scripts in `/usr/local/bin` or `/usr/local/sbin` directly — symlink from there if needed.
