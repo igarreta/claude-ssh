@@ -81,4 +81,5 @@ RTL-SDR dongle connected directly to the Pi Zero W USB port (no powered hub). Ra
 
 - Change MQTT topic prefix from `rtl_433/test` to production prefix once end-to-end flow is validated.
 - Verify sensor readings are arriving at homeassistant/MQTT consumer.
-- **Oregon-THGR122N not forwarded to MQTT**: config has `protocol 19` (Nexus only). Oregon sensor IS received by the hardware (confirmed in manual run output) but filtered out. Need to find the Oregon-THGR122N protocol number and add it to the config. Suspect protocol 86 (Oregon Scientific V3) but needs verification on the Pi.
+- **Oregon-THGR122N not forwarded to MQTT**: config has `protocol 19` (Nexus only). Oregon sensor IS received by the hardware (confirmed in manual run output) but filtered out. Need to find the Oregon-THGR122N protocol number and add it to the config. Protocol number lookup: `rtl_433 -R help 2>&1 | grep -i oregon` — safe to run while service is active (never opens hardware). Suspect protocol 86 (Oregon Scientific V3) but needs verification.
+- **Verify humidity and time fields are published**: with `devices=` format, rtl_433 publishes all decoded fields as subtopics (e.g. `.../humidity`, `.../time`). Config already has `report_meta time:iso:tz`. Check actual MQTT output before adding anything — fields may already be there.
