@@ -27,11 +27,13 @@ report_meta time:iso:tz
 
 # Output to Mosquitto broker on LAN. Topic template:
 #   rtl_433/<model>/<id>/<channel>/<field>
-output mqtt://192.168.1.8:1883,retain=0,devices=rtl_433/test[/model][/id][/channel]
+output mqtt://192.168.1.8:1883,retain=0,devices=rtl_433/raspberrypi2z/devices[/model][/channel][/id],events=rtl_433/raspberrypi2z/events
 ```
 
 - **Protocol 19**: Nexus / FreeTec NC-7345 / NX-3980 / Solight TE82S / TFA 30.3209 temperature+humidity sensor.
 - **Protocol 12**: Oregon Scientific Weather Sensor (v2/v3) — covers Oregon-THGR122N.
+- Topic structure: `rtl_433/raspberrypi2z/devices/<model>/<channel>/<id>/<field>` for individual fields; `rtl_433/raspberrypi2z/events` for JSON events per reading (consumed by TTato).
+- Channel comes before id in the path (matches the old docker03 format and HomeAssistant config).
 - **MQTT broker**: `192.168.1.8:1883` (LAN IP, no auth, no retain).
 - **Topic prefix**: `rtl_433/test` — set during testing. **Needs to be changed to a production prefix** (e.g. `rtl_433`) when confirmed working end-to-end.
 
@@ -106,4 +108,4 @@ RTL-SDR dongle connected directly to the Pi Zero W USB port (no powered hub). Ra
 - Change MQTT topic prefix from `rtl_433/test` to production prefix once end-to-end flow is validated.
 - Verify sensor readings are arriving at homeassistant/MQTT consumer.
 - **Oregon-THGR122N**: added protocol 12 to config — confirmed working.
-- **Verify humidity and time fields are published**: with `devices=` format, rtl_433 publishes all decoded fields as subtopics (e.g. `.../humidity`, `.../time`). Config already has `report_meta time:iso:tz`. Check actual MQTT output before adding anything — fields may already be there.
+- Promoted from `rtl_433/test` to `rtl_433/raspberrypi2z` (production). docker03 container stopped. HomeAssistant and TTato updated to new topics. 4 humidity sensors added to HA.
