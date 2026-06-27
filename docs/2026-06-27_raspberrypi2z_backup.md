@@ -29,7 +29,7 @@ Reload: `sudo exportfs -ra`
 
 `/etc/fstab` entry:
 ```
-192.168.1.3:/mnt/backup_usb1/raspberrypi2z /mnt/backup nfs nofail,soft,timeo=30,retrans=2,x-systemd.automount,x-systemd.device-timeout=10 0 0
+192.168.1.3:/mnt/backup_usb1/raspberrypi2z /mnt/backup nfs nofail,soft,timeo=300,retrans=10,x-systemd.automount,x-systemd.device-timeout=10 0 0
 ```
 
 ```bash
