@@ -48,7 +48,10 @@ Runs every 5 minutes, pings 192.168.1.1 (router).
 
 Recovery sequence:
 - **Fail 1**: restart Wi-Fi via `nmcli radio wifi off/on`, wait 5 min
-- **Fail 2**: `systemctl reboot`
+- **Fail 2**: log and wait another 5 min (allows slow router resets to recover)
+- **Fail 3**: `systemctl reboot`
+
+Total window before reboot: ~10 minutes.
 
 Enable status: `systemctl list-timers net-watchdog.timer`  
 Logs: `journalctl -t net-watchdog`

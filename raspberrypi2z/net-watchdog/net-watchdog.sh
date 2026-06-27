@@ -17,5 +17,10 @@ if [ "$FAILS" -eq 1 ]; then
     exit 0
 fi
 
-logger -t net-watchdog "Wi-Fi restart did not recover - rebooting"
+if [ "$FAILS" -eq 2 ]; then
+    logger -t net-watchdog "Still unreachable after Wi-Fi restart - waiting one more cycle"
+    exit 0
+fi
+
+logger -t net-watchdog "Wi-Fi restart did not recover after 10 min - rebooting"
 systemctl reboot
