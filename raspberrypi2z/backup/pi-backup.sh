@@ -180,6 +180,5 @@ check_available_space
 create_backup
 cleanup_old_backups
 
-send_notification "Monthly backup completed successfully" -1
 log_message "=== Backup completed successfully ==="
 cleanup_and_exit 0 "success"
