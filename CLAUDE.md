@@ -124,6 +124,14 @@ Add this line (replace `rsi` with your username):
 rsi ALL=(ALL) NOPASSWD: /usr/bin/podman
 ```
 
+## log-monitor
+Automated daily server log review. Runs on comet from cron (`0 8 * * *`), code in
+`log-monitor/`. Per host: `collect.sh` (ssh+journalctl, aggregated, cursor-incremental) →
+Haiku triage → Sonnet escalation (important+ only) → email always (Resend HTTP API) +
+Pushover (important/critical only, deduped on a deterministic content-hash fingerprint).
+Email creds in `~/etc/resend.env`. Add a host by dropping `log-monitor/hosts/<name>.conf`.
+See `docs/2026-06-30_log-monitor.md`.
+
 ## Adding New MCP Servers
 
 1. Edit `~/.claude.json`
