@@ -66,8 +66,25 @@ carries full detail regardless.
 Drop `hosts/<name>.conf` (copy `gr-srv03.conf`, set `SSH_TARGET`/`SSH_PORT`/`PRIORITY_FLOOR`).
 No other changes.
 
+## Noise suppression (SUPPRESS_PATTERN)
+
+`collect.sh` supports a `SUPPRESS_PATTERN` variable in each host config: a `grep -vE`
+regex applied to the aggregated journal lines before they reach the LLM.
+
+`gr-srv03.conf` suppresses:
+- `BACKUP_B|backup_b|2d0b0d7c` — rotating removable backup drives; absence/timeout is expected.
+- `192\.168\.1\.54` — WDMyCloud NAS (old hardware, reboots nightly causing CIFS reconnects).
+
+## Issues resolved after first runs (2026-06-30)
+
+| Issue | Resolution |
+|-------|-----------|
+| postfix `/etc/aliases.db` missing | Ran `newaliases` on gr-srv03 — file created, errors gone. |
+| BACKUP_B mount timeout | Expected — rotating drive, suppressed in log-monitor. |
+| CIFS `192.168.1.54` nightly reconnect | Expected — WDMyCloud reboot, suppressed. |
+| EXT4 `sdc1` errors (02:30, 03:00 daily) | BACKUP_B had hardware I/O failure; stale `shutdown`-flagged sdc1 mount persisted inside ceres LXC. Fixed with `pct exec 203 -- umount -l /mnt/backup_b`. See `Backup_Drives_Mounting_Configuration.md`. |
+| `dm-15` write access warnings | Normal — vzdump mounts LVM snapshots read-only during backup. |
+
 ## Notes / future
-- gr-srv03 currently shows real important issues (failing BACKUP_B USB drive, CIFS to
-  192.168.1.54 timing out, postfix `/etc/aliases.db` missing) — surfaced by the first runs.
 - Out of scope for v1: live SSH context-gathering during escalation, log sources beyond
   the systemd journal, per-service custom rules.

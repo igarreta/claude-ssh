@@ -250,4 +250,24 @@ it restarts the systemd unit to recover the mount. Only logs errors.
 - If you add a backup job outside this window, add a corresponding wake entry here.
 - Both BACKUP_A and BACKUP_B are affected (same drive model, same APM level).
 
+### Hardware failure edge case (2026-06-30)
+
+Slave propagation handles **clean drive swaps** (scheduled 15:00 unmount → plug new drive →
+00:30 remount propagates into ceres). It does **not** reliably clean up after a **hardware
+I/O failure**:
+
+1. BACKUP_B (sdc1) went offline mid-operation (`EXT4-fs: shut down requested`,
+   `Aborting journal`, `DID_NO_CONNECT`).
+2. `systemctl stop mnt-backup_b.mount` at 15:00 hit the dead device and likely fell back
+   to lazy unmount — detaching the host's reference but **not propagating into the LXC**,
+   leaving ceres with a dangling sdc1 mount (`shutdown` flag).
+3. Each night at 02:30 and 03:00 ceres backup scripts ran `ls` on `/mnt/backup_b` via
+   `is_disk_mounted()`, triggering `EXT4-fs warning: htree_dirblock_to_tree error -5`.
+
+**Recovery**: `pct exec 203 -- umount -l /mnt/backup_b`
+
+This is a rare one-off (requires actual disk hardware failure during a mounted window).
+The daily cycle is sufficient for normal rotation.
+
 _Last updated: 2026-03-21 — wake script fixes EIO on host side; slave propagation (see above) handles stale LXC bind mounts_
+_Updated: 2026-06-30 — documented hardware failure edge case where slave propagation doesn't clean up ceres_

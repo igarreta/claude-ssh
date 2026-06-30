@@ -68,6 +68,11 @@ FAILED_UNITS="$(awk '/@@FAILED@@/{f=1;next} /@@JOURNAL@@/{f=0} f' <<<"$RAW")"
 STATS="$(awk -F'@@STATS@@ ' '/@@STATS@@/{print $2}' <<<"$RAW")"
 JOURNAL="$(awk '/@@STATS@@/{j=1;next} j' <<<"$RAW")"
 
+# Host-specific noise suppression (set SUPPRESS_PATTERN in host.conf).
+if [[ -n "${SUPPRESS_PATTERN:-}" ]]; then
+    JOURNAL="$(grep -vE "$SUPPRESS_PATTERN" <<<"$JOURNAL" || true)"
+fi
+
 # Newest journal cursor (any priority) so the next run resumes exactly here.
 NEW_CURSOR="$(ssh_run 'journalctl -o export -n1 --no-pager 2>/dev/null | sed -n "s/^__CURSOR=//p"')"
 
