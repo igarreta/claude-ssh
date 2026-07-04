@@ -74,6 +74,11 @@ regex applied to the aggregated journal lines before they reach the LLM.
 `gr-srv03.conf` suppresses:
 - `BACKUP_B|backup_b|2d0b0d7c` — rotating removable backup drives; absence/timeout is expected.
 - `192\.168\.1\.54` — WDMyCloud NAS (old hardware, reboots nightly causing CIFS reconnects).
+- `own address as source` — `vmbr0` "received packet ... with own address as source" (2026-07-03:
+  investigated, was a single 2s/9-line burst on 2026-07-02 21:32, no recurrence). `vmbr0` has one
+  port (`enp2s0`) with STP off, so a local loop is impossible; a real external loop would need to
+  recur over time, but the digest aggregator collapses timestamps into a bare count, so a one-off
+  burst reads to the LLM triage like an ongoing loop. Suppressed; revisit if it recurs across days.
 
 ## Issues resolved after first runs (2026-06-30)
 
