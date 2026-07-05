@@ -22,7 +22,9 @@ Cron on comet runs `log-monitor/run.sh` daily at 08:00. Per host:
    `MAX_SEVERITY`, `ESCALATE`.
 3. **Escalate (Sonnet)** — only when triage flags important/critical. `prompts/analyze.md`
    produces root-cause + recommended action.
-4. **Email (always)** via the **Resend HTTP API** (plain text). Subject reflects max severity.
+4. **Email** via the **Resend HTTP API** (plain text), subject reflects max severity —
+   skipped when `MAX_SEVERITY` is `none` or `info` (2026-07-05: quiet/routine days
+   shouldn't generate a report at all).
 5. **Pushover (important/critical only)**, with dedup (see below).
 6. **Archive** — full report to `archive/<host>/YYYY-MM-DD.md`; one line per run to
    `archive/<host>/summary.log`. Dated reports pruned after 90 days.
@@ -79,6 +81,11 @@ regex applied to the aggregated journal lines before they reach the LLM.
   port (`enp2s0`) with STP off, so a local loop is impossible; a real external loop would need to
   recur over time, but the digest aggregator collapses timestamps into a bare count, so a one-off
   burst reads to the LLM triage like an ongoing loop. Suppressed; revisit if it recurs across days.
+
+`raspberrypi2z.conf` suppresses (2026-07-05) the same brcmfmac/wpa_supplicant cosmetic
+driver quirks already confirmed benign on `raspberrypi1.conf` (`FT: Invalid key
+management type`, `bgscan simple: Failed to enable signal strength`, P2P/SDIO noise).
+Real disconnects are not suppressed.
 
 ## Issues resolved after first runs (2026-06-30)
 

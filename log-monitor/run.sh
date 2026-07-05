@@ -126,14 +126,11 @@ process_host() {
         fi
     fi
 
-    # --- Email (always) ---
-    local subject
-    if [[ "$max_sev" == "none" ]]; then
-        subject="[${label}] log-monitor: all clear — ${today}"
-    else
-        subject="[${label}] log-monitor: ${max_sev} — ${today}"
+    # --- Email (skip for none/info — nothing worth a human's attention) ---
+    if [[ "$max_sev" != "none" && "$max_sev" != "info" ]]; then
+        local subject="[${label}] log-monitor: ${max_sev} — ${today}"
+        email_send "$subject" "$report"
     fi
-    email_send "$subject" "$report"
 
     printf '%s max=%s escalate=%s counts="%s" alerted=%s\n' \
         "$stamp" "$max_sev" "$escalate" "$counts" "$alerted" >> "$ARCHIVE_DIR/$label/summary.log"

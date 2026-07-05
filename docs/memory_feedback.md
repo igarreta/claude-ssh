@@ -17,3 +17,11 @@ Use `pct exec 205 -- <cmd>` from gr-srv03 instead of suggesting `NOPASSWD` sudoe
 ## Browser requires HTTPS — give HTTPS URLs, not plain HTTP
 
 The user's browser will not open plain `http://` web UIs (2026-06-22). When pointing them at a web service, always provide the **HTTPS** URL (e.g. via the Caddy reverse proxy `https://cygnus.tail366c79.ts.net`), not the raw `http://host:port`. Set up a TLS front end if one doesn't exist rather than handing over an HTTP link.
+
+## docker03 sudo requires a password
+
+`sudo` on docker03 requires a password — `mcp__docker03__sudo-exec` fails with "a password is required" (found 2026-07-05, see `docs/2026-07-05_docker03_fail2ban-fix.md`).
+
+**Why:** No passwordless sudoers entry configured for `rsi` on docker03 (same situation as raspberrypi2z and castor).
+
+**How to apply:** For privileged operations, write the file/script locally with `Write`, `scp` it to `/tmp/` on docker03, then give the user the exact `sudo` command to run themselves. Do not attempt `sudo-exec` directly on docker03.
