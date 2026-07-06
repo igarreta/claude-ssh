@@ -73,6 +73,12 @@ if [[ -n "${SUPPRESS_PATTERN:-}" ]]; then
     JOURNAL="$(grep -vE "$SUPPRESS_PATTERN" <<<"$JOURNAL" || true)"
 fi
 
+# Additional suppression applied only on Mondays (set MONDAY_SUPPRESS_PATTERN in
+# host.conf), for noise tied to the router's weekly Monday-morning reboot.
+if [[ -n "${MONDAY_SUPPRESS_PATTERN:-}" && "$(date +%a)" == "Mon" ]]; then
+    JOURNAL="$(grep -vE "$MONDAY_SUPPRESS_PATTERN" <<<"$JOURNAL" || true)"
+fi
+
 # Newest journal cursor (any priority) so the next run resumes exactly here.
 NEW_CURSOR="$(ssh_run 'journalctl -o export -n1 --no-pager 2>/dev/null | sed -n "s/^__CURSOR=//p"')"
 
