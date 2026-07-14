@@ -30,7 +30,7 @@ source "$SCRIPT_DIR/lib/notify.sh"
 mkdir -p "$STATE_DIR" "$ARCHIVE_DIR"
 touch "$REPORTED_LOG"
 
-sev_is_alertable() { [[ "$1" == "important" || "$1" == "critical" ]]; }
+sev_is_alertable() { [[ "$1" == "critical" ]]; }
 
 # Run a model: stdin = prompt file + appended sections.
 llm() {
@@ -126,8 +126,8 @@ process_host() {
         fi
     fi
 
-    # --- Email (skip for none/info — nothing worth a human's attention) ---
-    if [[ "$max_sev" != "none" && "$max_sev" != "info" ]]; then
+    # --- Email (skip for none/info/notice — nothing worth a human's attention) ---
+    if [[ "$max_sev" != "none" && "$max_sev" != "info" && "$max_sev" != "notice" ]]; then
         local subject="[${label}] log-monitor: ${max_sev} — ${today}"
         email_send "$subject" "$report"
     fi
