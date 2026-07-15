@@ -90,6 +90,8 @@ I has connected:
 - a rtl-433 : which I should move to cygnus in the future
 - a zigbee hub
 
+Backup drives BACKUP_A and BACKUP_B: only one is ever physically connected at a time; the other is always stored offsite. One being unmounted/missing is normal, not a fault. Once a week, both may be disconnected for one day during the swap.
+
 Some containers run on vmbr1 for reducing LAN IP usage
 
 More detailed information can be found in the docs directory of this repository

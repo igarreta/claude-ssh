@@ -45,7 +45,7 @@ removed (routine/success events, not actionable per [[feedback_pushover_errors_o
 Check `/var/log/proxmox-backup.log` on gr-srv03 directly to see if it's still
 happening (rather than relying on notifications).
 
-## Related: 2026-07-13 physical USB disconnect (separate issue)
+## Related: 2026-07-13 physical USB disconnect (separate issue) — CORRECTED 2026-07-15
 
 On 2026-07-14, `check-ceres-mount-sync.sh` logged a *different* symptom:
 `backup_a: not mounted on host, skipping` (neither backup_a nor backup_b
@@ -53,9 +53,16 @@ present on host at all — `lsblk`/`lsusb` showed no WD drive). Root cause: a
 real USB disconnect at **2026-07-13 21:28:46**, inside the designed
 15:00–22:00 swap window, after which no drive was reconnected before the
 00:30 remount cron ran — both `mnt-backup_a.mount` and `mnt-backup_b.mount`
-timed out waiting for their device (`Dependency failed`). This requires
-physically checking/reconnecting a backup drive; it is not a mount-config
-bug like the issue above.
+timed out waiting for their device (`Dependency failed`).
+
+**Correction:** only one of BACKUP_A/BACKUP_B is ever physically connected at
+a time — the other is always stored offsite (see CLAUDE.md). So *one* unit
+being unmounted is normal by design, not a fault; only worth investigating if
+**neither** is present past the swap window. Do not assume "drive needs
+reconnecting" without first checking which drive is supposed to be onsite that
+week. Also see [[project_gr-srv03_powered-hub-instability]] — the powered hub
+these drives connect through was independently found to be unreliable on
+2026-07-15.
 
 ## Related: BACKUP_A journal aborts during 2026-07-12 power outage
 
