@@ -33,9 +33,20 @@ touch "$REPORTED_LOG"
 sev_is_alertable() { [[ "$1" == "critical" ]]; }
 
 # Run a model: stdin = prompt file + appended sections.
+# Runs from SCRIPT_DIR (a trusted project) to avoid the untrusted-workspace warning
+# cron's default cwd triggers, and retries once on empty/auth-failure output since
+# OAuth token refresh occasionally fails transiently in the cron environment.
 llm() {
     local model="$1"
-    timeout 180 claude -p --model "$model" 2>>"$STATE_DIR/llm-errors.log"
+    local input out
+    input="$(cat)"
+    out="$(cd "$SCRIPT_DIR" && printf '%s' "$input" | timeout 180 claude -p --model "$model" 2>>"$STATE_DIR/llm-errors.log")"
+    if [[ -z "$out" || "$out" == *"Failed to authenticate"* || "$out" == *"OAuth session expired"* ]]; then
+        echo "[$(date '+%T')] llm retry (model=$model, empty/auth-failure output)" >&2
+        sleep 5
+        out="$(cd "$SCRIPT_DIR" && printf '%s' "$input" | timeout 180 claude -p --model "$model" 2>>"$STATE_DIR/llm-errors.log")"
+    fi
+    printf '%s' "$out"
 }
 
 process_host() {
