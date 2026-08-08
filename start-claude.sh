@@ -9,5 +9,5 @@ echo -ne "\033]0;Claude Code - SSH Manager\007"
 # Optional: Show git status on startup
 git status --short 2>/dev/null
 
-# Start Claude
-exec claude
+# Attach to a persistent tmux session (create it if it doesn't exist yet)
+exec tmux new-session -A -s claude claude
