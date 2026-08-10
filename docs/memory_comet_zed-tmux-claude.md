@@ -28,7 +28,8 @@ also the host `claude-ssh` (this repo) itself runs on.
   `~/.claude/settings.json`. Read at Claude process startup only — an
   already-running session (including the pre-existing `claude`/`cc` tmux
   session and this smoke-test `claude-ssh` one) needs a fresh `claude`
-  invocation to pick it up.
+  invocation to pick it up. **Confirmed working end-to-end**: user tested
+  in a new tmux thread, bell rang on a real `Notification` event.
 
 ## Still open (user action, client-side)
 Zed's `tasks.json` is read from the **Windows client**, not any remote host
