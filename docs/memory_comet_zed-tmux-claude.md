@@ -1,6 +1,6 @@
 # Memory: comet replication of zed-tmux-claude setup (2026-08-10)
 
-**Status:** done on comet; one manual client-side step left for the user.
+**Status:** done. Zed task entry added on Windows client and confirmed working.
 
 ## What this is
 `~/bin/docs/zed-tmux-claude.md` documents a Zed+SSH+tmux+Claude Code workflow
@@ -31,9 +31,10 @@ also the host `claude-ssh` (this repo) itself runs on.
   invocation to pick it up. **Confirmed working end-to-end**: user tested
   in a new tmux thread, bell rang on a real `Notification` event.
 
-## Still open (user action, client-side)
-Zed's `tasks.json` is read from the **Windows client**, not any remote host
-— add via `Ctrl+Shift+P → "zed: open tasks"` on Windows:
+## Zed task entry (Windows client)
+Added and confirmed working (2026-08-10) via `Ctrl+Shift+P → "zed: open
+tasks"` on Windows — Zed's `tasks.json` is client-side, not readable/writable
+from any remote host:
 ```json
 {
   "label": "comet » claude-ssh",
