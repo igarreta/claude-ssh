@@ -42,9 +42,23 @@ que cubre la cadena entera**: si un host deja de depositar, su tag se estanca o 
 No distingue "el host dejó de mandar" de "ceres dejó de copiar", pero entrega el hecho
 accionable: *estos datos no están protegidos*.
 
-Fuera de alcance por ahora: Glacier (terciario; `restic snapshots` es instantáneo porque los
-metadatos están en STANDARD, así que agregar una verificación de frescura es barato si más
-adelante se quiere) y `restic-wdmycloud` (nunca estuvo afectado).
+**Glacier entra también**, sólo con verificación de frescura y magnitud. Medido el 2026-08-14:
+un `restic snapshots` toca `snapshots/` (3.414 bytes), `config/` (155) y `keys/` (445), **todo
+en STANDARD**, y tarda 4,5 s. Son ~4 KB por repo por corrida: menos de un centavo de dólar al
+año entre egress y requests. Cero acceso a Deep Archive.
+
+> **Restricción dura:** el chequeo de Glacier se limita a `restic snapshots`. Cualquier comando
+> que camine el árbol — `ls`, `stats`, `check`, `restore`, `find`, `diff` — dereferencia hacia
+> `data/`, que sí está en Deep Archive: tarifas de retrieval (~$0.02/GB) y 12–48 h de espera.
+> Se pueden leer metadatos gratis, pero no verificar contenido. Por eso BACKUP_A/B sigue siendo
+> la capa que se verifica de verdad.
+
+Línea base de `backup-greven-usb1` (mensual, día 5), útil porque da varianza real y no una sola
+muestra: 247,2 / 250,6 / 244,3 / 239,6 / 264,5 / 237,4 GB (marzo a agosto 2026) — una banda de
+±6 % con la que calibrar el umbral de deriva. Confirma además que Glacier estuvo sano durante
+todo el incidente, es decir que fue realmente la única copia offsite viva.
+
+Fuera de alcance: `restic-wdmycloud` (nunca estuvo afectado).
 
 ## Arquitectura
 
@@ -146,7 +160,12 @@ propia cuenta de retención. Tenerlo en cuenta al mover la lógica.
 
 ## Abierto
 
-- Calibrar los umbrales de deriva (el % y la ventana de la mediana).
+- Calibrar los umbrales de deriva de BACKUP_A/B (el % y la ventana de la mediana). Para
+  Glacier ya hay banda medida (±6 %); para BACKUP_A/B la línea base es de **una sola muestra**
+  y no dice nada sobre varianza normal. Arrancar con pisos absolutos generosos —que ya atrapan
+  el caso catastrófico— y ajustar la deriva tras unas semanas de datos.
 - Definir si la retención en comet corre sobre todos los tags o sólo los que pasaron su
   verificación individual.
-- Glacier queda sin monitorear.
+- Snapshots sin campo `summary` (restic anterior a 0.17) deben tratarse como **desconocido**,
+  nunca como cero: los seis de Glacier lo tienen y ceres corre 0.18.0, pero un snapshot viejo
+  sin summary leería 0 y dispararía una falsa alarma.
