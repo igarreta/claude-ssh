@@ -47,12 +47,16 @@ the Pi, the no-op probe rewrote `www/TTatoMode` + `var/TTatoMode` within
 seconds, and the user confirmed the HA script works.
 
 ## Notes for future sessions
-- **`docker logs TTato` is useless**: the container's `json.log` has been 0
-  bytes since 2026-06-28, so `print()` output (including
-  `Mode changed to: X.` from `change_ttato_mode`, `bin/TTato.py:414`) is never
-  captured. Don't use it as a probe — check the **mtime of
-  `/home/rsi/TTato/www/TTatoMode`** or subscribe to `TTato/status` instead.
-  `log/TTato.log` (the `logger` output) is fine, but mode changes only `print`.
+- **Where TTato logs** — `docker logs TTato` is empty (`json.log` 0 bytes since
+  2026-06-28) because `bin/TTato.py:84-86` reassigns `sys.stdout`/`sys.stderr`
+  to `MyLogger`, so nothing ever reaches Docker. Everything, including
+  `print()` output like `Mode changed to: X.` (`change_ttato_mode`,
+  `bin/TTato.py:414`), goes to **`/home/rsi/TTato/log/TTato.log`**
+  (`TimedRotatingFileHandler`, level INFO, weekly rotation on Mondays,
+  `backupCount=4` → `TTato.log.YYYY-MM-DD`). A second logger writes
+  temperature rows to `www/temps_log.csv` with the same rotation.
+  So the probe is `grep "Mode changed" /home/rsi/TTato/log/TTato.log`, or the
+  mtime of `/home/rsi/TTato/www/TTatoMode`.
 - Commands go **straight** to the docker03 broker (`MQTT_BROKER = "192.168.1.8"`,
   `bin/GlobalThreads.py:54`). `mqtt-resend`'s `TTato/command` redirect rule in
   `BROKER_REDIRECTS.md` is legacy — that container isn't even running on the Pi.
