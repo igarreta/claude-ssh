@@ -292,5 +292,11 @@ volver a la opción original — ahora barata, porque comet ya corre todos los d
 - Snapshots sin campo `summary` (restic anterior a 0.17) deben tratarse como **desconocido**,
   nunca como cero: los seis de Glacier lo tienen y ceres corre 0.18.0, pero un snapshot viejo
   sin summary leería 0 y dispararía una falsa alarma.
-- Crear el monitor push en el Kuma de contabo2 con Retries=0 y ~50 h de intervalo, y guardar el
-  token en ceres (junto a `~/etc/pushover.env`).
+- ~~Crear el monitor push en el Kuma de contabo2 con Retries=0 y ~50 h de intervalo, y guardar
+  el token en ceres.~~ **Hecho 2026-08-15.** Monitor `ceres-backup-health` (id 15) creado
+  directo en `kuma.db` (sin API pública para esto en 2.x) — `interval`/`retry_interval`
+  180000 s (50h), `maxretries=0`, `resend_interval=1`, notificación Pushover por defecto
+  enganchada igual que los otros push monitors. Token en `~/etc/kuma-push.env` en ceres,
+  probado end-to-end (`{"ok":true}` + heartbeat registrado). Requirió reiniciar el contenedor
+  `uptime-kuma` de contabo2 para que el monitor nuevo quedara con su timer activo — los demás
+  monitors de ese Kuma tuvieron un corte de ~10s.
