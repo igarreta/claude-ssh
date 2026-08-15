@@ -98,6 +98,14 @@ else
     printf 'none\n'
 fi
 
+# Backup health (BACKUP_A/B + Glacier freshness/drift). Opt-in per host — only gr-srv03
+# has the disks. Runs from comet, not over the ssh_run wrapper above: it needs its own
+# ssh round trips to gr-srv03 *and* ceres. See backup-health.sh for why.
+if [[ -n "${BACKUP_HEALTH_CHECK:-}" ]]; then
+    printf '\n--- Backup health (BACKUP_A/B + Glacier) ---\n'
+    "$SCRIPT_DIR/backup-health.sh" 2>>"$STATE_DIR/llm-errors.log" || printf 'ERROR: backup-health.sh failed\n'
+fi
+
 # Persist cursor only if we got one (don't lose position on a transient ssh hiccup).
 if [[ -n "$NEW_CURSOR" ]]; then
     printf '%s' "$NEW_CURSOR" > "$CURSOR_FILE"

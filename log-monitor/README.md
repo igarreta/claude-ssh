@@ -18,16 +18,23 @@ Daily automated log review for homelab servers. Runs on **comet** from cron.
 ## Files
 - `run.sh` — orchestrator / cron entrypoint
 - `collect.sh` — per-host log collection
+- `backup-health.sh` — freshness + drift check for BACKUP_A/B and Glacier, appended to
+  gr-srv03's digest when `BACKUP_HEALTH_CHECK=yes` in its conf. Deterministic (bash + jq),
+  never touches Deep Archive data. See `docs/2026-08-14_backup-health-monitor-design.md`.
 - `lib/notify.sh` — Pushover + email helpers
 - `prompts/` — triage (Haiku) and analyze (Sonnet) prompts
 - `hosts/*.conf` — one file per monitored host
-- `state/` — cursors, dedup log, last digest *(gitignored)*
+- `state/` — cursors, dedup log, last digest, `backup-sizes.csv` *(gitignored)*
 - `archive/` — dated reports + summary log *(gitignored)*
 
 ## Setup
 - `~/etc/pushover.env` (already present) — Pushover credentials.
 - `~/etc/resend.env` (chmod 600) — `RESEND_API_KEY`, `MAIL_FROM`, `MAIL_TO`
   (copy from `resend.env.example`). `MAIL_FROM` must use a Resend-verified domain.
+- `~/etc/restic-password-local` (chmod 600) — read-only copy of ceres's BACKUP_A/B restic
+  password, needed by `backup-health.sh` to read snapshots from gr-srv03 over SSH (passed
+  inline, never written to gr-srv03's disk — that host's own policy is to keep recovery
+  credentials in Notion only).
 - No system packages required (uses `curl` + `jq`, already present).
 
 ## Usage
