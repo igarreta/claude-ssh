@@ -1,7 +1,8 @@
 # Sonda abierta: snapshots vacíos de ceres → BACKUP_A/B
 
 **Fecha:** 2026-08-14
-**Estado:** diagnóstico ABIERTO, sonda instalada, pendiente de lectura
+**Estado:** diagnóstico ABIERTO. Primera lectura el 2026-08-15 (ver abajo); la sonda queda
+puesta hasta la noche del 2026-08-17.
 **Relacionado:** [[2026-08-14_backup-health-monitor-design]]
 
 ## Qué pasó
@@ -60,6 +61,49 @@ Interpretación:
   crudo, ya propuesto y nunca implementado en la investigación de julio).
 
 `top=0` o `pcfg-daily=0` con `src=NOT-A-MOUNTPOINT` es el modo roto.
+
+## Primera lectura: noche del 2026-08-15
+
+Salió el **escenario 3** de la tabla de arriba, y con la cadena completa confirmada del lado
+del host.
+
+```
+00:35  src=/dev/sdb1  top=17  pcfg-daily=7  vm-containers=4  backup_a=-
+02:10  src=/dev/sdb1  top=17  pcfg-daily=7  vm-containers=4  backup_a=-
+02:59  src=/dev/sdb1  top=17  pcfg-daily=7  vm-containers=4  backup_a=/dev/sdc1
+```
+
+Lo que muestra el journal de gr-srv03 y `/var/log/proxmox-backup.log`:
+
+1. **00:30** el host monta BACKUP_A (sdc1) sin errores.
+2. Ceres **no lo ve**: el remontaje del host no propaga al LXC. Es el mismo mecanismo de
+   `docs/memory_gr-srv03_stale-mount-investigation.md`.
+3. **02:20** `check-ceres-mount-sync.sh` detecta *"backup_a: mounted on host but stale/empty in
+   ceres"*, remonta en el host y hace `pct reboot 203`. `uptime -s` en ceres = 02:20:10.
+4. **02:59** sano, y el backup de las 03:00 corre con los 7 tags llenos.
+
+O sea: el backup de anoche anduvo **porque la red de seguridad lo salvó**, no porque el montaje
+funcione. Y no es esporádico — el mismo self-healing aparece el 12-08, el 13-08 y el 15-08. El
+14-08 figura "in sync" porque venía del reinicio manual.
+
+### Lo que esto NO explica
+
+El origen (`/mnt/backup_usb1`, sdb1) estuvo **sano en las tres ventanas**: `top=17`,
+`pcfg-daily=7`. Lo que se cae es el *destino* (backup_a), no el origen.
+
+Pero los snapshots vacíos de 7 meses eran del **origen** — `/mnt/backup_usb1/gickup` en 0 B. Y
+el 13-08 hubo reinicio a las 02:20 y aun así el snapshot de las 03:00 quedó en 0 B. **El
+reinicio no explica la causa de los snapshots vacíos.** Sigue sin probarse, y por eso la sonda
+se queda dos noches más: lo único que cerraría el caso es ver el origen caído alguna vez.
+
+### immich, de paso
+
+La lectura destapó otro fallo de la misma forma: el tag `immich` venía "respaldando" desde el
+2025-12-17 un directorio que no existe. La llamada a `restic backup` ya estaba comentada, pero
+quedaban el `log_msg "Backing up immich..."` y el `forget --prune`, así que cada noche imprimía
+un job que no copiaba nada y reportaba éxito. immich está fuera de uso: el job se eliminó
+(`backup_greven` commit 8b094d3). Los dos snapshots de diciembre 2025 quedan en el repo por
+ahora.
 
 ## Limpieza cuando se cierre
 
