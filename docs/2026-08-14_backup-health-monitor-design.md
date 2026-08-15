@@ -81,9 +81,9 @@ ceres — cada noche, dentro de backup-usb1-local.sh
        ├─ alguno falló  → push status=down&msg=<motivo>  + Pushover directo
        └─ sin disco     → no pinguea, no alarma
 
-comet — log-monitor, después
+comet — log-monitor, todos los días 08:00
   └─ ssh gr-srv03 → restic snapshots --json -r /mnt/backup_a/restic-repo
-       └─ deriva contra la mediana móvil + frescura de Glacier
+       └─ frescura + deriva contra la mediana móvil + Glacier
             └─ hallazgos → Claude narra → email + Pushover
 ```
 
@@ -100,11 +100,14 @@ primera noche**. No hace falta mirar desde afuera para eso.
 
 Lo que gana con el cambio:
 
-- **Latencia.** El chequeo semanal atrapa el fallo hasta 6 noches tarde. Eso importa
-  concretamente por `raspberrypi --keep-last 3`: tres noches malas seguidas y los 28 GiB reales
-  ya salieron de la ventana **antes** de que el sábado llegue a mirar. Un monitor semanal no
-  puede proteger ese tag, por diseño.
-- **El prune se puede condicionar en el acto** (ver más abajo).
+- **El prune se puede condicionar en el acto**, que es la razón de fondo. `forget --prune` corre
+  a las 03:00, dentro del mismo script y a segundos del backup: **ningún observador externo llega
+  a tiempo**, ni siquiera uno diario a las 08:00, porque cuando mira el historial ya se recortó.
+  El único punto donde se puede frenar la purga antes de que se ejecute es adentro. Importa
+  concretamente por `raspberrypi --keep-last 3`, donde cada noche mala consume un tercio del
+  historial bueno (ver más abajo).
+- **Latencia.** El veredicto llega la misma noche en vez de a la mañana siguiente. Con la capa de
+  comet ya diaria esto pasó a ser un beneficio menor, no el argumento principal.
 
 Lo que **no** se puede hacer adentro y por eso queda en comet:
 
@@ -117,6 +120,26 @@ Lo que **no** se puede hacer adentro y por eso queda en comet:
 
 **Por qué comet entra por gr-srv03 y no por ceres:** el host es donde el disco está montado de
 verdad, e independiente del contenedor.
+
+### Cadencia de la capa de comet: diaria
+
+La versión original corría los sábados, porque ese día siempre hay un disco puesto. Con la
+verificación de magnitud ya adentro de ceres, esa restricción dejó de mandar: **corre todos los
+días, dentro de la corrida de log-monitor de las 08:00**.
+
+Encaja sin tocar horarios: el disco se monta a las 00:30 y `pre-swap-unmount.sh` lo desmonta a
+las 15:00, así que a las 08:00 está siempre montado salvo el día del swap — y ese caso ya está
+cubierto por la regla de "sin disco no concluye". Las noches sin disco dejan de necesitar
+tratamiento especial por cadencia: pasan a ser un día más sin dato.
+
+Lo que gana siendo diaria: la **frescura** deja de tener hasta 6 días de retraso, que es
+justamente el agujero que el heartbeat sólo cubre en grueso (dice "algo no corrió", no "qué
+tag"). Y la deriva se evalúa sobre la mediana con un día de resolución en vez de siete.
+
+Requisito para que no se vuelva ruido: un hallazgo que persiste —una deriva que sigue ahí
+mañana— **no puede volver a notificar todos los días**. El dedup por fingerprint que log-monitor
+ya tiene resuelve esto y hay que usarlo; era irrelevante con cadencia semanal y pasa a ser
+condición de diseño con cadencia diaria.
 
 ## Heartbeat
 
@@ -194,8 +217,9 @@ Por tag, sobre `total_bytes_processed` del summary del snapshot:
 | **Deriva**: ≥ X% de la mediana móvil | Regresiones parciales tipo `gickup` | comet |
 
 La frescura queda en comet porque es justamente la pregunta que ceres no puede contestar sobre
-sí mismo: si el job no corrió, no hay nadie adentro para notarlo. El heartbeat la cubre en
-paralelo, con menos resolución (dice "algo no corrió", no "qué tag").
+sí mismo: si el job no corrió, no hay nadie adentro para notarlo. Con cadencia diaria llega como
+mucho un día tarde. El heartbeat la cubre en paralelo, con menos resolución (dice "algo no
+corrió", no "qué tag").
 
 Línea base medida el 2026-08-14 (primera corrida sana en 7 meses), para calibrar los pisos:
 
@@ -233,18 +257,31 @@ comiendo el historial bueno.
 sábado comet verificaba y sólo entonces purgaba.
 
 **Nuevo:** el prune se queda donde está y se **condiciona al veredicto de su propio tag**. Un
-tag que no pasa el piso, no purga. Es más simple y llega antes: la mudanza a comet dejaba entrar
-hasta 6 noches de snapshots malos antes de que alguien mirara, y para `raspberrypi --keep-last 3`
-eso ya es la pérdida total del historial bueno. El gating nocturno corta en la primera noche.
+tag que no pasa el piso, no purga.
 
-Motivación concreta de ese tag: la **imagen** de la Pi se genera mensualmente, pero el job de
-restic corre **todas las noches** sobre `/mnt/backup_usb1/raspberrypi1`, cree o no una imagen
-nueva; cada noche nace un snapshot. Así que `--keep-last 3` son las últimas **3 noches**, no 3
-meses.
+Hay que ser honesto sobre el trade-off, porque **las dos opciones protegen el historial**. La
+diferencia es otra:
 
-Lo que se cae con este cambio: el costo de que el repo crezca entre sábados, y la nota fina de
-que `restic forget` agrupa por `host,paths` (que importaba sólo si la lógica se mudaba de
-máquina). Ninguno de los dos aplica ya.
+| | Retención en comet (original) | Gating en ceres (elegido) |
+|---|---|---|
+| Independencia | total: un error en el chequeo de ceres no puede purgar mal | ninguna: ceres juzga su propio trabajo |
+| Costo | el repo crece entre corridas; hay que replicar 7 políticas de retención fuera del script que las posee | ninguno, son tres líneas por tag |
+| Grupos de `forget` | hay que manejar el agrupamiento por `host,paths` al mover la lógica | no aplica |
+
+Con la capa de comet ya diaria, el costo de la opción original bajó mucho (el repo crecería un
+día, no una semana), así que la decisión es más ajustada de lo que parecía. Se elige el gating
+en ceres por simplicidad, y el riesgo residual queda **acotado**: si el piso de un tag estuviera
+mal calibrado y dejara pasar un snapshot malo, comet lo ve por magnitud a la mañana siguiente,
+habiendo perdido a lo sumo una noche de ventana de retención.
+
+Una noche es tolerable incluso en el peor tag. `raspberrypi` usa `--keep-last 3`, y la **imagen**
+de la Pi se genera mensualmente mientras el job de restic corre **todas las noches** sobre
+`/mnt/backup_usb1/raspberrypi1`, cree o no una imagen nueva: cada noche nace un snapshot, así que
+`--keep-last 3` son las últimas **3 noches**, no 3 meses. Perder una de tres deja margen; perder
+las tres, no.
+
+Si en la práctica los pisos resultan difíciles de calibrar y hay falsos verdes, la salida es
+volver a la opción original — ahora barata, porque comet ya corre todos los días.
 
 ## Abierto
 
@@ -252,9 +289,6 @@ máquina). Ninguno de los dos aplica ya.
   Glacier ya hay banda medida (±6 %); para BACKUP_A/B la línea base es de **una sola muestra**
   y no dice nada sobre varianza normal. Arrancar con pisos absolutos generosos —que ya atrapan
   el caso catastrófico— y ajustar la deriva tras unas semanas de datos.
-- Cadencia de la capa de comet. Con la verificación nocturna adentro, el sábado ya no es
-  obligatorio: se podría correr a diario dentro de log-monitor, que ya corre todos los días a
-  las 08:00. Queda por decidir.
 - Snapshots sin campo `summary` (restic anterior a 0.17) deben tratarse como **desconocido**,
   nunca como cero: los seis de Glacier lo tienen y ceres corre 0.18.0, pero un snapshot viejo
   sin summary leería 0 y dispararía una falsa alarma.
