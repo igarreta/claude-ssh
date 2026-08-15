@@ -1,7 +1,7 @@
 # Diseño: monitor de salud de backups
 
 **Fecha:** 2026-08-14 · **revisado:** 2026-08-15
-**Estado:** diseño acordado, sin implementar
+**Estado:** implementado (Fases 1, 2 y 3 desplegadas 2026-08-15)
 **Motivo:** el incidente de 2026-01-20 → 2026-08-14 (ver `host-backup/README.md` en
 `igarreta/proxmox-grsrv03`, sección *Limitaciones conocidas*)
 
@@ -283,12 +283,27 @@ las tres, no.
 Si en la práctica los pisos resultan difíciles de calibrar y hay falsos verdes, la salida es
 volver a la opción original — ahora barata, porque comet ya corre todos los días.
 
+## Fase 3 — implementación (2026-08-15)
+
+`log-monitor/backup-health.sh` (repo `igarreta/claude-ssh`), enganchado en `collect.sh` de
+gr-srv03 detrás de `BACKUP_HEALTH_CHECK=yes`. Corre desde comet: BACKUP_A/B por SSH al host
+gr-srv03 (nunca por ceres), Glacier por SSH a ceres. Umbrales: frescura 8 días (local) / 40
+días (Glacier, que corre mensual el día 5). Deriva: mediana móvil de hasta 30 muestras,
+sembrada la primera vez con el historial real que restic ya conservaba (`keep-daily 7` da ~7
+días de partida, Glacier ~6 meses) — no arrancó en blanco como estaba previsto más abajo. Las
+muestras en 0 bytes se excluyen del cálculo de la mediana a propósito: son la contaminación
+que dejaron los snapshots vacíos del incidente, todavía dentro de la ventana de retención al
+momento de implementar esto, y ningún tag produce legítimamente 0 bytes.
+
+La clave del repo local no vive en gr-srv03 (esa máquina sólo guarda claves de recuperación en
+Notion); vive en comet (`~/etc/restic-password-local`, copiada de ceres) y se pasa inline por
+SSH en cada corrida.
+
 ## Abierto
 
-- Calibrar los umbrales de deriva de BACKUP_A/B (el % y la ventana de la mediana). Para
-  Glacier ya hay banda medida (±6 %); para BACKUP_A/B la línea base es de **una sola muestra**
-  y no dice nada sobre varianza normal. Arrancar con pisos absolutos generosos —que ya atrapan
-  el caso catastrófico— y ajustar la deriva tras unas semanas de datos.
+- Calibrar el % de deriva (hoy 40%, arrancado a ojo) tras unas semanas de datos reales — ya
+  hay historial desde el día 1 gracias al backfill, así que esto puede revisarse pronto en vez
+  de esperar meses.
 - Snapshots sin campo `summary` (restic anterior a 0.17) deben tratarse como **desconocido**,
   nunca como cero: los seis de Glacier lo tienen y ceres corre 0.18.0, pero un snapshot viejo
   sin summary leería 0 y dispararía una falsa alarma.
