@@ -43,11 +43,17 @@ ssh ceres "cat ~/backup_greven/logs/probe-usb1-mount.log"
 ssh ceres "grep -E 'Backing up|processed|failed' ~/backup_greven/logs/cron-backup.log | tail -30"
 ```
 
-Línea **sana** (medida el 2026-08-13 19:16 y el 2026-08-14 02:59, con el backup funcionando):
+Línea **sana** (formato desde el 2026-08-15, con BACKUP_A conectado y B afuera):
 
 ```
-src=/dev/sdb1 ext4   top=17   pcfg-daily=7   vm-containers=4   backup_a=/dev/sdc1
+src=/dev/sdb1 ext4   top=17   pcfg-daily=7   vm-containers=4   backup_a=/dev/sdc1(3)   backup_b=/dev/mapper/pve-root[/mnt/backup_b](0)
 ```
+
+Los destinos se reportan como `SOURCE(N)`, con N = entradas que ve el contenedor. Hacen falta
+las dos mitades: `check-ceres-mount-sync` considera obsoleto un disco que **es** mountpoint pero
+está **vacío**, así que un dispositivo con `(0)` es el estado roto, no el sano. Un source
+`pve-root[...]` significa que el bind está dejando ver el directorio placeholder vacío del host
+— el disco real no está. Es lo esperable para el disco que está afuera.
 
 Interpretación:
 
@@ -95,6 +101,24 @@ Pero los snapshots vacíos de 7 meses eran del **origen** — `/mnt/backup_usb1/
 el 13-08 hubo reinicio a las 02:20 y aun así el snapshot de las 03:00 quedó en 0 B. **El
 reinicio no explica la causa de los snapshots vacíos.** Sigue sin probarse, y por eso la sonda
 se queda dos noches más: lo único que cerraría el caso es ver el origen caído alguna vez.
+
+### El bind obsoleto es de BACKUP_A, no del ciclo de montaje
+
+Contando los veredictos de `check-ceres-mount-sync` en `/var/log/proxmox-backup.log` desde el
+2026-07-17:
+
+| Disco | Noches montado | Obsoleto en ceres |
+|---|---|---|
+| BACKUP_A | 17 (22-07→03-08, 12-08, 13-08, 14-08, 15-08) | **16** |
+| BACKUP_B | 10 (17-07→20-07, 05-08→10-08) | **0** |
+
+B pasa por el mismo desmontaje de las 15:00 y el mismo remontaje de las 00:30 todas las noches
+y nunca se cae. A se cae siempre, con una sola excepción (14-08). O sea que el bind obsoleto
+**no es del ciclo de montaje en sí**, es algo propio de BACKUP_A.
+
+Consecuencia práctica: el disco se cambia el lunes 17-08 a la noche, y a partir de ahí el
+síntoma va a desaparecer solo. No sería una mejora — sería BACKUP_B tapándolo hasta la próxima
+rotación.
 
 ### immich, de paso
 
