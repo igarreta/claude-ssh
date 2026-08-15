@@ -25,6 +25,7 @@ SSH connectors use the `ssh-mcp` package to execute commands on remote machines.
 | raspberrypi2z | 100.92.195.47 | rsi | 22 | Raspberry Pi Zero W, 433 MHz temp sensors |
 | samba03 | 100.77.7.42 | root | 22 | Samba server |
 | living1 | 100.72.156.127 | rsi | 22 | stream to TV - not allways on |
+| mosquitto | 100.69.153.63 | rsi | 22 | Dedicated MQTT broker LXC (gr-srv03, VMID 105) |
 
 ### SSH Key
 
