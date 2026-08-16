@@ -38,11 +38,9 @@ rather than maintaining a custom TLS-enabled build for one sensor node on the sa
   `lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file` to `/etc/pve/lxc/105.conf`,
   `pct reboot 105`, tailscaled now starts fine.
 - Tailscale IP: `100.69.153.63` (added to `.mcp.json`/`mcp-connectors.md`/`CLAUDE.md` as `mosquitto`)
-- **LAN IP: `192.168.1.198`, DHCP-assigned — not yet static.** Fixed IPs are set at the router;
-  user didn't have access at migration time. TLS cert SAN is bound to this IP; if/when it moves
-  to a static address, **regenerate the server cert** (`openssl` commands in
-  `/tmp/mosquitto-setup.sh` history, or redo the CA-signing steps) with the new SAN before
-  pointing any client at it.
+- **LAN IP: `192.168.1.198`, now static** — set as a DHCP reservation at the router 2026-08-16,
+  same address it already had. TLS cert SAN was already bound to this IP, so no cert
+  regeneration needed.
 - mosquitto installed **native** via `apt` (not containerized) — avoids the podman-restart-policy
   class of bug already seen on cygnus (`docs/2026-06-22_cygnus_podman-restart-after-reboot.md`),
   fewer moving parts for a critical service.
@@ -73,11 +71,56 @@ Verified 2026-08-15: anonymous connections rejected on both listeners, wrong pas
 TLS handshake works against the SAN IP, ACL correctly blocks a scoped user's out-of-topic
 publish while allowing its own topics.
 
-## Still to do (deferred until the static IP is set)
+## Provisioning gap found and fixed (2026-08-16)
 
-1. Get a static LAN IP assigned at the router, then regenerate the server TLS cert with the new SAN.
-2. Update each client (write-local-then-scp per this repo's convention):
-   - **docker03 zigbee2mqtt**: `configuration.yaml` → `mqtt.server: mqtts://<new-ip>:8883` +
+105 was created with `/opt/proxmox-grsrv03/lxc-provisioning/provision-lxc.sh`, invoked with a
+`--disk` smaller than template 900's 6GB. `pct resize` can't shrink, so that step failed;
+`set -e` (no error trap) killed the script right there — **before** it reached the Tailscale
+TUN config, container start, or any step after. Root-caused via
+`/var/log/lxc-provision-105-20260815-200327.log` on gr-srv03 (last line: `unable to shrink
+disk size`). Script fixed (commit `2b6e866` in `igarreta/proxmox-grsrv03`, not yet pushed to
+origin): preflight now rejects `--disk` smaller than the template and exits cleanly before
+touching anything.
+
+Since the container was already TUN-patched, started, and had the mosquitto broker configured
+manually afterward (see above), only the generic provisioning steps were still missing. Fixed
+directly on 105:
+- `mp0` shared-secrets mount (`/opt/shared-secrets` → `/mnt/secrets`, ro) — **this was the
+  reported "secrets not working" bug**; `/mnt/` was completely empty
+- `mp1` backup mount (`/mnt/backup_usb1/mosquitto` → `/mnt/backup`), host dir created +
+  chowned to the unprivileged-container-mapped uid/gid (101000:101000)
+- `keyctl=1` feature (was `nesting=1` only)
+- `onboot: 1` (container would not have auto-started after a gr-srv03 reboot)
+- SSH hardening (password auth was still at Debian defaults, unlike other LXCs)
+- `~/bin` was 8+ months stale (never `git pull`led) — updated; `.bashrc` now sources
+  `bin/bashrc.sh`; `backup.sh` cron job added
+- Timezone was UTC, set to `America/Argentina/Buenos_Aires`
+- Secrets symlink automation (`~/bin/update-secrets` symlink + daily 00:35 cron) set up and
+  run once — confirmed working (`~/etc/*`, `~/.ssh/authorized_keys` now populated from
+  `/mnt/secrets`)
+
+Applied via a `pct reboot 105` (safe — no MQTT clients migrated yet, see "Still to do" below)
+to pick up the mount points and `keyctl` feature.
+
+**Incident during the fix**: a multi-line `bash -c` SSH-hardening command sent through the
+gr-srv03 MCP `run-command` tool had its newlines silently collapsed in transport, merging
+several statements onto one line. Control operators then reinterpreted the merged text,
+corrupting `sshd_config` (extra tokens appended to the `PasswordAuthentication` line) and
+taking `ssh.service` down on 105 for a few minutes. Recovered via `pct exec` (unaffected by
+sshd being down) — removed the bad line, reapplied each `sed` as its own single-line command,
+validated with `sshd -t`, restarted, and confirmed key-based login worked again. New rule
+recorded in `CLAUDE.md`: never send a multi-line command body through an MCP SSH
+`run-command`/`privileged-command` tool — one command per call, or write a script locally and
+`scp` it over for anything multi-step.
+
+The disk itself was never a problem — `pct resize` refused before touching the volume, so 105
+kept a clean 6GB disk (the template's size), just larger than whatever was originally
+requested.
+
+## Still to do
+
+1. Update each client (write-local-then-scp per this repo's convention):
+   - **docker03 zigbee2mqtt**: `configuration.yaml` → `mqtt.server: mqtts://192.168.1.198:8883` +
      `mqtt.ca`/`mqtt.user`/`mqtt.password`; mount `ca.crt` into the container via `compose.yaml`.
    - **docker03 mqtt-explorer**: reconfigure manually in its web UI.
    - **raspberrypi1 TTato**: add `MQTT_PORT`/`MQTT_USER`/`MQTT_PASS`/`MQTT_CA` constants in
@@ -92,9 +135,9 @@ publish while allowing its own topics.
    - **Home Assistant**: manual UI step (Settings → Devices & Services → MQTT → Reconfigure) —
      new host/port/user/pass, enable TLS, upload the CA cert. No SSH/API access to this host in
      the migration session.
-3. Cutover order: mqtt-explorer → rtl_433 → zigbee2mqtt → tuya-link → TTato → Home Assistant
+2. Cutover order: mqtt-explorer → rtl_433 → zigbee2mqtt → tuya-link → TTato → Home Assistant
    last (most critical). Keep docker03's old broker running in parallel until each client is
    confirmed working on the new one.
-4. After a stable cutover, decommission the docker03 mosquitto container/compose.
-5. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
+3. After a stable cutover, decommission the docker03 mosquitto container/compose.
+4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
    automated review.

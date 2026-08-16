@@ -35,6 +35,8 @@ scp -i ~/.ssh/id_ed25519_comet -P 1789 /tmp/filename rsi@100.72.195.90:/target/p
 
 If you need to copy a medium file or several small ones between two servers, ask if is is appropiate to install an ssh key to make the direct transfer
 
+**NEVER send a multi-line command body (embedded `\n`, e.g. a multi-statement `bash -c '...'`) to an MCP SSH `run-command`/`privileged-command` tool.** The newlines get silently stripped/collapsed in transport, so separate statements merge onto one line — control operators (`&&`/`||`/redirects) then reinterpret the merged text in unintended ways, executing something different from what was written, with no error surfaced. This has corrupted a config file (`sshd_config`, taking SSH down on a host) by merging a `sed`/`echo` fallback chain into garbage appended text. Always send **one command per tool call**. For a real multi-step script, write it locally with `Write`, `scp` it over, then run it with a single `bash /tmp/script.sh` call.
+
 ### SSH connection details (key: `~/.ssh/id_ed25519_comet`)
 
 Available mcp connectors and information for ssh connections, can be found in mcp-connectors.md
