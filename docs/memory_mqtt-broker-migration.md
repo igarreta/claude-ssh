@@ -117,12 +117,29 @@ The disk itself was never a problem — `pct resize` refused before touching the
 kept a clean 6GB disk (the template's size), just larger than whatever was originally
 requested.
 
+## Client cutover progress
+
+- **docker03 mqtt-explorer**: **done, 2026-08-16.** Reconfigured via its web UI (exposed
+  temporarily over HTTPS with `sudo tailscale serve --bg 4000` on docker03, since the plain
+  HTTP UI on :4000 has no reverse proxy and the browser refuses plain HTTP). New connection:
+  host `192.168.1.198`, port `8883`, user `mqttexplorer`.
+  - The `smeagolworms4/mqtt-explorer` browser-packaged fork's "Server Certificate (CA)" file
+    upload picker is broken (opens an error dialog, never lands a file on disk, no error in
+    `docker logs`) — worked around by leaving encryption **on** but **Validate Certificate
+    off**. Traffic is still TLS-encrypted and auth still applies; only CA-pinning against a
+    LAN MITM is lost for this one debug tool.
+  - Hit one real bug getting there: the UI's Port field silently stayed `1883` after toggling
+    Encryption on, so the client sent a TLS ClientHello at the plaintext listener — mosquitto
+    logged `New connection ... disconnected due to protocol error` (ciphertext failing to
+    parse as an MQTT packet). Fix was simply setting Port to `8883` to match. Confirmed
+    working end-to-end with a `mosquitto_pub`/UI round-trip test.
+  - Old docker03 broker connection left in place per the cutover-order/parallel-run plan below.
+
 ## Still to do
 
-1. Update each client (write-local-then-scp per this repo's convention):
+1. Update each remaining client (write-local-then-scp per this repo's convention):
    - **docker03 zigbee2mqtt**: `configuration.yaml` → `mqtt.server: mqtts://192.168.1.198:8883` +
      `mqtt.ca`/`mqtt.user`/`mqtt.password`; mount `ca.crt` into the container via `compose.yaml`.
-   - **docker03 mqtt-explorer**: reconfigure manually in its web UI.
    - **raspberrypi1 TTato**: add `MQTT_PORT`/`MQTT_USER`/`MQTT_PASS`/`MQTT_CA` constants in
      `GlobalThreads.py`; call `.tls_set(ca_certs=MQTT_CA)` + `.username_pw_set(...)` on all 3
      client instances before `.connect()`; `docker restart TTato`.
@@ -135,7 +152,7 @@ requested.
    - **Home Assistant**: manual UI step (Settings → Devices & Services → MQTT → Reconfigure) —
      new host/port/user/pass, enable TLS, upload the CA cert. No SSH/API access to this host in
      the migration session.
-2. Cutover order: mqtt-explorer → rtl_433 → zigbee2mqtt → tuya-link → TTato → Home Assistant
+2. Cutover order: ~~mqtt-explorer~~ → rtl_433 → zigbee2mqtt → tuya-link → TTato → Home Assistant
    last (most critical). Keep docker03's old broker running in parallel until each client is
    confirmed working on the new one.
 3. After a stable cutover, decommission the docker03 mosquitto container/compose.
