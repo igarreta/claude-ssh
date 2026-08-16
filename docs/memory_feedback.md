@@ -14,9 +14,18 @@ Do not configure passwordless sudo on castor. The user explicitly said they do n
 
 Use `pct exec 205 -- <cmd>` from gr-srv03 instead of suggesting `NOPASSWD` sudoers entries. Do not propose passwordless sudo as a convenience improvement on castor.
 
-## Browser requires HTTPS — give HTTPS URLs, not plain HTTP
+## Browser requires HTTPS for Tailscale addresses — LAN hostnames are fine over plain HTTP
 
-The user's browser will not open plain `http://` web UIs (2026-06-22). When pointing them at a web service, always provide the **HTTPS** URL (e.g. via the Caddy reverse proxy `https://cygnus.tail366c79.ts.net`), not the raw `http://host:port`. Set up a TLS front end if one doesn't exist rather than handing over an HTTP link.
+The user's browser refused plain `http://100.96.140.37:5050` (a Tailscale IP) on 2026-06-22,
+so a Caddy+Tailscale-cert HTTPS front end was built for pgAdmin on cygnus. But on 2026-08-16,
+`http://docker03:4000/` (a plain LAN hostname) worked fine directly in the browser — no HTTPS
+needed, confirmed after an unnecessary `tailscale serve` HTTPS proxy was set up for
+mqtt-explorer and then torn down once this was clarified.
+
+**How to apply:** Don't assume every plain-HTTP link needs an HTTPS front end. Give the plain
+`http://<lan-hostname>:<port>` link first if the service is reachable by LAN hostname; only
+build/use an HTTPS path (Caddy reverse proxy, `tailscale serve`) when the user reports it
+doesn't open, or when the only address available is a Tailscale IP (100.x range).
 
 ## docker03 sudo requires a password
 

@@ -119,10 +119,11 @@ requested.
 
 ## Client cutover progress
 
-- **docker03 mqtt-explorer**: **done, 2026-08-16.** Reconfigured via its web UI (exposed
-  temporarily over HTTPS with `sudo tailscale serve --bg 4000` on docker03, since the plain
-  HTTP UI on :4000 has no reverse proxy and the browser refuses plain HTTP). New connection:
-  host `192.168.1.198`, port `8883`, user `mqttexplorer`.
+- **docker03 mqtt-explorer**: **done, 2026-08-16.** Reconfigured via its web UI. Briefly
+  exposed over HTTPS with `sudo tailscale serve --bg 4000` on docker03 (assumed the plain
+  HTTP UI on :4000 would be blocked) — turned out plain `http://docker03:4000/` works fine on
+  the LAN, so the serve proxy was unnecessary and has been reset (`sudo tailscale serve
+  reset`). New connection: host `192.168.1.198`, port `8883`, user `mqttexplorer`.
   - The `smeagolworms4/mqtt-explorer` browser-packaged fork's "Server Certificate (CA)" file
     upload picker is broken (opens an error dialog, never lands a file on disk, no error in
     `docker logs`) — worked around by leaving encryption **on** but **Validate Certificate
