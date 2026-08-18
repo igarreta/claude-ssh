@@ -109,9 +109,9 @@ bus-path based**, it followed the dongle to its new physical port with no config
 change and no VM restart. Prefer this style for passthrough of a single unique
 device; bus-path entries break whenever the topology changes.
 
-### Leftover cruft to clean (noted 2026-08-18)
+### Leftover cruft — cleaned 2026-08-18
 
-VM 102 still carries three **phantom** path-based passthroughs pointing at the
+VM 102 carried three **phantom** path-based passthroughs pointing at the
 now-departed hub's subports:
 
 ```
@@ -126,7 +126,12 @@ slots (`qm monitor 102` -> `info usb`). They are harmless today but are a **late
 auto-capture trap**: plug a hub into bus-1 port 1 or port 3 later and QEMU will
 silently pull whatever appears at those subpaths into docker03.
 
-Clean with `qm set 102 --delete usb0,usb1,usb3` (pending until the VM's next reboot).
+**Removed 2026-08-18** with `qm set 102 --delete usb0,usb1,usb3`. It applied
+**live** — no reboot and no pending change; QEMU's `info usb` immediately dropped
+the three empty slots, leaving only the tablet and `usb2`. Zigbee was undisturbed:
+container not restarted, `/dev/serial/by-id/` symlink timestamp unchanged (so the
+dongle never re-enumerated), traffic continuous. Prior config backed up to
+`/root/102.conf.bak-20260818-091255` on gr-srv03.
 
 Unrelated but noted: VM 100 (`debian-gui`, stopped and unused) holds
 `usb0: host=0bda:c821`, the Realtek Bluetooth radio. No conflict while it stays
