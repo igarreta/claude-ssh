@@ -42,3 +42,46 @@ delivery on that hub or port, exposed by a spinning HDD's higher current draw
 - If it still fails after a power cycle, test the hub's other ports individually.
 - Until resolved, keep BACKUP_A/BACKUP_B connected directly to the gr-srv03 server
   rather than through this powered hub.
+
+## Update 2026-08-17: hub now drops the Zigbee dongle too (revised 2026-08-18)
+
+Previous note (07-15) said the RTL/Zigbee dongles "still work fine on this hub" — no
+longer true. The hub has degraded further.
+
+Host kernel log (`journalctl -k`) 19:34–20:45 on 2026-08-17 shows the hub at `1-1`
+(the `1a40:0101` USB2.0 hub chip on `usb1-port1`) repeatedly cycling: `clear tt 1
+error -71`, `disabled by hub (EMI?), re-enabling`, disconnect/reconnect of the
+Sonoff Zigbee 3.0 Dongle Plus V2 (`10c4:ea60`, port `1-1.3`) every few minutes,
+escalating at 20:45 to the hub itself failing enumeration (`device descriptor
+read/64, error -71`, `Device not responding to setup address`, `attempt power
+cycle`).
+
+**Blast radius: one container.** The dongle is passed through to docker03 (VM 102,
+`usb2: host=10c4:ea60`), where it appears as `usb 2-3`. Each host-side drop surfaced
+in the guest as a `cp210x` disconnect and Docker restarted the zigbee2mqtt container
+under its `restart: always` policy — **5 restarts** between 17:00 and 20:53,
+recovering every time.
+
+### Correction to the original 08-17 write-up
+
+That write-up said this hub "froze docker03" via the passthrough. **It did not.**
+docker03 was healthy and logging continuously throughout; the apparent VM freeze was
+an unrelated, coincident Tailscale node-key expiry at 17:27, two hours before the USB
+storm began. The "silent journal" that suggested a freeze was an artifact of reading
+it unprivileged.
+
+Full analysis, including the container-DNS coupling and the fleet-wide key-expiry
+fix, is in
+[2026-08-17_docker03_tailscale-key-expiry-and-container-dns.md](2026-08-17_docker03_tailscale-key-expiry-and-container-dns.md).
+
+So: no VM-freeze escalation to attribute to this hub. What the hub *does* do is knock
+the Zigbee dongle offline every few minutes, which is bad enough on its own.
+
+## Conclusion
+
+The hub is not safe for anything now — not just spinning HDDs, but also the low-power
+dongles previously assumed safe.
+
+**Action needed (still open):** move the Zigbee dongle (and RTL-433, per the existing
+plan in CLAUDE.md to move it to cygnus) off this hub onto a direct host port or a
+different hub, not just the backup drives.
