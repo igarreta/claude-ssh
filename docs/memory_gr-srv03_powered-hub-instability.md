@@ -1,7 +1,8 @@
 # Memory: gr-srv03 powered USB hub instability (2026-07-15)
 
-**Status:** RESOLVED 2026-08-17 by removing the hub from the setup entirely.
-History kept below for context.
+**Status:** ROOT-CAUSED 2026-08-18 and mitigated 2026-08-17 by removing the hub.
+**The "degrading hub" theory below is superseded — see "Actual root cause" at the
+end.** History kept for context.
 
 ## What happened
 Investigated "BACKUP_A not recognized" — turned out to be expected: BACKUP_A and
@@ -136,3 +137,86 @@ dongle never re-enumerated), traffic continuous. Prior config backed up to
 Unrelated but noted: VM 100 (`debian-gui`, stopped and unused) holds
 `usb0: host=0bda:c821`, the Realtek Bluetooth radio. No conflict while it stays
 stopped.
+
+
+## Actual root cause (2026-08-18): backup-drive hot-plug transients, not hub decay
+
+User hypothesis — "the episodes coincide with unplugging/replugging BACKUP_A/_B, but
+those disks were on a *different* USB port, the hub had only the Zigbee dongle" —
+**confirmed against the logs, 7 of 7 episodes.**
+
+### The correlation
+
+Every Zigbee (`cp210x`) disconnect episode in 37 days of journal coincides with a
+backup-drive plug or unplug on bus 2:
+
+| dongle drop | drive event |
+|---|---|
+| 07-15 06:15–06:23 | `2-3` enumeration-failure loop, Toshiba attached 06:23 |
+| 07-20 18:22 | **`2-1` USB disconnect** 18:22 |
+| 07-21 18:11–18:15 | WD Elements attached, `[sdc] Spinning up disk...` 18:11 |
+| 08-03 19:37 | **`2-1` USB disconnect** 19:37 |
+| 08-04 19:39 | Toshiba attached 19:39 |
+| 08-11 19:07–19:08 | WD Elements attached, `Spinning up disk...` 19:08 |
+| 08-17 19:34 | **`2-1` USB disconnect 19:34:29 — storm began 19:34:33, 4 s later** |
+
+The unplug→replug pairs are the weekly offsite rotation: 07-20→07-21, 08-03→08-04,
+08-10→08-11, 08-17→(still out). The apparent "evening EMI" clustering was simply
+when the swap is done.
+
+**One negative case:** the 08-10 18:23 unplug caused no dongle drop. The coupling is
+probabilistic — it depends on transient severity and timing — not deterministic.
+
+### The mechanism: shared controller and VBUS rail, not a shared port
+
+```
+Intel Alder Lake-N PCH USB 3.2 xHCI [8086:54ed] @ 00:14.0   <- ONE controller
+  ├─ Bus 001 (USB2 root)  port 1 ── powered hub 1a40:0101 ── Zigbee dongle
+  └─ Bus 002 (USB3 root)  port 1 ── BACKUP_A/B
+```
+
+The ports really were different physical sockets — `usb1-port1` has **no USB3 peer**
+(it is a USB2-only socket), while the drive's `usb2-port1` peers with `usb1-port5`.
+Confirmed via `/sys/bus/usb/devices/usb*/…/usb*-port*/peer`.
+
+But both sit on the same xHCI silicon and, on a NucBox-class mini PC, the same shared
+5 V VBUS supply for the external sockets. A bus-powered 2.5" HDD pulls a large inrush
+transient on plug-in (capacitor charge + motor spin-up — hence the `Spinning up
+disk...` lines) and a similar transient on removal. That momentarily sags the shared
+rail. The PCH root ports tolerate it; the cheap Terminus `1a40:0101` hub — minimal
+decoupling, no local regulation — browns out, its controller glitches, and the kernel
+reports what it observed: `disabled by hub (EMI?)` and `error -71` downstream.
+
+### Why this supersedes the earlier theory
+
+The 07-15 note assumed marginal hub power exposed by HDD current draw *through the
+hub*, and the 08-17 note assumed progressive decay. Neither holds:
+
+- The hub was **not** carrying the drives during these episodes — only the dongle.
+- There was **no** decline from "slow" to "won't enumerate". There were discrete
+  trigger events roughly weekly, all along.
+- 08-17 looked catastrophic only because the drive was unplugged and, uniquely,
+  **never plugged back in** — so the hub kept cycling instead of settling after the
+  usual 1–4 minutes.
+
+### Evidence the fix will hold — and why it is still unproven
+
+Across all 37 days and all 7 swap events, **no root-hub-attached device was ever
+disturbed**: the Bluetooth adapter (`usb1-port4`) and USB audio (`usb1-port6`) never
+glitched, and bus-1 root-hub port errors total **0**. Only the downstream hub was
+susceptible, which is why moving the dongle to a direct root-hub port should hold.
+
+**But it has not yet been tested against the real trigger.** The drive was unplugged
+2026-08-17 19:34 and has not been reconnected, so the hub was removed during a period
+with no swap. The ~12 h of silence proves nothing about the failure mode.
+
+**Test to run:** at the next BACKUP_A/_B reconnection, check for `cp210x` disconnects
+within ~10 s of the drive attaching:
+
+```bash
+journalctl -k --since '10 min ago' | grep -E 'cp210x|Spinning up|usb 2-1'
+```
+
+If the dongle rides through a plug/unplug cycle, the fix is confirmed. If it still
+drops, the transient is reaching the root port too, and the next step is a
+**self-powered** drive dock/enclosure rather than a bus-powered 2.5" HDD.
