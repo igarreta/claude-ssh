@@ -1,6 +1,7 @@
 # Memory: gr-srv03 powered USB hub instability (2026-07-15)
 
-**Status:** unresolved, needs further investigation.
+**Status:** RESOLVED 2026-08-17 by removing the hub from the setup entirely.
+History kept below for context.
 
 ## What happened
 Investigated "BACKUP_A not recognized" — turned out to be expected: BACKUP_A and
@@ -77,11 +78,56 @@ fix, is in
 So: no VM-freeze escalation to attribute to this hub. What the hub *does* do is knock
 the Zigbee dongle offline every few minutes, which is bad enough on its own.
 
-## Conclusion
+## Resolution 2026-08-17 21:11 — hub eliminated
 
-The hub is not safe for anything now — not just spinning HDDs, but also the low-power
-dongles previously assumed safe.
+The hub was removed from the setup: RTL-433 disconnected, Zigbee dongle moved to a
+**direct root-hub port** on gr-srv03. Host kernel log:
 
-**Action needed (still open):** move the Zigbee dongle (and RTL-433, per the existing
-plan in CLAUDE.md to move it to cygnus) off this hub onto a direct host port or a
-different hub, not just the backup drives.
+```
+21:11:36 usb 1-1: USB disconnect, device number 42        <- hub removed
+21:11:44 usb 1-1: Sonoff Zigbee 3.0 USB Dongle Plus V2    <- now direct on root hub
+21:11:44 cp210x 1-1:1.0: cp210x converter detected
+```
+
+**Verified 2026-08-18 (~12 h later):**
+
+| | during the storm | after the move |
+|---|---|---|
+| USB kernel events | every 2-6 min | **zero in ~12 h** |
+| `error -71` / `disabled by hub` | 16 in 24 h (all pre-21:11) | **0** |
+
+`lsusb -t` no longer shows the `1a40:0101` hub chip at all. The dongle sits directly
+on the bus-1 root hub under `usbfs` (claimed by QEMU for VM 102), and zigbee2mqtt is
+passing live Zigbee traffic with a stable `/dev/serial/by-id/` node.
+
+Do not reuse this hub. Keep BACKUP_A/BACKUP_B and any dongles on direct ports.
+
+### Passthrough config survived the move — because it is ID-based
+
+`qm config 102` has `usb2: host=10c4:ea60`. Being **vendor:product based rather than
+bus-path based**, it followed the dongle to its new physical port with no config
+change and no VM restart. Prefer this style for passthrough of a single unique
+device; bus-path entries break whenever the topology changes.
+
+### Leftover cruft to clean (noted 2026-08-18)
+
+VM 102 still carries three **phantom** path-based passthroughs pointing at the
+now-departed hub's subports:
+
+```
+usb0: host=1-1.1
+usb1: host=1-1.4
+usb3: host=1-3.1
+```
+
+Nothing has enumerated at any of those paths since at least 2026-08-01, so they were
+already dead before the hub was pulled. QEMU shows them as empty "USB Host Device"
+slots (`qm monitor 102` -> `info usb`). They are harmless today but are a **latent
+auto-capture trap**: plug a hub into bus-1 port 1 or port 3 later and QEMU will
+silently pull whatever appears at those subpaths into docker03.
+
+Clean with `qm set 102 --delete usb0,usb1,usb3` (pending until the VM's next reboot).
+
+Unrelated but noted: VM 100 (`debian-gui`, stopped and unused) holds
+`usb0: host=0bda:c821`, the Realtek Bluetooth radio. No conflict while it stays
+stopped.
