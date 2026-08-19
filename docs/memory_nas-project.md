@@ -24,7 +24,10 @@ on one 3–4 TB disk. That caps the backed-up subset, not the NAS capacity.
 | Capacity | **2×8 TB is too large. 12 TB usable (4×4 TB RAIDZ1) is too much.** Wants alternatives explored between those points. |
 | Media browsing | **Immich** (Google-Photos-like: timeline, faces, search, phone apps). Existing folder tree must stay intact → external-library mode. |
 | PBS placement | Recommend one at the next step (on-NAS VM vs LXC on gr-srv03 with datastore on NAS). |
-| Placement | **Prefers NOT next to gr-srv03** (physical separation), but is short of options — small footprint is required, and co-locating with gr-srv03 is an acceptable compromise. Ethernet available wherever it lands. |
+| Placement | **Prefers NOT next to gr-srv03** (physical separation), but is short of options — small footprint is required, and co-locating with gr-srv03 is an acceptable compromise. Ethernet available wherever it lands. Footprint is "to be considered but not a hard limit". |
+| Peliculas (263 GB) | **May move to the NAS, but stays excluded from backups**, as today. |
+| Time Machine | MacBook will have **1 TB**, not expected to fill for a long time. |
+| Offsite scope | **PBS and Time Machine must both be backed up remotely.** BACKUP_A/B may be increased to **4 TB** (the size of the larger disk). |
 
 ## Baseline measurements (2026-08-19)
 
@@ -58,28 +61,37 @@ on one 3–4 TB disk. That caps the backed-up subset, not the NAS capacity.
 |---|---|
 | Live shares from WDMyCloud | 1.6 TB |
 | Backups absorbed from backup_usb1 (+ more PBS history than today) | 0.3–0.5 TB |
-| Time Machine for one MacBook | 0.5–1.0 TB |
-| **Total** | **2.5–3.1 TB** |
+| Time Machine (1 TB MacBook, plan a 1 TB quota) | 1.0 TB |
+| **NAS total, day one** | **~3.1 TB** |
+| **Offsite subset** (all of the above except Peliculas) | **~2.75 TB** |
 
-→ A 2×4 TB mirror is ~75% full on day one, so **2×6 TB is the realistic floor** for a 2-bay
-mirror. This is the tension to resolve: the budget and the "8 TB is too large" preference pull
-down, the 2.5–3.1 TB day-one figure plus photo/video growth pull up.
+→ A 2×4 TB mirror (3.6 TiB usable) is **86% full on day one — not viable**. 2×6 TB (5.45 TiB
+usable, 57% day one) is the realistic floor. The offsite copy at ~2.75 TB on a 4 TB disk
+(3.6 TiB usable) is ~76% full, and is the constraint that will bind first.
 
 ## Open decisions
 
-1. **Bay count and disk size** — explore options between 2×6 TB mirror and 4-bay layouts;
-   user rejected 2×8 TB and 4×4 TB RAIDZ1 as oversized.
-2. **Turnkey appliance vs DIY** — needs a concrete price/availability comparison for goods
-   carried from abroad.
-3. **NAS OS** — constrained by decision 4 (running VMs) and by Immich support.
-4. **PBS placement** — on the NAS (needs a VM-capable OS: TrueNAS SCALE / Proxmox / Unraid)
-   vs an LXC on gr-srv03 with its datastore on the NAS over NFS/iSCSI.
-5. **What must fit in the 3 TB offsite disk** — is Peliculas in? Time Machine? PBS datastore?
-6. **Time Machine quota** — depends on the future MacBook's disk size.
-7. **Does the BACKUP_A/B rotation move from gr-srv03 to the NAS**, or stay where it is?
+**Decided by the 2026-08-19 research** (see [[docs/2026-08-19_nas-hardware-research.md]]):
+DIY loses at 2 bays (turnkey is cheaper, smaller, lighter); recommended OS is **Proxmox VE +
+ZFS mirror**; recommended **PBS placement is on the NAS with a local datastore** (NFS-backed
+PBS datastores are discouraged, and it puts the backup server on different hardware from
+gr-srv03, which it protects).
+
+**Still open:**
+
+1. **The budget collision** — at Aug 2026 prices, <USD 600 and adequate capacity are not
+   simultaneously satisfiable with new drives. Choose: (a) raise budget to ~$750 for
+   F2-425 + 2×6 TB new, (b) recertified enterprise drives to stay under $600 (noise, seller
+   warranty), or (c) shrink scope. **This is the blocking decision.**
+2. **2-bay vs 4-bay chassis** — F2-425 $255 vs F4-425 $365; 4-bay allows adding disks one at a
+   time, which is worth more than usual during a drive shortage.
+3. **Verification items before purchase** — recertified enterprise 8 TB street price,
+   third-party OS support/BIOS/HDMI on the chosen chassis, M.2 slot count, noise figures.
+4. **Does the BACKUP_A/B rotation move from gr-srv03 to the NAS**, or stay where it is?
 
 ## Related
 
-[[docs/memory_backup_schedule.md]] — the existing backup windows and disk-wake constraints any
+[[docs/2026-08-19_nas-hardware-research.md]] — market context, hardware/OS/PBS comparison and the
+budget analysis. [[docs/memory_backup_schedule.md]] — the existing backup windows and disk-wake constraints any
 new NAS-side job must respect. [[docs/memory_ceres_wdmycloud_glacier.md]] — the WDMyCloud→S3
 Glacier backup and its exclusions.
