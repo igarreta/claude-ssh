@@ -175,9 +175,16 @@ Intel Alder Lake-N PCH USB 3.2 xHCI [8086:54ed] @ 00:14.0   <- ONE controller
   └─ Bus 002 (USB3 root)  port 1 ── BACKUP_A/B
 ```
 
-The ports really were different physical sockets — `usb1-port1` has **no USB3 peer**
-(it is a USB2-only socket), while the drive's `usb2-port1` peers with `usb1-port5`.
-Confirmed via `/sys/bus/usb/devices/usb*/…/usb*-port*/peer`.
+The ports really were different physical sockets: the dongle enumerated on
+`usb1-port1`, the drive on `usb2-port1`.
+
+> **Correction 2026-08-19:** this section originally called `usb1-port1` "a USB2-only
+> socket" based on `/sys/bus/usb/devices/usb*/…/usb*-port*/peer`. **That sysfs data is
+> unreliable on this board** — gr-srv03 has only **3 external USB-A ports, all USB 3.2
+> Gen 1**, while the firmware table reports extra peerless hotplug sockets and puts two
+> different devices on one "socket" (`usb1-port6`/`usb2-port2`). The different-socket
+> conclusion still holds; the USB2-only characterisation does not. Count sockets at the
+> chassis, not in sysfs.
 
 But both sit on the same xHCI silicon and, on a NucBox-class mini PC, the same shared
 5 V VBUS supply for the external sockets. A bus-powered 2.5" HDD pulls a large inrush
@@ -263,3 +270,14 @@ the filesystem is mounted r/w, so no lasting damage — but unsynced data at tha
 instant was lost. Unrelated to the USB fix. For the weekly offsite rotation, unmount
 first (`umount /mnt/backup_b`, or stop the `mnt-backup_b.mount` unit) before pulling
 the cable.
+
+## Planned rebuild with better hubs (2026-08-19)
+
+All 3 external ports are occupied and two more devices are coming (a second HDD and
+the RTL-433), so hubs are unavoidable. The plan — powered self-powered hub for the
+drives, separate small hub for the dongles, Kingston XS1000 direct — with rationale,
+rejected alternatives, purchase criteria and post-install verification, is in
+[2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md).
+
+Key point: self-powering the drives removes the transient **at the source**, which is
+what makes putting a dongle behind a hub acceptable again.
