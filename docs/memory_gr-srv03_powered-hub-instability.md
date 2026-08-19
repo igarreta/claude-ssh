@@ -220,3 +220,46 @@ journalctl -k --since '10 min ago' | grep -E 'cp210x|Spinning up|usb 2-1'
 If the dongle rides through a plug/unplug cycle, the fix is confirmed. If it still
 drops, the transient is reaching the root port too, and the next step is a
 **self-powered** drive dock/enclosure rather than a bus-powered 2.5" HDD.
+
+## FIX CONFIRMED 2026-08-19 — dongle rode through three hot-plug events
+
+The test described above has now run for real. BACKUP_B (Toshiba Canvio Basics
+`0480:a202`, serial `20170126021100F`) was reconnected on 2026-08-18 and cycled:
+
+| time (2026-08-18) | event on bus 2 | effect on Zigbee dongle |
+|---|---|---|
+| 19:11:33 | `usb 2-1` attach, `[sdc]` spin-up | **none** |
+| 19:47:13 | `usb 2-1` USB disconnect | **none** |
+| 19:47:20 | `usb 2-1` re-attach, EXT4 recovery, mounted | **none** |
+
+Counters since the hub was removed (2026-08-17 21:12 → 2026-08-19):
+
+- `cp210x` / `error -71` / `disabled by hub` kernel events: **0**
+- bus-1 root-port errors, resets, `attempt power cycle`: **0**
+- `/dev/serial/by-id/usb-Itead_Sonoff_Zigbee_3...` symlink mtime on docker03:
+  still **Aug 17 21:11** — the dongle has not re-enumerated once
+- zigbee2mqtt container: `Up 24 hours`, **RestartCount 0**
+
+Under the old topology every one of these plug/unplug events had a ~6-in-7 chance of
+knocking the dongle offline; three in a row passed clean. **The root-cause analysis
+holds and the fix is proven: only the downstream `1a40:0101` hub was susceptible to
+the shared-rail transient, the PCH root ports are not.**
+
+No further action on this issue. Standing rule: keep the Zigbee dongle and the backup
+drives on **direct root-hub ports**; do not reintroduce that hub.
+
+### Side note — the 19:47:13 removal was unclean
+
+The drive was pulled while still mounted with dirty writes:
+
+```
+Buffer I/O error on dev sdc1, ... lost sync page write
+JBD2: I/O error when updating journal superblock for sdc1-8.
+sd 2:0:0:0: [sdc] Synchronize Cache(10) failed: ... DID_NO_CONNECT
+```
+
+The journal replayed cleanly on re-attach (`EXT4-fs (sdc1): recovery complete`) and
+the filesystem is mounted r/w, so no lasting damage — but unsynced data at that
+instant was lost. Unrelated to the USB fix. For the weekly offsite rotation, unmount
+first (`umount /mnt/backup_b`, or stop the `mnt-backup_b.mount` unit) before pulling
+the cable.
