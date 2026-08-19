@@ -281,3 +281,21 @@ rejected alternatives, purchase criteria and post-install verification, is in
 
 Key point: self-powering the drives removes the transient **at the source**, which is
 what makes putting a dongle behind a hub acceptable again.
+
+Purchase decisions (2026-08-19, nothing bought yet):
+
+- **Storage hub: Rosonway RSH-A10** ($37) — mechanical switches survive a power
+  outage, PPPS verified on every port. Six powered candidates compared in
+  [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md).
+- **Extension cables: Conable CAL2S-6-3PK** ($10) — 3 x 6 ft USB 2.0 A-M/A-F.
+  USB 2.0 deliberately (no SuperSpeed pairs next to the SDR); 28AWG is fine at
+  ~0.23 V drop for the RTL, and gold plating is irrelevant.
+- **Ferrites: 13 mm ID clip-on, wire-wound, 10 pcs** — 13 mm so 2-3 turns fit
+  (impedance goes as N^2). If RTL coverage drops, fit them to the **HDD cables first**
+  (noise source) before the SDR extension.
+- **Port 3 still open** — three options in the plan: a 10 Gbps dongle hub (A), a $7
+  USB 2.0 Sabrent with no PPPS (B), or **no second hub at all** (C: Zigbee joins the
+  RSH-A10 on an extension and gains `uhubctl` power-cycling, RTL goes direct). C costs
+  nothing and gives the SDR the best RF path, at the cost of consolidating backups and
+  home automation behind one 12 V brick. No cheap USB 2.0 PPPS hub remains in
+  production, which is why B has to give up `uhubctl`.
