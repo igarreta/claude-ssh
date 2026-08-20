@@ -296,6 +296,101 @@ original budget). Do not buy the ST4000NM0023 (SAS, incompatible) or the RE4 2 T
 worst $/TB tier). Do not buy the base F2-425 unless Immich's ML features are being given up — the
 RAM upgrade it needs costs more than the difference to the Plus.
 
+## 9. Cheaper alternatives to the TerraMaster
+
+### 9.1 The winner: UGREEN NASync DXP2800 — $297
+
+| | UGREEN DXP2800 | TerraMaster F2-425 Plus |
+|---|---|---|
+| Price (Amazon/Walmart) | **$297** | $382 |
+| CPU | Intel N100 | Intel N150 |
+| RAM | **8 GB DDR5**, 1 SODIMM, upgradeable | 8 GB DDR5, upgradeable to 32 GB |
+| M.2 NVMe | **2×** | 3× (PCIe 3.0 ×1) |
+| HDD bays | 2 | 2 |
+| LAN | 1× 2.5GbE | 2× 5GbE |
+| OS storage | 32 GB soldered eMMC (holds UGOS) | — |
+| Third-party OS | **Officially permitted, warranty intact** | Officially permitted |
+
+**Saves $85 and loses very little that matters here.** The N100→N150 gap is negligible for Immich
+(both have the same QSV-capable iGPU generation), and 2.5GbE vs 5GbE is irrelevant on a gigabit
+home LAN — a 2-drive HDD mirror cannot saturate 2.5GbE anyway. Proxmox and TrueNAS installs on the
+DXP2800 are widely documented; the SATA bays and M.2 slots do not share a controller path. The
+eMMC can simply be left alone with UGOS on it (PVE goes on an NVMe) — do **not** install Proxmox to
+the eMMC, its write endurance is far below an NVMe's.
+
+The two real concessions: only **one** SODIMM slot (so a RAM upgrade means replacing the 8 GB
+stick, not adding to it — same as the TerraMaster), and one fewer M.2 slot.
+
+### 9.2 The cheapest route to four bays: Aoostar WTR Pro — $279 barebones
+
+Intel N100, **4 bays**, 2× 2.5GbE, 1× M.2 2280, one DDR4 SODIMM slot (up to 32 GB), HDMI/DP/USB-C.
+Barebones means **no RAM and no SSD** — add $90–150 for 16 GB DDR4, landing at **$369–429** for a
+4-bay machine, i.e. about the price of the 2-bay F2-425 Plus. Well regarded in homelab circles and
+explicitly used with Proxmox/TrueNAS.
+
+Against it: drives are **not hot-swappable**, only one M.2 slot, and it is an AliExpress-direct
+brand — warranty and RMA mean shipping to China, which is moot once the unit is in Argentina but
+also means no local recourse if it arrives faulty. Buy it only if the 4 bays are genuinely wanted.
+
+### 9.3 Correction to §8.1's RAM figure
+
+§8.1 cited $150–219 for a 16 GB DDR4 SODIMM, from one aggregator's "median kit price". Better data
+puts a single 16 GB DDR4 SODIMM at roughly **$90–150** (16 GB DDR4 desktop kits are $69–130; DDR5
+is the expensive one, 16 GB at $169–215). That narrows the gap — F2-425 + RAM ≈ **$344–404** vs the
+Plus at $382 — so it is now a close call on price alone. **The Plus still wins**, because the base
+F2-425 has *no M.2 slot at all*: Proxmox would have to live on the HDD mirror, taking Immich's
+PostgreSQL and thumbnail cache onto spinning rust, and there is no upgrade path out of that.
+
+### 9.4 On using the spare M.2 slots "to grow"
+
+Right for *performance*, wrong for *bulk capacity*. NAND is in the same shortage as everything else
+— roughly **$90/TB for NVMe against ~$28/TB for recertified HDD**, so growing storage via M.2 costs
+about three times as much per TB. What the spare slots are genuinely worth:
+
+- **PVE boot + VM/LXC root disks** (the main win — keeps Immich's database and thumbnails off the HDDs).
+- **L2ARC** (read cache) or **SLOG** — both are safe to lose; the pool survives their failure.
+- **A ZFS `special` vdev** (metadata + small blocks), which makes an Immich library feel dramatically
+  faster. **It must be mirrored**: losing an unmirrored special vdev destroys the entire pool. Two
+  M.2 slots is exactly enough; do not do this with one.
+
+### 9.5 Not worth considering
+
+**ARM boxes** (Immich ML plus Proxmox wants x86-64), **NVMe-only NAS** such as the Beelink ME mini
+(NAND $/TB is the worst it has been in years), and **any mini-PC + USB DAS** combination — the
+USB-storage failure history on gr-srv03 is documented and does not need repeating.
+
+## 10. Where to buy recertified HDDs
+
+| Source | What it is | Warranty | Use it for |
+|---|---|---|---|
+| **goHardDrive** | Recertified / white-label enterprise; 15+ years trading | Often **3–5 years** | **First stop** — longest warranty at similar prices |
+| **ServerPartDeals (SPD)** | The r/DataHoarder default; manufacturer-recertified Exos / Ultrastar | Typically **2 years**, seller-fulfilled | Best selection and the deepest discounts |
+| **Seagate Recertified** / **WD Recertified** (direct) | Factory-recertified, straight from the maker | Short — Seagate's is **6 months** | Best provenance, worst warranty |
+| **Amazon Renewed / Newegg refurb** | Convenience channel, mixed provenance | Varies, usually 1 yr + easy returns | Only when the return window is the real protection |
+| **eBay datacenter pulls** | 50–70% off retail, provenance unknown | None to nominal | Only if you enjoy the gamble |
+| Disctech, Tech-Supply Direct, Bargain Hardware (EU) | Niche resellers | Varies | Fallbacks / EU-side buying |
+
+### Rules that matter for this purchase specifically
+
+1. **Warranty is close to worthless once the drive is in Argentina** — an RMA means shipping to the
+   US and back. So the warranty length is a proxy for the seller's confidence, not a real safety
+   net. Weight the *provenance* (manufacturer-recertified > seller-refurbished) at least as heavily.
+2. **"Manufacturer recertified" ≠ "seller refurbished."** The first was rebuilt and re-tested by
+   Seagate/WD and re-labelled; the second was only tested by the reseller. Read the listing wording.
+3. **Test while still in the US, inside the return window** if the trip allows it: a full SMART long
+   test plus one `badblocks -w` pass catches most infant mortality. This is worth planning the
+   purchase date around.
+4. **Check SMART on arrival**: power-on hours (prefer under ~30 000), `Reallocated_Sector_Ct`,
+   `Current_Pending_Sector`, and for Seagate, be aware the raw read/seek error rates look alarming
+   but are not — read the normalised values.
+5. **Different lots** for the two mirror members (§7), and ask the seller if they can pick from
+   separate batches.
+6. **SATA only.** Repeating it because the two candidates in §8.3 both failed on either interface or
+   age: filter every listing to SATA before looking at the price.
+
+**Target**: a **6 TB SATA manufacturer-recertified enterprise drive** (Exos 7E8, Ultrastar 7K6000 /
+He-class) at **$160–180**, from goHardDrive or ServerPartDeals.
+
 ## Sources
 
 - [ListofDisks — live US retailer HDD price tracker](https://www.listofdisks.com/)
@@ -314,3 +409,12 @@ RAM upgrade it needs costs more than the difference to the Plus.
 - [Seagate ST4000NM0023 — Constellation ES.3 SAS 6Gb/s](https://www.bhphotovideo.com/c/product/929904-REG/seagate_st4000nm0023_4tb_constellation_es_3_sas.html)
 - [WD RE4 WD2003FYYS — SATA II, released February 2010](https://www.amazon.com/RE4-Enterprise-Hard-Drive-WD2003FYYS/dp/B002XW44QY)
 - [Tom's Hardware — RAM price index 2026](https://www.tomshardware.com/pc-components/ram/ram-price-index-2026-lowest-price-on-ddr5-and-ddr4-memory-of-all-capacities)
+- [UGREEN NASync DXP2800 review — Android Central](https://www.androidcentral.com/accessories/smart-home/ugreen-nasync-dxp2800-review)
+- [TrueNAS on a UGREEN NAS — installation guide, NASCompares](https://nascompares.com/guide/truenas-on-a-ugreen-nas-installation-guide/)
+- [Aoostar WTR Pro 4-bay N100 NAS — Liliputing](https://liliputing.com/aoostar-wtr-pro-is-a-4-bay-nas-with-an-intel-n100-processor-2-5-gbe-ethernet-and-an-m-2-2280-slot/)
+- [Aoostar WTR Pro review — NASCompares](https://nascompares.com/review/aoostar-wtr-pro-nas-review/)
+- [goHardDrive recertified / white-label](https://www.goharddrive.com/category-s/70.htm)
+- [Seagate factory-recertified drives](https://www.seagate.com/products/seagate-recertified/)
+- [WD recertified drives](https://www.westerndigital.com/products/recertified)
+- [Refurbished HDD seller comparison — Tom's Hardware forum](https://forums.tomshardware.com/threads/best-affordable-12tb-refurbished-or-renewed-hard-drive-options-serverpartdeals-goharddrive-seagate-wd-etc.3864677/)
+- [16GB RAM price tracker — rampricesusa](https://rampricesusa.com/16gb-ram-prices)
