@@ -290,19 +290,32 @@ two-drive swap cheaper than a four-drive array is today.
 
 ### 8.5 Recommendation
 
-**F2-425 Plus + 6 TB recertified SATA enterprise drives** — both of them if $722 is acceptable
-(P1), otherwise one now and `zpool attach` the second when HDD prices ease (P2, $552, inside the
-original budget). Do not buy the ST4000NM0023 (SAS, incompatible) or the RE4 2 TB (2010 design,
+**F2-425 Plus ($382) + 6 TB recertified SATA enterprise drives** — both of them if $722 is
+acceptable (P1), otherwise one now and `zpool attach` the second when HDD prices ease (P2, $552,
+inside the original budget). *(Confirmed 2026-08-20 after the DXP2800 turned out to be $369, not
+$297 — see §9.0.)* Do not buy the ST4000NM0023 (SAS, incompatible) or the RE4 2 TB (2010 design,
 worst $/TB tier). Do not buy the base F2-425 unless Immich's ML features are being given up — the
 RAM upgrade it needs costs more than the difference to the Plus.
 
 ## 9. Cheaper alternatives to the TerraMaster
 
-### 9.1 The winner: UGREEN NASync DXP2800 — $297
+### 9.0 CORRECTION (same day): the DXP2800 is $369, not $297
+
+The $297 figure came from the 2026-08-19 research, which took it from a **Slickdeals post dated
+October 2025** — a sale price, not a current one. **Amazon today: $369.** The DXP2800 has genuinely
+traded at $296.99 before, so it is worth a camelcamelcamel price alert, but it cannot be planned
+around at that number.
+
+At **$369 vs $382 the gap is $13**, and for that $13 the F2-425 Plus gives a third M.2 slot, dual
+5GbE instead of a single 2.5GbE, and the newer N150. **The DXP2800 is no longer the better buy — the
+F2-425 Plus is.** §9.1 below is kept for the spec comparison and stands if the DXP2800 goes on sale
+again.
+
+### 9.1 UGREEN NASync DXP2800 — $369 now, $297 on sale
 
 | | UGREEN DXP2800 | TerraMaster F2-425 Plus |
 |---|---|---|
-| Price (Amazon/Walmart) | **$297** | $382 |
+| Price (Amazon) | **$369** ($297 seen on sale, Oct 2025) | $382 |
 | CPU | Intel N100 | Intel N150 |
 | RAM | **8 GB DDR5**, 1 SODIMM, upgradeable | 8 GB DDR5, upgradeable to 32 GB |
 | M.2 NVMe | **2×** | 3× (PCIe 3.0 ×1) |
@@ -311,7 +324,7 @@ RAM upgrade it needs costs more than the difference to the Plus.
 | OS storage | 32 GB soldered eMMC (holds UGOS) | — |
 | Third-party OS | **Officially permitted, warranty intact** | Officially permitted |
 
-**Saves $85 and loses very little that matters here.** The N100→N150 gap is negligible for Immich
+**At its $297 sale price it saves $85 and loses very little that matters here; at $369 it saves $13 and loses more than that.** The N100→N150 gap is negligible for Immich
 (both have the same QSV-capable iGPU generation), and 2.5GbE vs 5GbE is irrelevant on a gigabit
 home LAN — a 2-drive HDD mirror cannot saturate 2.5GbE anyway. Proxmox and TrueNAS installs on the
 DXP2800 are widely documented; the SATA bays and M.2 slots do not share a controller path. The
@@ -353,7 +366,24 @@ about three times as much per TB. What the spare slots are genuinely worth:
   faster. **It must be mirrored**: losing an unmirrored special vdev destroys the entire pool. Two
   M.2 slots is exactly enough; do not do this with one.
 
-### 9.5 Not worth considering
+### 9.5 UGREEN NASync DH2300 — $227 — reject
+
+Cheap, but architecturally a dead end for this project: **Rockchip RK3576, 8-core ARM**, 4 GB
+LPDDR4X **soldered** (not upgradeable), single **1 GbE**, 32 GB eMMC, RAID 0/1/JBOD in UGOS only.
+
+**Proxmox VE and TrueNAS are x86-64 only and cannot be installed on it.** That removes the entire
+decided software plan — PVE + ZFS, PBS on the NAS, Immich in a VM — and Immich's machine-learning
+(faces, smart search) on an RK3576 with 4 GB would be unusable even if it ran. It is a good little
+appliance for someone who wants UGOS and a photo backup target; it is not this project's machine.
+
+### 9.6 On hot-swap (noted 2026-08-20)
+
+Hot-swap is irrelevant here — this NAS can be powered down to change a drive. That removes the main
+objection to the **Aoostar WTR Pro** in §9.2, which is now a legitimate 4-bay option at
+**$279 + $90–150 RAM = $369–429**, the same money as a 2-bay F2-425 Plus. What remains against it:
+one M.2 slot only, and AliExpress-direct warranty/RMA.
+
+### 9.7 Not worth considering
 
 **ARM boxes** (Immich ML plus Proxmox wants x86-64), **NVMe-only NAS** such as the Beelink ME mini
 (NAND $/TB is the worst it has been in years), and **any mini-PC + USB DAS** combination — the
