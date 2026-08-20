@@ -195,6 +195,107 @@ Two drives of the **same nominal capacity and RPM class**, from **different lots
 brands**. If the recertified route (build B) is taken, ask the reseller for drives from different
 batches and check SMART power-on hours on both before building the pool.
 
+## 8. Evaluating the actual Amazon candidates (2026-08-20)
+
+### 8.1 Correction: the F2-425 / F4-425 specs in the 2026-08-19 research were wrong
+
+That doc listed the F2-425 and F4-425 as **Intel N150 with 8 GB DDR5**. They are not. Verified
+against TerraMaster's store, the F4-425 datasheet and reviews:
+
+| Model | CPU | RAM (stock) | RAM max | M.2 NVMe | LAN | Amazon price |
+|---|---|---|---|---|---|---|
+| **F2-425** | Intel **N5095** (Jasper Lake, 2021) | **4 GB DDR4**, 1 SODIMM | 16 GB | **none** | 1× 2.5GbE | **$254** |
+| **F4-425** | Intel **N5095** | **4 GB DDR4**, 1 SODIMM | 16 GB | **none** | 1× 2.5GbE | **$365** |
+| **F2-425 Plus** | Intel **N150** (Alder Lake-N) | **8 GB DDR5** | **32 GB** | **3× M.2 2280** (PCIe 3.0 ×1) | **2× 5GbE** | **$382** |
+| F4-425 Plus | Intel N150 | 16 GB DDR5 | 32 GB | 3× M.2 | 2× 5GbE | $493 |
+
+Only the **Plus** models are the N150/DDR5/NVMe machines. Two consequences for this project:
+
+- **The NVMe line item in builds A–D of the 2026-08-19 doc was unbuildable** — the base F2-425 and
+  F4-425 have nowhere to put it. On those, Proxmox root would have to live on the HDD mirror
+  itself (workable, but Immich's PostgreSQL and thumbnail cache then sit on spinning rust).
+- **4 GB is not enough** for Proxmox + ZFS ARC + Immich with machine learning. It would have to be
+  upgraded, and a **16 GB DDR4 SODIMM now costs $150–219** (median $219, Aug 2026 — DRAM is in the
+  same shortage as everything else).
+
+### 8.2 The decisive arithmetic
+
+> **F2-425 ($254) + a 16 GB DDR4 stick ($150–219) = $404–473 — more than the F2-425 Plus at $382,
+> for a worse machine.**
+
+The Plus wins on every axis at a lower total: newer CPU, DDR5 expandable to 32 GB, dual 5GbE,
+HDMI 2.0 4K60 (which also confirms a third-party OS install is practical), and three M.2 slots that
+solve the Proxmox-boot problem — PVE on a small NVMe, both HDD bays free for the mirror. **The base
+F2-425 is only the right buy if 4 GB is genuinely lived with, i.e. Immich without ML (no face
+recognition, no smart search).**
+
+### 8.3 The two drives: one is incompatible, one is too old
+
+**Seagate ST4000NM0023, $96 — reject, it is a SAS drive.** The Amazon title says so: *"6Gbps SAS"*.
+This is exactly the trap flagged in §3 — the cheapest per-TB listings are SAS datacenter pulls.
+It will not connect to a TerraMaster (or any consumer NAS) without an HBA, and these chassis have
+no slot for one. It is also a Constellation ES.3, a 2012–2013 design.
+
+**WD RE4 WD2003FYYS 2 TB, $63 — reject on age and capacity tier.**
+- **Released February 2010** — a *sixteen-year-old* design. "Renewed" refers to the testing, not to
+  the age of the platters, bearings and spindle motor.
+- **SATA 3.0 Gb/s (SATA II)** — the interface generation before the one every other drive uses.
+- 7200 rpm enterprise mechanics: roughly double the idle power and clearly more audible than a
+  5400-class NAS drive, in a box that may sit in living space.
+- $63 / 2 TB = **$31.50/TB**, in the capacity tier that §2 identifies as the worst value on the
+  market. Four of them (RAIDZ1, 5.45 TiB, $252) is the "small drives in a bigger array" trap of §4,
+  made worse by putting sixteen-year-old mechanics under it.
+
+**The instinct is right, the drives are wrong.** Recertified enterprise *is* the sensible lever
+here — but from the 2015–2018 generation and in **SATA**, at 6 TB where $/TB is best (§2):
+HGST Ultrastar 7K6000 4 TB ~$130, Exos 7E8 4 TB $137–150, **Exos 7E8 / MDD 6 TB $160–180**.
+
+Also worth stating plainly: **no RAID is "error proof."** Redundancy covers *drive* failure. It
+does not cover deletion, corruption propagated by the filesystem, ransomware, PSU or controller
+failure, or theft — which is what BACKUP_A/B and Glacier are for. With older recertified drives the
+right response is not a fancier RAID level but ZFS checksums, monthly scrubs, SMART monitoring, and
+the offsite copy that already exists.
+
+### 8.4 Revised builds, with "start small and upgrade in a couple of years"
+
+Using recertified 6 TB SATA at ~$170 each. Usable figures are for a ZFS mirror.
+
+| Build | Parts | Total | Usable | Day-one full | Redundancy |
+|---|---|---|---|---|---|
+| **P1 — recommended** | F2-425 Plus $382 + 2×6 TB recert $340 | **$722** | 5.45 TiB | 57% | mirror |
+| **P2 — genuinely "start small"** | F2-425 Plus $382 + 1×6 TB recert $170 | **$552** | 5.45 TiB | 57% | **none until the twin is attached** |
+| P3 — cheapest with a mirror | F2-425 $254 + 2×6 TB recert $340 | $594 | 5.45 TiB | 57% | mirror, but **4 GB RAM** |
+| P3+ | P3 + 16 GB DDR4 later | $744–813 | — | — | worse than P1, costs more |
+| P4 — 4-bay | F4-425 $365 + 2×6 TB recert $340 | $705 | 5.45 TiB | 57% | mirror; 4 GB, no M.2, 2 bays spare |
+
+Add ~$60 for a 500 GB NVMe boot device on P1/P2 whenever convenient — it is optional at purchase
+time (PVE can boot from the HDD mirror and be moved later) and there are three free slots.
+
+**P2 deserves attention given the stated preference.** ZFS converts a single-disk vdev into a mirror
+online and non-destructively with `zpool attach` — no rebuild of the pool, no downtime, just a
+resilver. So P2 is not a dead end: it is P1 paid in two instalments, and the second instalment is
+the part whose price is most likely to *fall* (HDDs are at a two-year high; the chassis, RAM and
+NVMe markets are equally inflated but the chassis is the part that will not get cheaper in a way
+that rewards waiting). The cost is an unprotected interval — acceptable for the WDMyCloud content,
+which is still covered by BACKUP_A/B and Glacier, but **Time Machine would be its only copy** and
+should not be pointed at the NAS until the mirror is complete.
+
+**P4 (the 4-bay) is not the growth path it looks like** at these prices: it costs $111 more than the
+base 2-bay *and* still needs a $150–219 RAM upgrade to run Immich properly, ending at $855–924 —
+more than P1, on the older platform. The 4-bay only makes sense with the F4-425 **Plus** at $493
+(16 GB, 3× M.2), which is a $111 premium over the F2-425 Plus for two spare bays. Given usage that
+"should not grow very fast apart from Time Machine", 5.45 TiB at 57% full leaves ~2.3 TiB of
+headroom — several years at the stated rate — and by then post-shortage 12 TB drives will make a
+two-drive swap cheaper than a four-drive array is today.
+
+### 8.5 Recommendation
+
+**F2-425 Plus + 6 TB recertified SATA enterprise drives** — both of them if $722 is acceptable
+(P1), otherwise one now and `zpool attach` the second when HDD prices ease (P2, $552, inside the
+original budget). Do not buy the ST4000NM0023 (SAS, incompatible) or the RE4 2 TB (2010 design,
+worst $/TB tier). Do not buy the base F2-425 unless Immich's ML features are being given up — the
+RAM upgrade it needs costs more than the difference to the Plus.
+
 ## Sources
 
 - [ListofDisks — live US retailer HDD price tracker](https://www.listofdisks.com/)
@@ -204,3 +305,12 @@ batches and check SMART power-on hours on both before building the pool.
 - [DatacenterDisk — where to buy, live prices](https://datacenterdisk.com/where-to-buy)
 - [ServerPartDeals — manufacturer recertified drives](https://serverpartdeals.com/collections/manufacturer-recertified-drives)
 - [Disk-Scout — best NAS hard drives 2026](https://disk-scout.com/guides/best-nas-hard-drives)
+- [TerraMaster F2-425 official product page](https://www.terra-master.com/products/f2-425)
+- [TerraMaster F4-425 official product page](https://www.terra-master.com/products/f4-425)
+- [TerraMaster F2-425 Plus official product page](https://www.terra-master.com/products/f2-425-plus)
+- [itpro — TerraMaster F2-425 Plus review (N150, 8 GB DDR5, 3× M.2, dual 5GbE)](https://www.itpro.com/infrastructure/servers-and-storage/terramaster-f2-425-plus-review-a-versatile-desktop-nas-at-a-great-price)
+- [CNX Software — F2-425 Plus 3+2-bay teardown](https://www.cnx-software.com/2026/02/19/terramaster-f2-425-plus-32-bay-hybrid-nas-review-part-1-unboxing-teardown-drives-installation-and-first-boot/)
+- [NASCompares — TerraMaster F2-425 before you buy (N5095, 4 GB DDR4, 16 GB max)](https://nascompares.com/review/terramaster-f2-425-nas-before-you-buy/)
+- [Seagate ST4000NM0023 — Constellation ES.3 SAS 6Gb/s](https://www.bhphotovideo.com/c/product/929904-REG/seagate_st4000nm0023_4tb_constellation_es_3_sas.html)
+- [WD RE4 WD2003FYYS — SATA II, released February 2010](https://www.amazon.com/RE4-Enterprise-Hard-Drive-WD2003FYYS/dp/B002XW44QY)
+- [Tom's Hardware — RAM price index 2026](https://www.tomshardware.com/pc-components/ram/ram-price-index-2026-lowest-price-on-ddr5-and-ddr4-memory-of-all-capacities)
