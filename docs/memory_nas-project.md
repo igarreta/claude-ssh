@@ -2,6 +2,11 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
+> **Resume here**: research is complete; the project is paused on one decision — which of builds
+> A/B/C/D in [[docs/2026-08-19_nas-hardware-research.md]] §9 to buy. Build B is the only one near
+> the USD 600 budget and depends on an unverified recertified-enterprise 8 TB price. Separately,
+> docker03's replacement LXC on gr-srv03 is decided but not yet built.
+
 ## Scope (what the NAS must absorb)
 
 1. **WDMyCloud live shares** — becomes the primary copy (photos, videos, documents).
