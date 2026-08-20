@@ -395,7 +395,7 @@ USB-storage failure history on gr-srv03 is documented and does not need repeatin
 |---|---|---|---|
 | **goHardDrive** | Recertified / white-label enterprise; 15+ years trading | Often **3–5 years** | **First stop** — longest warranty at similar prices |
 | **ServerPartDeals (SPD)** | The r/DataHoarder default; manufacturer-recertified Exos / Ultrastar | Typically **2 years**, seller-fulfilled | Best selection and the deepest discounts |
-| **Seagate Recertified** / **WD Recertified** (direct) | Factory-recertified, straight from the maker | Short — Seagate's is **6 months** | Best provenance, worst warranty |
+| **Seagate Recertified** / **WD Recertified** (direct) | Factory-recertified, straight from the maker | Seagate **6 months**, WD **1 year** | Best provenance, thin stock — see §10.1 |
 | **Amazon Renewed / Newegg refurb** | Convenience channel, mixed provenance | Varies, usually 1 yr + easy returns | Only when the return window is the real protection |
 | **eBay datacenter pulls** | 50–70% off retail, provenance unknown | None to nominal | Only if you enjoy the gamble |
 | Disctech, Tech-Supply Direct, Bargain Hardware (EU) | Niche resellers | Varies | Fallbacks / EU-side buying |
@@ -417,6 +417,26 @@ USB-storage failure history on gr-srv03 is documented and does not need repeatin
    separate batches.
 6. **SATA only.** Repeating it because the two candidates in §8.3 both failed on either interface or
    age: filter every listing to SATA before looking at the price.
+
+### 10.1 The manufacturer-direct stores (checked 2026-08-20)
+
+**Seagate** — <https://www.seagate.com/products/seagate-recertified/>, with the enterprise range at
+<https://www.seagate.com/products/seagate-recertified/exos-recertified/>. Drives are data-sanitised,
+factory-tested and re-flashed, with a **6-month warranty**. **The Exos recertified page is currently
+showing "no longer in stock"** — there is an email-notification signup on it. US store only.
+
+**Western Digital** — <https://www.westerndigital.com/products/recertified> (wd.com/products/recertified
+redirects there). Advertised up to 40% off with a **1-year limited warranty from WD** — twice
+Seagate's, and the best warranty available from any manufacturer-direct channel. Note recertified
+items are **excluded from WD's free 2-day shipping** offer, and the store ships within the
+contiguous US only.
+
+**How to use this channel realistically.** Both stores are US-only and need a US delivery address —
+fine given the drives are being hand-carried anyway. But **neither reliably stocks the 6 TB SATA
+tier**: manufacturer recert inventory is fed by datacenter returns, which skew heavily to 12 TB+, and
+Seagate's enterprise recert stock is empty right now. Treat the direct stores as a **first check,
+not a plan**: look there for provenance and WD's 1-year warranty, and expect to buy from
+goHardDrive or ServerPartDeals in practice. Setting the Seagate back-in-stock alert costs nothing.
 
 **Target**: a **6 TB SATA manufacturer-recertified enterprise drive** (Exos 7E8, Ultrastar 7K6000 /
 He-class) at **$160–180**, from goHardDrive or ServerPartDeals.
