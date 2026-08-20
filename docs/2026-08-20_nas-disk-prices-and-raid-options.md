@@ -152,6 +152,49 @@ TerraMaster or UGREEN. If either turns up as an option in a product menu, it is 
 2-bay → 4-bay is a **$110** step (F2-425 → F4-425). The F4-425 Plus at $493 remains cheaper than
 F4-425 + a $209 16 GB SODIMM.
 
+## 7. Must the array's drives match?
+
+**Same size — effectively yes. Same model — no, and deliberately not.**
+
+### Size
+
+- In a ZFS mirror or RAIDZ vdev, **usable capacity = smallest member** (times the layout's
+  efficiency). A 4 TB + 6 TB mirror yields 3.64 TiB and silently wastes 2 TB. ZFS permits it; it
+  just doesn't pay.
+- The real trap is at **replacement time**: "4 TB" is not an exact LBA count, and vendors differ by
+  a few MB. If the replacement is marginally *smaller* than the drive it replaces, `zpool replace`
+  refuses. Modern ZFS reserves a small slack margin, but the safe rule is **replace with the same
+  model or a larger drive** — and keep a note of the exact model bought.
+- Growing later: both mirror members must be replaced with the larger drive before capacity
+  appears, and `zpool set autoexpand=on` must be set (or `zpool online -e` run afterwards).
+- Synology **SHR** and TerraMaster **TRAID** exist precisely to make mismatched sizes useful. The
+  decision to run Proxmox + ZFS (2026-08-19) gives that lever up — a deliberate trade for ZFS
+  checksums, snapshots and send/recv.
+
+### Model and brand
+
+- Not required. Any CMR SATA drive of the same capacity pairs fine — a WD Red Plus mirrored with a
+  Seagate IronWolf is a perfectly valid vdev.
+- **Mixing is mildly preferable.** Drives from one production lot share wear characteristics and
+  tend to fail near each other — precisely the correlated failure a mirror does not protect
+  against. Different lots, or different vendors, decorrelates it. This matters most for
+  **recertified enterprise drives**, which frequently arrive as consecutive pulls from the same
+  rack with near-identical power-on hours.
+
+### What must match
+
+- **CMR throughout.** Never mix an SMR drive into an array — resilvers crawl or fail outright.
+- **RPM class**, in practice. A 5400 + 7200 mirror writes at the slower drive's pace *and* carries
+  the 7200's noise and heat: both costs, neither benefit.
+- **ashift=12** at pool creation. It is a property of the pool, not of the disks, cannot be changed
+  afterwards, and is the default for any modern drive.
+
+### For this build
+
+Two drives of the **same nominal capacity and RPM class**, from **different lots or different
+brands**. If the recertified route (build B) is taken, ask the reseller for drives from different
+batches and check SMART power-on hours on both before building the pool.
+
 ## Sources
 
 - [ListofDisks — live US retailer HDD price tracker](https://www.listofdisks.com/)
