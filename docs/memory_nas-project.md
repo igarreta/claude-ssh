@@ -71,6 +71,13 @@ usable, 57% day one) is the realistic floor. The offsite copy at ~2.75 TB on a 4
 
 ## Open decisions
 
+**Decided 2026-08-19**: gr-srv03 **cannot** host the NAS role with only new drives — its 12 GB
+LPDDR5 is soldered (already 9.1/11.7 GB used with 6.5 GB swapped), its single M.2 2242 SATA slot
+is occupied so any drives would be USB on the bus with the documented Zigbee-drop history, and
+PBS there would back the host up to itself. **docker03 will be replaced by an LXC on gr-srv03**
+(not by the NAS), returning ~4.5 GB of allocation and keeping the Zigbee dongle where it is. The
+NAS spec is unchanged by that decision.
+
 **Decided by the 2026-08-19 research** (see [[docs/2026-08-19_nas-hardware-research.md]]):
 DIY loses at 2 bays (turnkey is cheaper, smaller, lighter); recommended OS is **Proxmox VE +
 ZFS mirror**; recommended **PBS placement is on the NAS with a local datastore** (NFS-backed
@@ -79,12 +86,14 @@ gr-srv03, which it protects).
 
 **Still open:**
 
-1. **The budget collision** — at Aug 2026 prices, <USD 600 and adequate capacity are not
-   simultaneously satisfiable with new drives. Choose: (a) raise budget to ~$750 for
-   F2-425 + 2×6 TB new, (b) recertified enterprise drives to stay under $600 (noise, seller
-   warranty), or (c) shrink scope. **This is the blocking decision.**
-2. **2-bay vs 4-bay chassis** — F2-425 $255 vs F4-425 $365; 4-bay allows adding disks one at a
-   time, which is worth more than usual during a drive shortage.
+1. **The budget collision** — HDD, DRAM *and* NAND are all in shortage. Re-costed builds:
+   **A** F2-425 + NVMe + 2×6 TB new = **$775–835**; **B** same with 2×8 TB recertified enterprise
+   = **~$615**; **C** F4-425 + 2×6 TB = $885–945; **D** F4-425 Plus (16 GB built in) + 2×6 TB =
+   $1013–1073. **Only build B approaches <USD 600**, and only if recert 8 TB drives are ~$150.
+   **This is the blocking decision.**
+2. **2-bay vs 4-bay, and 8 GB vs 16 GB** — a 16 GB DDR5 SODIMM costs ~$209 on its own, so RAM
+   must either be lived with at 8 GB (ARC capped at 2 GB, Immich ML at concurrency 1) or bought
+   pre-installed via the F4-425 Plus. Losing Immich's face/smart search is the real cost of 8 GB.
 3. **Verification items before purchase** — recertified enterprise 8 TB street price,
    third-party OS support/BIOS/HDMI on the chosen chassis, M.2 slot count, noise figures.
 4. **Does the BACKUP_A/B rotation move from gr-srv03 to the NAS**, or stay where it is?

@@ -139,3 +139,111 @@ install rather than an architecture problem.
 - [UGREEN NASync DXP2800 product page](https://ai.ugreen.com/products/ugreen-nasync-dxp2800-nas-storage)
 - [TrueNAS vs UnRAID — Which Should You Choose? (NAS Compares)](https://nascompares.com/2026/08/05/truenas-vs-unraid-which-should-you-choose/)
 - [Seagate IronWolf ST6000VN006 listing](https://www.broadbandbuyer.com/products/47366-seagate-st6000vn006/)
+
+---
+
+# Addendum (2026-08-19): gr-srv03 as the NAS host, and re-cost
+
+## 8. Can gr-srv03 do the job with only new drives? — **No**
+
+Evaluated at the user's request, since docker03 is being decommissioned. Measured on the host:
+
+| Check | Result |
+|---|---|
+| Model | GMKtec NucBox G5, Intel N97 (4 cores) |
+| RAM | 12 GB LPDDR5, reported as `Form Factor: Row Of Chips` (4×3 GB) — **soldered, no SODIMM slot, no upgrade path** |
+| RAM in use | 9.1 GB of 11.7 GB, **6.5 GB in swap** |
+| Guest allocation | 16.1 GB allocated to running guests vs 11.7 GB physical |
+| Storage expansion | **One M.2 2242 SATA slot, occupied** by the 256 GB boot SSD, plus microSD. No 2.5" bay, no M.2 2280, single SATA port in use |
+| USB | 3 physical ports, all occupied; documented hot-plug instability |
+
+Three blockers:
+
+1. **RAM is soldered and already oversubscribed.** Retiring docker03 returns 6 GB of *allocation*
+   (~3.1 GB resident), which fixes today's overcommit — worth doing on its own merits. But the NAS
+   role needs ZFS ARC + Immich (6 GB with ML, 4 GB without) + PBS + Samba ≈ 6–10 GB, against the
+   ~3–4 GB freed. It does not fit and **can never be made to fit**.
+2. **Nowhere to put the drives.** With the only internal slot occupied, "some new drives" can only
+   mean USB — on the bus with the documented Zigbee-drop history (BACKUP_A/B hot-plug transients on
+   the shared xHCI 5V rail, 7/7 episodes, see [[docs/memory_gr-srv03_powered-hub-instability.md]]).
+   That is the worst available home for the primary copy of irreplaceable family photos.
+3. **PBS would back the host up to itself** — losing the failure separation that motivated it.
+
+**Decision**: the NAS is separate hardware. **docker03 is replaced by an LXC on gr-srv03**, not by
+the NAS.
+
+### Consequences of the docker03 → LXC decision
+
+docker03 currently runs: `zigbee2mqtt`, `cloudflaretunnel` (duplicated by LXC 103), `mosquitto`
+(superseded by LXC 105, cutover pending), `portainer`, `uptime-kuma`, `beszel-agent`,
+`mqtt-explorer`. All small.
+
+- A replacement LXC sized ~1.5–2 GB covers the lot → **net ~4.5 GB of allocation returned** to
+  gr-srv03, which should stop the swapping.
+- The 64 GB VM disk leaves the LVM-thin pool, which also shrinks the future PBS datastore (the
+  171 GB `vm-containers` directory is dominated by it).
+- **The Zigbee dongle stays on gr-srv03**, so zigbee2mqtt stays local — no dongle relocation, and
+  USB passthrough into an LXC (by-id device entry) is more robust than the VM passthrough that
+  caused the 2026-07-15 outage ([[docs/memory_docker03_zigbee2mqtt.md]]).
+- The NAS spec is therefore **unchanged** by the decommission: it still needs only Immich + PBS +
+  Samba + ZFS.
+
+## 9. Re-cost (August 2026 prices)
+
+**All three component markets are in shortage simultaneously**: HDD +46% since Sep 2025,
+DRAM +89–110% in 2026 (16 GB DDR5 SODIMM ≈ **$209**), NAND ~+100% (1 TB NVMe ≈ **$90**, was ~$45).
+None are expected to recover before 2027.
+
+**Implication: do not plan on a RAM upgrade.** A 16 GB stick costs most of a chassis. The NAS must
+run within its stock 8 GB, or the RAM must come pre-installed (see the F4-425 Plus below).
+
+### Chassis
+
+| Model | Bays | RAM | M.2 | Price |
+|---|---|---|---|---|
+| TerraMaster F2-425 | 2 | 8 GB DDR5 SODIMM | verify | **$255** |
+| UGREEN NASync DXP2800 | 2 | 8 GB DDR5 | 2× | **$297** |
+| TerraMaster F4-425 | 4 | 8 GB DDR5 | verify | **$365** |
+| TerraMaster F4-425 Plus | 4 | **16 GB DDR5** | 3× | **$493** (15% off) |
+
+TerraMaster explicitly permits installing a third-party OS **without voiding the warranty**, and
+the boxes have HDMI 2.0 out for the installer — so Proxmox VE is a supported path. A boot NVMe is
+effectively required (installing the host onto the HDDs would block spin-down and complicate the
+ZFS mirror).
+
+Note: at $493 with 16 GB pre-installed, the F4-425 Plus is **cheaper than F4-425 + a $209 stick**
+($574). If 16 GB is wanted, buy it built in.
+
+### Builds
+
+| Build | Components | Total |
+|---|---|---|
+| **A — cheapest workable** | F2-425 $255 + 500 GB NVMe $60 + 2×6 TB new $460–520 | **$775–835** |
+| **B — budget-forced** | F2-425 $255 + NVMe $60 + 2×8 TB recertified enterprise ~$300 | **~$615** |
+| **C — growth path** | F4-425 $365 + NVMe $60 + 2×6 TB new $460–520 | **$885–945** |
+| **D — RAM-comfortable** | F4-425 Plus $493 + NVMe $60 + 2×6 TB new $460–520 | **$1013–1073** |
+
+**The <USD 600 target is now reachable only via build B**, and only if recertified enterprise 8 TB
+drives really land near $150 (unverified — §7). Everything else starts at $775.
+
+### Living within 8 GB on the NAS
+
+Feasible, but fully committed, and it needs deliberate tuning:
+
+- **Cap the ZFS ARC at ~2 GB** (`zfs_arc_max`). A 6 TB pool of mostly-cold media does not need more;
+  the "1 GB per TB" guideline applies to dedup-heavy use, which this is not.
+- **Immich ~4 GB** with ML enabled but job concurrency set to 1. If it thrashes, either drop ML
+  (`IMMICH_MACHINE_LEARNING_ENABLED=false`, ~4 GB total, loses face/smart search) or add RAM later
+  when DRAM prices recover.
+- **PBS ~1–1.5 GB**, **Samba LXC ~0.5 GB**.
+
+If losing face recognition and smart search would be a disappointment, that is the argument for
+build D — the 16 GB is what makes Immich comfortable, not the fourth bay.
+
+## Additional sources
+
+- [RAM price tracking 2026 — Tom's Hardware](https://www.tomshardware.com/pc-components/ram/ram-price-index-2026-lowest-price-on-ddr5-and-ddr4-memory-of-all-capacities)
+- [SSD prices double as NAND shortage bites](https://tech-insider.org/ssd-prices-nand-shortage-2026/)
+- [Immich requirements](https://docs.immich.app/install/requirements/)
+- [TerraMaster F2-425 Plus review — itpro](https://www.itpro.com/infrastructure/servers-and-storage/terramaster-f2-425-plus-review-a-versatile-desktop-nas-at-a-great-price)
+- [Installing TrueNAS on TerraMaster F4-425](https://blog.bitscry.com/2025/11/08/installing-truenas-on-terramaster-f4-425/)
