@@ -262,8 +262,8 @@ Using recertified 6 TB SATA at ~$170 each. Usable figures are for a ZFS mirror.
 
 | Build | Parts | Total | Usable | Day-one full | Redundancy |
 |---|---|---|---|---|---|
-| **P1 — recommended** | F2-425 Plus $382 + 2×6 TB recert $340 | **$722** | 5.45 TiB | 57% | mirror |
-| **P2 — genuinely "start small"** | F2-425 Plus $382 + 1×6 TB recert $170 | **$552** | 5.45 TiB | 57% | **none until the twin is attached** |
+| **P1 — recommended** | F2-425 Plus $382 + 2×6 TB recert $370 | **$752** | 5.45 TiB | 57% | mirror |
+| **P2 — genuinely "start small"** | F2-425 Plus $382 + 1×6 TB recert $180 | **$562** | 5.45 TiB | 57% | **none until the twin is attached** |
 | P3 — cheapest with a mirror | F2-425 $254 + 2×6 TB recert $340 | $594 | 5.45 TiB | 57% | mirror, but **4 GB RAM** |
 | P3+ | P3 + 16 GB DDR4 later | $744–813 | — | — | worse than P1, costs more |
 | P4 — 4-bay | F4-425 $365 + 2×6 TB recert $340 | $705 | 5.45 TiB | 57% | mirror; 4 GB, no M.2, 2 bays spare |
@@ -437,6 +437,36 @@ tier**: manufacturer recert inventory is fed by datacenter returns, which skew h
 Seagate's enterprise recert stock is empty right now. Treat the direct stores as a **first check,
 not a plan**: look there for provenance and WD's 1-year warranty, and expect to buy from
 goHardDrive or ServerPartDeals in practice. Setting the Seagate back-in-stock alert costs nothing.
+
+### 10.2 Live stock check, 2026-08-20
+
+**ServerPartDeals: 6 TB SATA is out of stock across the board.** Every 6 TB Exos listing checked is
+unavailable — ST6000NM021A ($114.99, $19.16/TB), ST6000NM0115 ($210) and ST6000NM019B ($210) all
+show "out of stock / request a quote". That $114.99 is a ghost price: it is what the tier cost
+before the shortage, and it is what makes SPD look cheapest in aggregators that scrape listings
+without checking availability. **SPD is not a source for 6 TB today.**
+
+**goHardDrive has real, in-stock 6 TB SATA inventory**, all 7200 rpm enterprise, free shipping:
+
+| Drive | Condition | Warranty | Price | $/TB |
+|---|---|---|---|---|
+| **HGST Ultrastar 7K6000** HUS726060ALE610 | Certified Refurbished | **3 yr** | **$179.95** | $30.00 |
+| **Seagate Exos 7E8** ST6000NM0115 (512e, 256 MB) | Enterprise | **5 yr** | **$189.95** | $31.66 |
+| **Toshiba MG04ACA600E** | Enterprise | **5 yr** | $189.95 | $31.66 |
+| Toshiba MG04ACA600E | Certified Refurbished | 3 yr | $179.95 | $30.00 |
+| MDD / white-label 6 TB | Renewed / standard | 1–3 yr | $159.95 | $26.66 |
+
+- [Ultrastar 7K6000 6 TB — goHardDrive](https://www.goHardDrive.com/HGST-Ultrastar-0F23001-6TB-7200RPM-Hard-Drive-p/g01-1079.htm)
+- [Exos 7E8 ST6000NM0115 6 TB — goHardDrive](https://www.goHardDrive.com/Seagate-ST6000NM0115-6TB-128MB-SATA-Enterprise-HDD-p/g01-1326.htm)
+- [Toshiba MG04ACA600E 6 TB — goHardDrive](https://www.goHardDrive.com/Toshiba-MG04ACA600E-6TB-64MB-Cache-3-5-Hard-Drive-p/g01-1148.htm)
+
+**Buy**: one **Ultrastar 7K6000 at $179.95** + one **Exos 7E8 at $189.95** = **$369.90**. Two
+different manufacturers satisfies the different-lots rule of §7 for free, and both carry 3–5 year
+warranties — better terms than anything the manufacturer-direct stores offer. Skip the $159.95
+white-label drives: saving $20–30 on an unbranded drive is the wrong trade in a two-drive mirror.
+
+This is **$30 above** the $340 assumed in §8.4, so the builds become **P1 = $752** and
+**P2 = $562** (one drive now). $/TB lands at $30–32, slightly above the $27–30 estimated in §2.
 
 **Target**: a **6 TB SATA manufacturer-recertified enterprise drive** (Exos 7E8, Ultrastar 7K6000 /
 He-class) at **$160–180**, from goHardDrive or ServerPartDeals.
