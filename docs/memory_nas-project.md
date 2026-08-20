@@ -105,6 +105,8 @@ gr-srv03, which it protects).
 
 ## Related
 
+[[docs/2026-08-20_nas-disk-prices-and-raid-options.md]] — 2/3/4/6/8 TB street prices, what to look
+for in a drive, and the 1-disk vs 2-disk mirror vs 4-disk RAIDZ comparison costed for this project.
 [[docs/2026-08-19_nas-hardware-research.md]] — market context, hardware/OS/PBS comparison and the
 budget analysis. [[docs/memory_backup_schedule.md]] — the existing backup windows and disk-wake constraints any
 new NAS-side job must respect. [[docs/memory_ceres_wdmycloud_glacier.md]] — the WDMyCloud→S3
