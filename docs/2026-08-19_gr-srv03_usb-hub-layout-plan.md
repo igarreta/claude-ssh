@@ -229,6 +229,17 @@ swap the cable early rather than late.
   pulling a drive. That gives a guaranteed clean detach and a near-zero removal
   transient. (Relevant: the 08-18 19:47 removal was a live yank of a mounted
   filesystem — JBD2 I/O error and EXT4 journal replay.)
+- **Assert port power on, never assume it** (added 2026-08-20). Run
+  `uhubctl -l <hub-location> -a on` at the top of the 00:30 remount path and once at
+  boot, before any mount is attempted. Without it, an outage landing between the 15:00
+  unmount and the physical swap could leave a port switched off, and the resulting
+  failure is indistinguishable from the normal offsite-rotation "drive missing" state.
+  With it, no hub's power-on default matters — which is why that property was retired
+  as a purchase criterion. See
+  [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md).
+- **Do not power the backup drives off between nightly runs.** APM already spins them
+  down after ~10 min idle; cutting VBUS instead would add a spin-up cycle per night,
+  and spin-up count is the dominant wear metric on a 2.5" HDD.
 - Chipset: VL817 / GL3510-class USB 3.2. **Not** Terminus-class.
 
 **Dongle hub**

@@ -1,5 +1,9 @@
 # gr-srv03 USB hub comparison — storage hub + dongle hub (2026-08-19)
 
+> **Updated 2026-08-20** — the outage-default criterion has been retired; see
+> [The outage question, retired](#the-outage-question-retired-2026-08-20).
+> The decision is unchanged, but it now rests on different grounds.
+
 **Status:** Storage hub DECIDED, not yet purchased. Dongle hub still open.
 Selects the hubs for
 [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md).
@@ -15,16 +19,21 @@ three are recorded at the bottom so they are not re-evaluated later.
 | PSU | 12 V/3 A (36 W) | 12 V/4 A (48 W) | 12 V/5 A (60 W) |
 | Ports | 10 x USB 3.0 | 10 (3x10G + 7x5G) | 10 (3x10G + 7x5G) |
 | Switches | **Mechanical, latching** | **Mechanical** | Touch (MCU latch) |
-| Survives power outage | **Yes — physical state** | **Yes — physical state** | **Unknown** |
+| Survives power outage | **Yes — physical state** | **Yes — physical state** | Vendor states ports resume ON (2026-08-20) |
 | PPPS / uhubctl | **Verified**, all ports, ~2.5 s | Unverified, chipset unknown | Verified (all but 2nd USB-C) |
 | Chipset | Realtek `0bda:0411` | Unknown | Realtek `0bda:0423` |
 
+> The *Survives power outage* row is kept for the record only — it was the row
+> that originally decided this table, and as of 2026-08-20 it decides nothing.
+
 ## Decision: Rosonway RSH-A10
 
-The only one of the three satisfying both hard requirements with evidence —
-mechanical switches that cannot forget their state across an outage, and per-port
-power switching independently confirmed on every port. Leave every switch
+The cheapest candidate with **per-port power switching independently verified on
+every port**, a real 12 V brick, and a USB-A upstream. Leave every switch
 physically ON and drive the ports with `uhubctl`.
+
+Since 2026-08-20 that verified-PPPS line is the whole argument. The mechanical
+switches are a mild bonus, no longer the deciding factor.
 
 - 36 W is the smallest budget here but ample: two 2.5" drives peak around 20 W
   including simultaneous spin-up.
@@ -35,34 +44,64 @@ physically ON and drive the ports with `uhubctl`.
   uplink. Irrelevant for two mechanical drives, and precisely why the Kingston
   XS1000 (~1 GB/s) stays on a direct host port.
 
-## Why the outage question decided it
+## The outage question, retired (2026-08-20)
 
-gr-srv03 has already lost power once (2026-07-12). A hub whose ports come back
-OFF after an outage would silently leave the backup drives unpowered until
-someone is physically at the machine — a failure mode that would present as
-"backups stopped" days later.
+This section originally decided the comparison. It no longer does.
 
-RSHTECH does not document the power-on default of its touch buttons anywhere in
-the product page or manual, and no first-hand power-cycle test could be found.
-The touch latch is known to be **separate from** the hub's USB per-port power
-switching: the octoprobe assessment of the sibling ST07C records that *"if
-powered off manually, remote control does not work anymore; if powered off
-automatically, manual control does not work anymore."* That is MCU-held state
-with no non-volatile storage documented. It most likely resets to ON, but
-"most likely" is the wrong confidence level for this requirement.
+**The original worry.** gr-srv03 has already lost power once (2026-07-12). A hub
+whose ports come back OFF after an outage would silently leave the backup drives
+unpowered until someone is physically at the machine — presenting as "backups
+stopped" days later, and indistinguishable from the normal offsite-rotation
+"drive missing" state.
 
-A mechanical switch is physical state and cannot forget. It also does **not**
-cost per-port software control: on the RSH-A10 the octoprobe assessment found
-power switching *"works fine on every port"*, with the caveat that it *"only
-works when the button is in the pressed state."* Switch ON permanently, control
-in software.
+**Why it does not survive scrutiny.** A *persistent* off-state barely exists in
+this design:
+
+| Use of `uhubctl` power-off | Persistent? |
+|---|---|
+| Reset a wedged Zigbee dongle (2026-07-15 recovery watchdog) | No — momentary off→on |
+| Cut VBUS after the 15:00 unmount, before pulling the drive for the offsite swap | Yes, but only 15:00 → swap window |
+| Leave BACKUP_A/B unpowered between nightly backups | **Never the plan, and would be wrong** |
+
+That third row deserves the explicit "no": APM already spins the Toshibas down
+after ~10 min idle (see
+[memory_backup_schedule.md](memory_backup_schedule.md)), and cutting power
+outright would add a spin-up cycle per night — spin-up count being the dominant
+wear metric on a 2.5" HDD. It would trade drive life for nothing.
+
+So the entire exposure is an outage landing inside the afternoon swap window.
+
+**And that dissolves with one line.** Assert power on before mounting, rather
+than trusting any hub's power-on default:
+
+```sh
+uhubctl -l <hub-location> -a on
+```
+
+placed at the top of the 00:30 remount path and at boot. An outage reboots
+gr-srv03 anyway, so boot is exactly where the assertion runs — the failure mode
+and its remedy arrive together. With that in place **no hub's power-on default
+matters**, MCU or mechanical.
+
+**Retained as background.** RSHTECH support confirmed on 2026-08-20 that a port
+which was ON before power loss stays ON after power is restored. This is a
+support statement, not a power-cycle test, and it does not cover the case of a
+port that `uhubctl` (not the button) had switched off — on the sibling ST07C the
+octoprobe assessment records that *"if powered off manually, remote control does
+not work anymore; if powered off automatically, manual control does not work
+anymore,"* which is MCU-held state with no documented non-volatile storage. The
+boot-time assertion above makes the question moot, so it was not pursued further.
+
+**What actually discriminates now:** verified PPPS, adequate 5 V budget, no
+backfeed into the host port, USB-A upstream, price.
 
 ## Rejected
 
 | Hub | $ | Reason |
 |---|---|---|
 | Leinsis KZW-U10217B | 34 | Better brick, but no evidence it supports PPPS at all |
-| RSHTECH RSH-ST10C-6 | 40 | Best brick + verified PPPS, but undocumented power-on default on touch latches |
+| RSHTECH RSH-ST10C-6 | 40 | Best brick + verified PPPS, but $3 more than the A10 for 60 W and 10 Gbps ports that this host cannot use |
+| RSHTECH RSH-ST10P | ? | **Not in the uhubctl list at all** — PPPS unverified, which is now the criterion that matters. USB-C upstream (host is USB-A only); 66 W at 24 V shared with 2x USB-C PD 45 W charging + 100 W PD passthrough, a laptop-docking feature set whose 5 V budget for the data ports is unpublished. Suggested by RSHTECH support 2026-08-20; a different model from the ST10C-6 |
 | Rosonway RSH-A10QPD | 41 | Not in uhubctl list; 60 W shared with 20 W PD + 2x2.4 A charging ports |
 | intpw YH6AC | 40 | 65 W @ 20 V PD brick, 5 V budget unstated, shared with 2x45 W charging; not in uhubctl list |
 | UGREEN CM859 / 75949 | 33 | 12 V/2 A (24 W) is too thin for two HDDs; no UGREEN entry in uhubctl list at all |
@@ -161,6 +200,7 @@ Buy one of these three only if that search is not worth the time.
 - [octoprobe assessment — RSH-A10](https://github.com/octoprobe/usbhubctl/blob/main/usb_hubs/README_RSHTECH_RSH-A10.md)
 - [octoprobe assessment — RSH-ST07C](https://github.com/octoprobe/usbhubctl/blob/main/usb_hubs/README_RSHTECH_RSH-ST07C.md)
 - [uhubctl issue #616 — RSH-ST10C-6](https://github.com/mvp/uhubctl/issues/616)
+- [RSHTECH RSH-ST10P product page](https://www.rshtech.com/products/10-port-powered-usb-c-hub-66w-with-3x10gbps-usb-32-data-ports-2c-1a-4-usb-30-ports-2-usb-c-pd-45w-charging-ports-and-pd-100w-rsh-st10p)
 - [TSUPY TP01-00055 (B0C5593DBH)](https://www.amazon.com/TSUPY-Extension-Ultra-Slim-Aluminium-Chromebook/dp/B0C5593DBH)
 - [VENTION B0D2XWJ99H](https://www.amazon.com/VENTION-Splitter-Expander-Chromebook-Surface/dp/B0D2XWJ99H)
   / [Vention CHOBB product page](https://ventiontech.com/products/usb-to-usb-3-2-gen-2-type-a-x-4-usb-c-10g-hub-0-15m-black)
