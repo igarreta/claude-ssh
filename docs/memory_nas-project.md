@@ -2,10 +2,13 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
-> **Resume here**: research is complete; the project is paused on one decision — which of builds
-> A/B/C/D in [[docs/2026-08-19_nas-hardware-research.md]] §9 to buy. Build B is the only one near
-> the USD 600 budget and depends on an unverified recertified-enterprise 8 TB price. Separately,
-> docker03's replacement LXC on gr-srv03 is decided but not yet built.
+> **Resume here** (2026-08-20): recommended buy is **TerraMaster F2-425 Plus ($382 Amazon) + 6 TB
+> recertified SATA enterprise drives** — two now (P1, $722) or one now with `zpool attach` of the
+> twin later (P2, $552). The base F2-425/F4-425 are **N5095 + 4 GB DDR4 + no M.2** (the 08-19 doc
+> was wrong) and their needed RAM upgrade costs more than the step up to the Plus. Two Amazon drive
+> candidates were rejected: ST4000NM0023 is **SAS** (incompatible), WD RE4 2 TB is a **2010**
+> design in the worst $/TB tier. See [[docs/2026-08-20_nas-disk-prices-and-raid-options.md]] §8.
+> Still open: P1 vs P2, and docker03's replacement LXC on gr-srv03 is decided but not yet built.
 
 ## Scope (what the NAS must absorb)
 
