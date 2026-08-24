@@ -3,6 +3,10 @@
 **Date**: 2026-08-20. Continues [[docs/2026-08-19_nas-hardware-research.md]].
 Prices are **US street, USD, August 2026**, for import (see [[docs/memory_nas-project.md]]).
 
+> **Price validity**: everything below was verified on **2026-08-20** in a market moving fast in
+> both directions. The enclosure prices are stable; the HDD prices and especially *stock* are not.
+> Re-check §10.2 before ordering.
+
 ## 1. Health warning on the price data
 
 Aggregators disagree by ~2× at the same capacity. Live retail scrapes (Best Buy / B&H, refreshed

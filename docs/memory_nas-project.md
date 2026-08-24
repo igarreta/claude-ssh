@@ -2,13 +2,34 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
-> **Resume here** (2026-08-20): recommended buy is **TerraMaster F2-425 Plus ($382 Amazon) + 6 TB
-> recertified SATA enterprise drives** — two now (P1, $722) or one now with `zpool attach` of the
-> twin later (P2, $552). The base F2-425/F4-425 are **N5095 + 4 GB DDR4 + no M.2** (the 08-19 doc
-> was wrong) and their needed RAM upgrade costs more than the step up to the Plus. Two Amazon drive
-> candidates were rejected: ST4000NM0023 is **SAS** (incompatible), WD RE4 2 TB is a **2010**
-> design in the worst $/TB tier. See [[docs/2026-08-20_nas-disk-prices-and-raid-options.md]] §8.
-> Still open: P1 vs P2, and docker03's replacement LXC on gr-srv03 is decided but not yet built.
+> **Resume here** (updated 2026-08-24): research is **complete and purchase-ready**. Nothing bought
+> yet — the only open call is **P1 vs P2** (buy both drives now, or one now and the second later).
+> The full buy list, with links and live stock, is in "Purchase list" below.
+
+## Purchase list (prices verified 2026-08-20 — re-check before ordering)
+
+| Item | Source | Price |
+|---|---|---|
+| **TerraMaster F2-425 Plus** (N150, 8 GB DDR5→32, 3× M.2, 2× 5GbE, 2 bays) | Amazon | **$382** |
+| **HGST Ultrastar 7K6000** HUS726060ALE610 6 TB SATA, cert. refurb, 3 yr | [goHardDrive g01-1079](https://www.goHardDrive.com/HGST-Ultrastar-0F23001-6TB-7200RPM-Hard-Drive-p/g01-1079.htm) | **$179.95** |
+| **Seagate Exos 7E8** ST6000NM0115 6 TB SATA, enterprise, 5 yr | [goHardDrive g01-1326](https://www.goHardDrive.com/Seagate-ST6000NM0115-6TB-128MB-SATA-Enterprise-HDD-p/g01-1326.htm) | **$189.95** |
+| *(optional, any time later)* 500 GB NVMe for PVE boot | — | ~$60 |
+
+- **P1 — mirror now: $752.** Both drives, ZFS mirror, 5.45 TiB usable, 57% full day one.
+- **P2 — start small: $562.** Enclosure + one drive; `zpool attach` the second later (online,
+  non-destructive). Don't point Time Machine at it until the mirror is complete — the NAS would be
+  the MacBook's only copy.
+
+Two *different* manufacturers is deliberate: it satisfies the different-lots rule (§7 of the
+research doc) at no cost. Both carry longer warranties than any manufacturer-direct store
+(Seagate direct = 6 months, WD direct = 1 year), though a US warranty is near-useless once the
+drives are in Argentina — test them inside the US return window if the trip allows.
+
+**Rejected, with reasons** (don't re-open these): base F2-425/F4-425 (N5095, 4 GB DDR4, **no M.2**);
+UGREEN DH2300 (**ARM** — Proxmox/TrueNAS cannot run on it); UGREEN DXP2800 (fine machine, but $369
+now, not the $297 sale price — only $13 under the Plus, which has more); Seagate ST4000NM0023
+(**SAS**, incompatible); WD RE4 2 TB (**2010** design, worst $/TB tier); ServerPartDeals for 6 TB
+(**sold out** — its $114.99 listing is a ghost price that fools price trackers).
 
 ## Scope (what the NAS must absorb)
 
