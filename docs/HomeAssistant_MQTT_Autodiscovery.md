@@ -1,5 +1,10 @@
 # Home Assistant MQTT: Always Use Autodiscovery
 
+**Status:** active
+**Host:** homeassistant
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date**: 2026-02-17
 **Lesson learned the hard way**
 

@@ -1,5 +1,10 @@
 # gr-srv03: Disable apt-daily Timers
 
+**Status:** closed
+**Host:** gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** 2026-05-13
 
 ## Background

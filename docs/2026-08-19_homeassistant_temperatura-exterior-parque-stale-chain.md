@@ -1,6 +1,11 @@
 # HomeAssistant: "Temperatura exterior parque" froze on a dead sensor; staleness
 # guards + met.no fallback added
 
+**Status:** closed
+**Host:** homeassistant, docker03
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Symptom
 2026-08-19: `sensor.temperatura_exterior_parque` reported **15.8 °C** while the
 actual outdoor temperature was ~14.1 °C. The value had been frozen since

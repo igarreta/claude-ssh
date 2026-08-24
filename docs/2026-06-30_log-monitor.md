@@ -1,7 +1,11 @@
 # Log-monitor — automated daily server log review
 
+**Status:** active
+**Host:** comet
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** 2026-06-30
-**Host:** comet (orchestrator) → targets gr-srv03 (v1)
 **Code:** `log-monitor/` in this repo
 
 ## Purpose

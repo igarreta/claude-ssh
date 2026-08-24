@@ -1,5 +1,10 @@
 # cygnus: backup_usb1 data mount and quetren grabaciones relocation
 
+**Status:** closed
+**Host:** cygnus, gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** 2026-05-28
 
 ## What was done

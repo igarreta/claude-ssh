@@ -1,5 +1,10 @@
 # rtl_433 production migration: docker03 → raspberrypi2z (2026-06-27)
 
+**Status:** closed
+**Host:** raspberrypi2z, docker03
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Summary
 
 The rtl_433 service previously ran as a Docker container on docker03, publishing to

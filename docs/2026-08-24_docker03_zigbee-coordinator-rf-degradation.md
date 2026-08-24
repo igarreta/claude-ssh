@@ -1,6 +1,11 @@
 # Zigbee: comando perdido en `luces medianera z` — degradación RF del coordinador (2026-08-24)
 
-**Estado:** causa raíz identificada con alta confianza, **corrección física pendiente**
+**Status:** open
+**Host:** docker03, gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
+**Status detail (es):** causa raíz identificada con alta confianza, **corrección física pendiente**
 (cable de extensión USB, ~2 meses de demora). Mitigaciones y detección aplicadas
 2026-08-24.
 

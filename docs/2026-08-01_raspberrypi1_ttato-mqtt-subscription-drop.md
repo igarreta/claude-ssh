@@ -1,5 +1,10 @@
 # raspberrypi1 TTato: MQTT command subscription silently dropped (2026-08-01)
 
+**Status:** superseded
+**Host:** raspberrypi1
+**Supersedes:** —
+**Superseded-by:** 2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md
+
 ## Problem
 User sent a mode-change command ("auto") from Home Assistant via
 `script.ttato_modificar_enviar`. Payload arrived fine on the broker, but

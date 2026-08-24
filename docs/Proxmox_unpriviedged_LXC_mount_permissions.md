@@ -1,5 +1,10 @@
 # Troubleshooting LXC Mount Permissions
 
+**Status:** active
+**Host:** gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Problem Summary
 
 When binding a mount from the Proxmox host into an LXC container, the mounted directory showed as `nobody:nogroup` with permission denied errors on write operations, despite the mount appearing as read-write (`rw,noatime`).

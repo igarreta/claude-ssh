@@ -1,7 +1,11 @@
 # cygnus: Caddy TLS reverse proxy + Tailscale cert auto-renewal
 
+**Status:** active
+**Host:** cygnus
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** 2026-06-22
-**Host:** cygnus (LXC in gr-srv03)
 
 ## What runs
 

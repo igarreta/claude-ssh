@@ -5,6 +5,13 @@ metadata:
   type: project
 ---
 
+# docker03: RTL-SDR capture of the garage door opener (433 MHz)
+
+**Status:** open
+**Host:** docker03
+**Supersedes:** —
+**Superseded-by:** —
+
 docker03 has an RTL2838 RTL-SDR dongle (Realtek, `0bda:2838`) attached but otherwise unused (USB path `/dev/bus/usb/002/002`). Goal: capture the RF signature of a garage door opener remote.
 
 **Why:** Want to identify/replay the garage opener's signal (or at least confirm what protocol/frequency it uses).

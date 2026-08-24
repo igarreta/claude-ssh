@@ -7,6 +7,11 @@ metadata:
 
 # Pool thermometer buoy — rtl_433 protocol research
 
+**Status:** open
+**Host:** raspberrypi2z
+**Supersedes:** —
+**Superseded-by:** —
+
 **Goal:** add a wireless pool thermometer buoy that raspberrypi2z's existing rtl_433
 setup (see `docs/2026-06-26_raspberrypi2z_rtl433-setup.md`) can decode, without a
 lengthy reverse-engineering effort.

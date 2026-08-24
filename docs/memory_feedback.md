@@ -1,5 +1,10 @@
 # Memory: Feedback & Preferences
 
+**Status:** active
+**Host:** (fleet)
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Docs and memory location
 
 Always save documentation, incident write-ups, and memory content in the local `docs/` directory of the claude-ssh repo (`/home/rsi/claude-ssh/docs/`), not on the remote machine being documented.

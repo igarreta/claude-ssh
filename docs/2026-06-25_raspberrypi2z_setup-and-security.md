@@ -1,5 +1,10 @@
 # raspberrypi2z setup and initial security review (2026-06-25)
 
+**Status:** active
+**Host:** raspberrypi2z
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Overview
 
 New node, Raspberry Pi Zero W, Tailscale IP `100.92.195.47`. Will receive

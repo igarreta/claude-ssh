@@ -1,5 +1,10 @@
 # raspberrypi1 TTato: Manual-mode phantom-zero heating (2026-08-01)
 
+**Status:** closed
+**Host:** raspberrypi1
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Problem
 User asked why heating was on in Manual mode when only the exterior
 temperature was below the set point — all currently-reporting interior

@@ -1,5 +1,10 @@
 # raspberrypi2z: Monthly SD card backup
 
+**Status:** active
+**Host:** raspberrypi2z, ceres, gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 ## What is backed up
 
 Full compressed SD card image via `dd | gzip`. Runs on the **2nd of each month at 02:07**.

@@ -1,5 +1,10 @@
 # HDMI Audio Fix - living1
 
+**Status:** closed
+**Host:** living1
+**Supersedes:** —
+**Superseded-by:** —
+
 **Fecha:** 04/03/2026
 **Equipo:** NUC con Linux Mint XFCE (living1)
 

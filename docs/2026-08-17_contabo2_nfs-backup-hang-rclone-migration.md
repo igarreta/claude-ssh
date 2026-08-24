@@ -1,5 +1,10 @@
 # contabo2 backup: NFS hang fixed by migrating to rclone/SFTP (2026-08-17)
 
+**Status:** closed
+**Host:** contabo2, ceres
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Symptoms reported
 - contabo2: `~/bin/backup.sh` — "Failed to copy ~/bak to backup" for 2 consecutive
   nights (08-16, 08-17).

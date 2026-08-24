@@ -1,5 +1,10 @@
 # Tailscale ACL Configuration
 
+**Status:** active
+**Host:** (fleet)
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Overview
 
 All machines are on the same tailnet: `tail366c79.ts.net` (account: `ramon.igarreta@gmail.com`).

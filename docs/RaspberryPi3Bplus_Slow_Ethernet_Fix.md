@@ -1,7 +1,11 @@
 # Raspberry Pi 3B+ Slow Ethernet Fix
 
-**Date:** 2026-02-27
+**Status:** closed
 **Host:** raspberrypi1
+**Supersedes:** —
+**Superseded-by:** —
+
+**Date:** 2026-02-27
 
 ## Symptom
 

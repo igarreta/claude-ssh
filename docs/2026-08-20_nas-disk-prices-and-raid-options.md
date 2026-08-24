@@ -1,5 +1,10 @@
 # NAS project — small-capacity disk prices and RAID layout comparison
 
+**Status:** active
+**Host:** (project)
+**Supersedes:** 2026-08-19_nas-hardware-research.md (§5 and §9 only)
+**Superseded-by:** —
+
 **Date**: 2026-08-20. Continues [[docs/2026-08-19_nas-hardware-research.md]].
 Prices are **US street, USD, August 2026**, for import (see [[docs/memory_nas-project.md]]).
 

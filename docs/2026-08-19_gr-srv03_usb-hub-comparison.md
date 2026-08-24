@@ -1,10 +1,15 @@
 # gr-srv03 USB hub comparison — storage hub + dongle hub (2026-08-19)
 
+**Status:** open
+**Host:** gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 > **Updated 2026-08-20** — the outage-default criterion has been retired; see
 > [The outage question, retired](#the-outage-question-retired-2026-08-20).
 > The decision is unchanged, but it now rests on different grounds.
 
-**Status:** Storage hub DECIDED, not yet purchased. Dongle hub still open.
+**Status detail:** Storage hub DECIDED, not yet purchased. Dongle hub still open.
 Selects the hubs for
 [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md).
 

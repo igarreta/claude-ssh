@@ -1,5 +1,10 @@
 # castor: PostgreSQL server setup
 
+**Status:** active
+**Host:** castor
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** 2026-05-29
 
 ## Overview

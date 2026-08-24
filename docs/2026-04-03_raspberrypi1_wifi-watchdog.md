@@ -1,5 +1,10 @@
 # raspberrypi1 — WiFi Watchdog Setup and Incident Log
 
+**Status:** active
+**Host:** raspberrypi1
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Overview
 
 The wifi-watchdog is a bash script that monitors network connectivity on raspberrypi1

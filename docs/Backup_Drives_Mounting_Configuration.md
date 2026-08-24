@@ -1,5 +1,10 @@
 # Backup Drives Mounting Configuration
 
+**Status:** active
+**Host:** gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Overview
 Three backup drives with different mounting strategies:
 - **BACKUP_USB1**: Critical drive, mounted at startup via fstab

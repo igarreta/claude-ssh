@@ -1,7 +1,11 @@
 # docker03 — fail2ban not running (fixed)
 
-**Date:** 2026-07-05
+**Status:** closed
 **Host:** docker03
+**Supersedes:** —
+**Superseded-by:** —
+
+**Date:** 2026-07-05
 **Trigger:** log-monitor flagged `fail2ban.service failed` (important, escalated) in the 2026-07-05 daily report.
 
 ## Root cause

@@ -1,7 +1,12 @@
 # Sonda abierta: snapshots vacíos de ceres → BACKUP_A/B
 
+**Status:** open
+**Host:** ceres, gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Fecha:** 2026-08-14
-**Estado:** diagnóstico ABIERTO. Primera lectura el 2026-08-15 (ver abajo); la sonda queda
+**Status detail (es):** diagnóstico ABIERTO. Primera lectura el 2026-08-15 (ver abajo); la sonda queda
 puesta hasta la noche del 2026-08-17.
 **Relacionado:** [[2026-08-14_backup-health-monitor-design]]
 

@@ -1,5 +1,10 @@
 # Solución WiFi - Linux Mint en Hospital Alemán
 
+**Status:** closed
+**Host:** living1
+**Supersedes:** —
+**Superseded-by:** —
+
 **Fecha:** 13 de diciembre de 2025
 **Equipo:** NUC con Linux Mint XFCE, Kernel 6.14.0-36-generic
 

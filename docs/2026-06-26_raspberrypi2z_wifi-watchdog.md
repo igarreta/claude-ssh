@@ -1,5 +1,10 @@
 # raspberrypi2z: Wi-Fi hang diagnosis and network watchdog
 
+**Status:** active
+**Host:** raspberrypi2z
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Incident (2026-06-26 ~10:02)
 
 raspberrypi2z became unreachable at ~10:02. Required manual reboot. The BCM2835

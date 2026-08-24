@@ -1,5 +1,10 @@
 # raspberrypi2z: rtl_433 setup (2026-06-26)
 
+**Status:** active
+**Host:** raspberrypi2z
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Overview
 
 rtl_433 v25.02 installed on raspberrypi2z (Pi Zero W) to receive 433 MHz temperature/humidity sensor readings and forward them to MQTT.

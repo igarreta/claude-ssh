@@ -1,5 +1,10 @@
 # Proxmox Internal Network Setup - vmbr1 Bridge
 
+**Status:** active
+**Host:** gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Purpose:** One-time setup of internal network for containers/VMs  
 **Network:** 10.0.100.0/24  
 **Gateway:** 10.0.100.1 (Proxmox host on vmbr1)  

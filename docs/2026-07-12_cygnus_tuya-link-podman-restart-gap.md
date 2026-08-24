@@ -1,7 +1,11 @@
 # cygnus: tank water level sensor stopped — podman-restart.service filter gap
 
+**Status:** closed
+**Host:** cygnus
+**Supersedes:** 2026-06-22_cygnus_podman-restart-after-reboot.md
+**Superseded-by:** —
+
 **Date:** July 12, 2026
-**Host:** cygnus (LXC in gr-srv03, rootful podman)
 
 ---
 

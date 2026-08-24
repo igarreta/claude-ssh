@@ -1,5 +1,10 @@
 # raspberrypi2z: Oregon-THGR122N outage 2026-07-01/02
 
+**Status:** closed
+**Host:** raspberrypi2z
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Symptom
 Oregon-THGR122N (exterior Granaderos, channel=1, id=161) stopped publishing to
 `rtl_433/raspberrypi2z/events` around Jul 1 15:00. Other sensors (Nexus-TH ×3)

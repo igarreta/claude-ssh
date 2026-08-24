@@ -1,5 +1,10 @@
 # Memory: Backup schedule
 
+**Status:** active
+**Host:** gr-srv03, ceres, cygnus
+**Supersedes:** —
+**Superseded-by:** —
+
 All backup jobs run on gr-srv03 hardware. ceres and cygnus are LXCs sharing the host CPU — heavy jobs in both simultaneously spike load on both.
 
 **Disk wake constraint**: gr-srv03 spins up backup HDDs (BACKUP_A/B, Toshiba) at 02:25 and 02:55. Drives spin down after ~10 min idle. Backup jobs must start within 10 min of their wake. Do not add jobs outside the 02:25–03:30 window without adding a corresponding wake entry in gr-srv03 crontab.

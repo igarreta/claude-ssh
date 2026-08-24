@@ -1,5 +1,10 @@
 # Comet - Internet Connectivity Loss (Tailscale Logged Out)
 
+**Status:** closed
+**Host:** comet, gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** July 12, 2026
 **Container:** comet (LXC, CT 204 on gr-srv03)
 

@@ -1,6 +1,11 @@
 # Memory: comet replication of zed-tmux-claude setup (2026-08-10)
 
-**Status:** done. Zed task entry added on Windows client and confirmed working.
+**Status:** closed
+**Host:** comet
+**Supersedes:** —
+**Superseded-by:** —
+
+**Status detail:** done. Zed task entry added on Windows client and confirmed working.
 
 ## What this is
 `~/bin/docs/zed-tmux-claude.md` documents a Zed+SSH+tmux+Claude Code workflow

@@ -1,5 +1,10 @@
 # gr-srv03: LVM Space Monitor and docker03 Thin Provisioning Fix
 
+**Status:** closed
+**Host:** gr-srv03, docker03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** 2026-04-25
 
 ## Background

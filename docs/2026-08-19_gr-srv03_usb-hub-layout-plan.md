@@ -1,6 +1,11 @@
 # gr-srv03 USB layout plan — powered hubs for storage + dongles (2026-08-19)
 
-**Status:** PLANNED, nothing purchased or moved yet. Storage hub decided
+**Status:** open
+**Host:** gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
+**Status detail:** PLANNED, nothing purchased or moved yet. Storage hub decided
 (Rosonway RSH-A10), extension cables and ferrites decided (Conable CAL2S-6-3PK +
 13 mm wire-wound clip-ons);
 **port 3 layout undecided — three options below.** Current setup is the

@@ -1,6 +1,11 @@
 # Memory: docker03 zigbee2mqtt outage and hardening (2026-07-15)
 
-**Status:** resolved, hardening applied.
+**Status:** closed
+**Host:** docker03
+**Supersedes:** —
+**Superseded-by:** —
+
+**Status detail:** resolved, hardening applied.
 
 ## What happened
 zigbee2mqtt container on docker03 was found exited (code 2), down since

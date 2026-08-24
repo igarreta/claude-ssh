@@ -7,6 +7,11 @@ metadata:
 
 # ceres WDMyCloud → AWS Glacier backup (backup-greven-wdmycloud)
 
+**Status:** active
+**Host:** ceres
+**Supersedes:** —
+**Superseded-by:** —
+
 Repo: `s3:s3.amazonaws.com/backup-greven-wdmycloud` (restic, S3 Glacier Deep Archive),
 script `~/backup_greven/scripts/backup-wdmycloud-s3.sh` on ceres, runs monthly (~1st week, see [[project_backup_schedule]]).
 

@@ -6,6 +6,61 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Save memory content as `docs/memory_<topic>.md` files in this repository (git-tracked). Keep `~/.claude/projects/` MEMORY.md as a short index only.
 
+## CRITICAL: docs/ conventions
+
+**`docs/INDEX.md` is the entry point. Read it before searching `docs/` for how something
+works** — it groups every doc into topic threads, current state first, so you don't act on
+a stale write-up just because grep matched it.
+
+### Every doc carries a status header
+
+Immediately under the title of every file in `docs/`, before any other content:
+
+```
+**Status:** active | closed | superseded | open
+**Host:** docker03, gr-srv03          (or `(fleet)` / `(project)`)
+**Supersedes:** <older-file.md>       (or —)
+**Superseded-by:** <newer-file.md>    (or —)
+```
+
+- **active** — describes how the system works *now*. Edit in place as reality changes.
+- **closed** — a resolved incident. True as history; its fix is live. Don't edit, write a new doc.
+- **superseded** — replaced. **Never act on it**; follow `Superseded-by`.
+- **open** — unresolved, or a decision/purchase still pending. Needs follow-up.
+
+Exactly **one** `**Status:**` line per file. If a doc needs a longer nuanced status, keep the
+one-word canonical line and add a separate `**Status detail:**` line under it.
+
+`Supersedes` / `Superseded-by` may carry a scope qualifier when only part of a doc is
+replaced, e.g. `**Superseded-by:** 2026-08-20_nas-disk-prices.md (§5 and §9 only)`.
+
+### The rules that keep it true
+
+1. **Writing a doc that replaces an older one? Edit the old doc's `Superseded-by` in the
+   same commit**, and set the new doc's `Supersedes`. A one-way link is the failure mode
+   this convention exists to prevent — someone greps, hits the old doc first, and acts on
+   a fix that was later found insufficient.
+2. **Add the new doc to `docs/INDEX.md` in the same commit** — into its topic thread, and
+   update that thread's **Current:** line if the state changed.
+3. **When an `open` item resolves, change its status** to `closed` or `active` and update
+   the thread's **Current:** line.
+4. Never change a `closed` doc's findings. New facts go in a new dated doc that supersedes it,
+   or in a `> **CORRECTED <date>**` banner at the top if the correction is small.
+
+### Naming
+
+- `YYYY-MM-DD_host_topic.md` — incident or investigation, dated, effectively immutable.
+- `memory_<topic>.md` — live project/state notes, edited in place.
+- `Title_Case.md` — legacy standing-reference docs. Don't create new ones.
+
+Useful checks:
+
+```bash
+grep -l '^\*\*Status:\*\* open' docs/*.md          # what still needs attention
+grep -l '^\*\*Status:\*\* superseded' docs/*.md    # what not to trust
+grep -l '^\*\*Host:\*\*.*docker03' docs/*.md       # everything about one host
+```
+
 ## General instructions
 I like concise responses, without excesive duplication.
 Respond as requested, do not extend with supossiotions about next steps. Do not add descriptions of possible alternatives before asking if they are required.

@@ -1,5 +1,10 @@
 # Memory: castor
 
+**Status:** active
+**Host:** castor
+**Supersedes:** —
+**Superseded-by:** —
+
 PostgreSQL database server running on dedicated unprivileged LXC **castor** (ID 205) in gr-srv03.
 
 **Why:** Home database server for Claude interaction. Dedicated LXC for independent snapshots before schema changes.

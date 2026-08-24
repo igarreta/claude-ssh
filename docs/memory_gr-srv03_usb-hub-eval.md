@@ -5,6 +5,13 @@ metadata:
   type: project
 ---
 
+# gr-srv03: BACKUP_A USB speed baseline before the powered-hub switch
+
+**Status:** superseded
+**Host:** gr-srv03
+**Supersedes:** —
+**Superseded-by:** memory_gr-srv03_powered-hub-instability.md
+
 Evaluating moving BACKUP_A (WD Elements 2621, WD40NDZW, 4TB, `/mnt/backup_a`) from its
 current direct USB connection on gr-srv03 to a powered USB hub.
 

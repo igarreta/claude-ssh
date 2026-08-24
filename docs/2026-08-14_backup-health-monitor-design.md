@@ -1,7 +1,12 @@
 # Diseño: monitor de salud de backups
 
+**Status:** active
+**Host:** ceres, comet, gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Fecha:** 2026-08-14 · **revisado:** 2026-08-15
-**Estado:** implementado (Fases 1, 2 y 3 desplegadas 2026-08-15)
+**Status detail (es):** implementado (Fases 1, 2 y 3 desplegadas 2026-08-15); **pruebas en curso al 2026-08-24**
 **Motivo:** el incidente de 2026-01-20 → 2026-08-14 (ver `host-backup/README.md` en
 `igarreta/proxmox-grsrv03`, sección *Limitaciones conocidas*)
 

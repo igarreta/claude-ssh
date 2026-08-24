@@ -1,5 +1,10 @@
 # raspberrypi1 — Hardware/kernel watchdog enabled (2026-06-25)
 
+**Status:** closed
+**Host:** raspberrypi1
+**Supersedes:** memory_raspberrypi1_freeze.md
+**Superseded-by:** —
+
 ## Why
 Closes the "no auto-recovery" gap from the [Jun 17 2026 hard freeze](memory_raspberrypi1_freeze.md):
 that incident had no panic, no OOM, nothing logged — a genuine kernel-level lockup that

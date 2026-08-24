@@ -1,6 +1,11 @@
 # Memory: gr-srv03 powered USB hub instability (2026-07-15)
 
-**Status:** ROOT-CAUSED 2026-08-18 and mitigated 2026-08-17 by removing the hub.
+**Status:** closed
+**Host:** gr-srv03, docker03
+**Supersedes:** memory_gr-srv03_usb-hub-eval.md
+**Superseded-by:** —
+
+**Status detail:** ROOT-CAUSED 2026-08-18 and mitigated 2026-08-17 by removing the hub.
 **The "degrading hub" theory below is superseded — see "Actual root cause" at the
 end.** History kept for context.
 
@@ -137,7 +142,6 @@ dongle never re-enumerated), traffic continuous. Prior config backed up to
 Unrelated but noted: VM 100 (`debian-gui`, stopped and unused) holds
 `usb0: host=0bda:c821`, the Realtek Bluetooth radio. No conflict while it stays
 stopped.
-
 
 ## Actual root cause (2026-08-18): backup-drive hot-plug transients, not hub decay
 

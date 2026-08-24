@@ -7,6 +7,11 @@ metadata:
 
 ## Recurring stale ceres bind mount — ROOT CAUSE FOUND (2026-07-14)
 
+**Status:** closed
+**Host:** gr-srv03, ceres
+**Supersedes:** —
+**Superseded-by:** —
+
 `check-ceres-mount-sync.sh` (cron `20 2 * * *` on gr-srv03) detected the
 backup_a/backup_b bind mount as stale/empty inside ceres (CT 203) every night
 from **2026-07-10 to 07-13**, self-healed by `remount-backup.sh`, which
@@ -39,7 +44,7 @@ mount, so ceres could pick up a fresh mount without a full container restart.
 Not undertaken as of 2026-07-14 — current nightly detect+reboot self-heal is
 considered acceptable.
 
-**Status:** on 2026-07-13 the Pushover notifications for both the detection
+**Status detail:** on 2026-07-13 the Pushover notifications for both the detection
 (`check-ceres-mount-sync.sh`) and the remount success (`remount-backup.sh`) were
 removed (routine/success events, not actionable per [[feedback_pushover_errors_only]]).
 Check `/var/log/proxmox-backup.log` on gr-srv03 directly to see if it's still

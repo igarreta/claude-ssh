@@ -1,5 +1,10 @@
 # NAS project — scope, preferences and baseline
 
+**Status:** open
+**Host:** (project)
+**Supersedes:** —
+**Superseded-by:** —
+
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
 > **Resume here** (updated 2026-08-24): research is **complete and purchase-ready**. Nothing bought

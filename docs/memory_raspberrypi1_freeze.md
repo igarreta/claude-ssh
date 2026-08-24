@@ -1,5 +1,10 @@
 # raspberrypi1 — Hard freeze / disconnect (Jun 17 2026)
 
+**Status:** superseded
+**Host:** raspberrypi1
+**Supersedes:** —
+**Superseded-by:** 2026-06-25_raspberrypi1_kernel-watchdog.md
+
 ## Incident
 - **Disconnected:** Wed 2026-06-17, journal stops dead at **21:02:13** mid-operation.
   Tailscale marked it offline ~21:12 (controller offline-detection timeout).

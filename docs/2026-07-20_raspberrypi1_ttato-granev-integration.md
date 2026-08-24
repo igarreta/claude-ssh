@@ -1,5 +1,10 @@
 # raspberrypi1 TTato: granev/temp/* MQTT integration (2026-07-20)
 
+**Status:** closed
+**Host:** raspberrypi1, homeassistant
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Problem
 Home Assistant now preprocesses/averages temperature readings and publishes
 results to `granev/temp/*` MQTT topics (192.168.1.8:1883), replacing TTato's

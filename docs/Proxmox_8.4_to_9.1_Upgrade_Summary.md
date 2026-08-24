@@ -1,4 +1,10 @@
 # Proxmox 8.4.14 â†’ 9.1.1 Upgrade Summary
+
+**Status:** closed
+**Host:** gr-srv03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** November 29-30, 2024  
 **System:** GMTec NucBox G5 (N97, 12GB RAM)  
 **Result:** âœ… Successful

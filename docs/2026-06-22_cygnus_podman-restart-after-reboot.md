@@ -1,7 +1,11 @@
 # cygnus: containers down after 2026-06-17 reboot — podman-restart.service fix
 
+**Status:** superseded
+**Host:** cygnus
+**Supersedes:** —
+**Superseded-by:** 2026-07-12_cygnus_tuya-link-podman-restart-gap.md
+
 **Date investigated:** 2026-06-22
-**Host:** cygnus (LXC in gr-srv03, rootful podman)
 
 ## Symptom
 

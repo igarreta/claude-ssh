@@ -1,6 +1,11 @@
 # docker03 outage 2026-08-17 — Tailscale node-key expiry, not the USB/Zigbee storm
 
-**Status:** closed. Root-caused; key expiry disabled fleet-wide 2026-08-18 and
+**Status:** closed
+**Host:** docker03
+**Supersedes:** —
+**Superseded-by:** —
+
+**Status detail:** closed. Root-caused; key expiry disabled fleet-wide 2026-08-18 and
 container DNS fallback added on docker03 the same day.
 
 ## Summary

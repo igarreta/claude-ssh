@@ -1,5 +1,10 @@
 # raspberrypi2z: rtl_433 dropped to 1 sensor, fixed by reboot; daily restart added
 
+**Status:** closed
+**Host:** raspberrypi2z
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Symptom
 2026-07-20: raspberrypi2z was publishing only 1 of 3 rtl_433 sensors (protocol 19,
 Nexus/TFA) all day. A manual reboot at ~22:00 (actual reboot 21:39) restored all 3

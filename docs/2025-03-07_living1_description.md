@@ -1,5 +1,10 @@
 # living1 system description
 
+**Status:** active
+**Host:** living1
+**Supersedes:** —
+**Superseded-by:** —
+
 [code]
 System:
   Kernel: 6.17.0-14-generic arch: x86_64 bits: 64 compiler: gcc v: 13.3.0 clocksource: tsc

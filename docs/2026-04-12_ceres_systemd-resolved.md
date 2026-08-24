@@ -1,7 +1,11 @@
 # ceres: systemd-resolved setup
 
+**Status:** closed
+**Host:** ceres
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** 2026-04-12  
-**Host:** ceres (Debian 13 LXC, gr-srv03 ID 203)
 
 ## Problem
 

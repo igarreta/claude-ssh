@@ -1,8 +1,12 @@
 # cygnus: Caddy TLS cert renewal failed — Let's Encrypt ARI stuck order
 
+**Status:** open
+**Host:** cygnus
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date:** 2026-08-04
-**Host:** cygnus (LXC in gr-srv03)
-**Status:** unresolved as of 2026-08-04 (not urgent — see Impact)
+**Status detail:** unresolved as of 2026-08-04 (not urgent — see Impact)
 
 ## Symptom
 

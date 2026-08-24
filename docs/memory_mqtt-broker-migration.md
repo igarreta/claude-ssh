@@ -1,5 +1,10 @@
 # MQTT broker migration: docker03 → dedicated gr-srv03 LXC (in progress)
 
+**Status:** open
+**Host:** mosquitto, docker03
+**Supersedes:** —
+**Superseded-by:** —
+
 **Date started**: 2026-08-15
 
 ## Why

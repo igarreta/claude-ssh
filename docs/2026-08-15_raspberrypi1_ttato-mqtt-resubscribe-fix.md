@@ -1,5 +1,10 @@
 # raspberrypi1 TTato: permanent fix for the MQTT command subscription drop (2026-08-15)
 
+**Status:** closed
+**Host:** raspberrypi1
+**Supersedes:** 2026-08-01_raspberrypi1_ttato-mqtt-subscription-drop.md
+**Superseded-by:** —
+
 ## Problem
 HA mode changes (`ttato_modificar_modo`) had no effect again — same symptom as
 2026-08-01, 13 days after that session's container restart.

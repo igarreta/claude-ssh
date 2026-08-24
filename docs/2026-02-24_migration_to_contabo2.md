@@ -1,5 +1,10 @@
 # Contabo1 → Contabo2 Migration Plan
 
+**Status:** closed
+**Host:** contabo1, contabo2
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Context for Claude Code
 
 This document was prepared by Claude Desktop after analyzing the source server (contabo1)

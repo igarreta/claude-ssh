@@ -1,5 +1,10 @@
 # NAS project — hardware/OS research (first pass)
 
+**Status:** active
+**Host:** (project)
+**Supersedes:** —
+**Superseded-by:** 2026-08-20_nas-disk-prices-and-raid-options.md (§5 and §9 only)
+
 > **CORRECTED 2026-08-20**: the enclosure tables in §5 and §9 below list the F2-425 and F4-425 as
 > Intel N150 with 8 GB DDR5. They are actually **Intel N5095 with 4 GB DDR4 (1 SODIMM, 16 GB max)
 > and no M.2 NVMe slot** — only the *Plus* models are N150/DDR5/NVMe. Builds A–D therefore carry an

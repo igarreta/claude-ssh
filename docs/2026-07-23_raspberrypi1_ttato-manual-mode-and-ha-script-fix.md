@@ -1,5 +1,10 @@
 # raspberrypi1 TTato: manual mode override + HA script payload bug fix (2026-07-23)
 
+**Status:** active
+**Host:** raspberrypi1, homeassistant
+**Supersedes:** —
+**Superseded-by:** —
+
 ## Request
 Put TTato into Manual mode at 16°C until 2026-08-01 11:00.
 
