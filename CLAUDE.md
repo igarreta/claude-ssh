@@ -10,8 +10,23 @@ between them, or updating one silently leaves the others lying:
 | Layer | Holds | Size |
 |---|---|---|
 | `docs/*.md` (git-tracked) | the detail — the single source of truth | as long as needed |
-| `~/.claude/projects/-home-rsi-claude-ssh/memory/<node>.md` | why it matters + how to apply + a `docs/` pointer | ~5–12 lines |
-| `~/.claude/projects/.../MEMORY.md` | **pointers only** — `- [node.md](node.md) — hook` | one line per node |
+| `docs/memory-nodes/<node>.md` | why it matters + how to apply + a `docs/` pointer | ~5–12 lines |
+| `docs/memory-nodes/MEMORY.md` | **pointers only** — `- [node.md](node.md) — hook` | one line per node |
+
+**The memory directory is a symlink into this repo**, so memory is versioned and every
+memory write shows up in `git diff` for review before you commit it:
+
+```
+~/.claude/projects/-home-rsi-claude-ssh/memory -> /home/rsi/claude-ssh/docs/memory-nodes
+```
+
+Expect `git status` to go dirty during sessions where a memory is saved — that is the point,
+not a problem. The nodes keep their memory-system frontmatter and are deliberately **exempt
+from the `docs/` status-header convention**; the checks above glob `docs/*.md`, which does
+not recurse into the subdirectory.
+
+If the harness ever recreates that path as a real directory, the link is lost but the content
+is not — it is already in git. Re-create the symlink and move any stray nodes across.
 
 Rules:
 
@@ -27,6 +42,7 @@ Check the layer is still consistent:
 
 ```bash
 M=~/.claude/projects/-home-rsi-claude-ssh/memory
+test -L "$M" || echo "SYMLINK LOST — re-link to docs/memory-nodes"   # link still intact
 grep '^- ' $M/MEMORY.md | grep -v '](.*\.md)'                    # inline content: must be empty
 for f in $M/*.md; do b=$(basename $f); [ "$b" = MEMORY.md ] && continue; \
   grep -q "($b)" $M/MEMORY.md || echo "unindexed: $b"; done       # every node indexed
