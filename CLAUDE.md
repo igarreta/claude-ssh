@@ -4,7 +4,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Memory
 
-Save memory content as `docs/memory_<topic>.md` files in this repository (git-tracked). Keep `~/.claude/projects/` MEMORY.md as a short index only.
+**One fact, one home.** Three layers, each with a distinct job — never duplicate detail
+between them, or updating one silently leaves the others lying:
+
+| Layer | Holds | Size |
+|---|---|---|
+| `docs/*.md` (git-tracked) | the detail — the single source of truth | as long as needed |
+| `~/.claude/projects/-home-rsi-claude-ssh/memory/<node>.md` | why it matters + how to apply + a `docs/` pointer | ~5–12 lines |
+| `~/.claude/projects/.../MEMORY.md` | **pointers only** — `- [node.md](node.md) — hook` | one line per node |
+
+Rules:
+
+1. **Never put content in `MEMORY.md`.** If a fact deserves remembering, it gets a node file.
+   A bare line with the whole story in it is the failure this structure exists to prevent.
+2. A node states *why the fact matters* and *how to apply it*, then points at `docs/`. It does
+   not restate tables, inventories, or narrative that `docs/` already carries.
+3. When a fact changes, update the `docs/` file first, then the node, then the `MEMORY.md`
+   hook if the one-line summary is now wrong.
+4. Link related nodes with `[[node_name]]` (no `.md`), and `docs/` files by path.
+
+Check the layer is still consistent:
+
+```bash
+M=~/.claude/projects/-home-rsi-claude-ssh/memory
+grep '^- ' $M/MEMORY.md | grep -v '](.*\.md)'                    # inline content: must be empty
+for f in $M/*.md; do b=$(basename $f); [ "$b" = MEMORY.md ] && continue; \
+  grep -q "($b)" $M/MEMORY.md || echo "unindexed: $b"; done       # every node indexed
+grep -ho '\[\[[^]]*\]\]' $M/*.md | sed 's/\[\[//;s/\]\]//' | sort -u | \
+  while read n; do case "$n" in docs/*) continue;; esac; \
+  [ -e "$M/$n.md" ] || echo "dangling: [[$n]]"; done              # no broken wikilinks
+```
 
 ## CRITICAL: docs/ conventions
 
