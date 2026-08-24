@@ -70,11 +70,12 @@ daily restart in place →
 ## Backups
 
 **Current:** health monitor phases 1–3 deployed 2026-08-15, **tests being finished as of
-2026-08-24**; ceres empty-snapshot cause still unproven with a probe outstanding →
+2026-08-24**; ceres empty-snapshot cause still unproven — probe read 2026-08-24, never reproduced, held for the
+08-25 BACKUP_A rotation →
 [2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md)
 
 - [2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md) — *active* — design + deployed implementation; finishing tests
-- [2026-08-14_ceres-empty-snapshots-probe.md](2026-08-14_ceres-empty-snapshots-probe.md) — **open** — 7 months of empty snapshots; `pct reboot 203` fixed it, cause unproven, probe reading overdue
+- [2026-08-14_ceres-empty-snapshots-probe.md](2026-08-14_ceres-empty-snapshots-probe.md) — **open** — 7 months of empty snapshots; `pct reboot 203` fixed it, cause unproven after 8 probe nights, probe held for the 08-25 BACKUP_A rotation
 - [memory_backup_schedule.md](memory_backup_schedule.md) — *active* — **read before adding any job**: disk-wake window 02:25–03:30
 - [Backup_Drives_Mounting_Configuration.md](Backup_Drives_Mounting_Configuration.md) — *active* — fstab + udev/systemd mount units for BACKUP_USB1 / A / B
 - [2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md](2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md) — *closed* — NFS over WAN → rclone/SFTP

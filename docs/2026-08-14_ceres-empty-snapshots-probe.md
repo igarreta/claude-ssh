@@ -6,8 +6,9 @@
 **Superseded-by:** —
 
 **Fecha:** 2026-08-14
-**Status detail (es):** diagnóstico ABIERTO. Primera lectura el 2026-08-15 (ver abajo); la sonda queda
-puesta hasta la noche del 2026-08-17.
+**Status detail (es):** diagnóstico ABIERTO. Dos lecturas hechas (2026-08-15 y 2026-08-24, ver abajo).
+El origen nunca se cayó en 8 noches, así que la causa sigue sin probarse. La sonda **se deja puesta
+hasta la rotación de BACKUP_A del 2026-08-25**, que es la única corrida que todavía podría reproducirla.
 **Relacionado:** [[2026-08-14_backup-health-monitor-design]]
 
 ## Qué pasó
@@ -133,6 +134,37 @@ quedaban el `log_msg "Backing up immich..."` y el `forget --prune`, así que cad
 un job que no copiaba nada y reportaba éxito. immich está fuera de uso: el job se eliminó
 (`backup_greven` commit 8b094d3). Los dos snapshots de diciembre 2025 quedan en el repo por
 ahora.
+
+## Segunda lectura: 2026-08-24 (noches 08-17 → 08-24)
+
+Ocho noches, 24 ventanas. **El origen no falló ni una vez**: las 24 muestras dan
+`src=/dev/sdb1 ext4  top=18  pcfg-daily=7  vm-containers=4`.
+
+Eso es el **escenario 1** de la tabla, del lado del origen: apunta a un estado persistente del
+contenedor que el `pct reboot` limpió. Pero **no es prueba** — la sonda nunca llegó a observar el
+modo roto, sólo establece que 8 noches del disparador sospechado no lo reproducen.
+
+Del lado del destino se confirma lo previsto, y ya está tapado por la rotación:
+
+| Noche | BACKUP_A | Veredicto de `check-ceres-mount-sync` |
+|---|---|---|
+| 08-16, 08-17 | conectado | *stale/empty in ceres* → `pct reboot` las dos noches |
+| 08-18 | recién sacado | los dos discos afuera, "in sync" |
+| 08-19 → 08-24 | afuera (B conectado) | **"in sync", 6 noches, cero reinicios** |
+
+`uptime -s` en ceres = **2026-08-17 02:20:11**, o sea el último self-healing. El síntoma
+desapareció con el cambio de disco, no con un arreglo: BACKUP_A sigue siendo el que se pone
+obsoleto y eso vuelve en la próxima rotación.
+
+Los backups en sí están sanos. La noche del 08-24 los 7 tags copiaron datos y todos pasaron su
+floor check — `gickup` 1019.444 MiB contra los 0 B de la época enero–agosto. (El snapshot de
+`gickup` del 08-19 con hora 04:10 es simplemente la primera escritura completa a BACKUP_B.)
+
+Detalle cosmético: desde el cambio de disco el campo `backup_b=` de la sonda ocupa dos líneas,
+porque `findmnt` devuelve dos filas — el placeholder `pve-root` y el `/dev/sdc1(3)` real. B se ve
+bien con sus 3 entradas; lo que no aguanta dos filas es el formato de una línea del script.
+
+**Decisión (2026-08-24):** la sonda queda puesta hasta la rotación de BACKUP_A del 2026-08-25.
 
 ## Limpieza cuando se cierre
 
