@@ -1,0 +1,316 @@
+device,day,samples,avg_lqi,min_lqi
+0xa4c138123e89ffff,2026-08-09,20,178.2,172
+Enchufe_1,2026-07-15,611,160.7,120
+Enchufe_1,2026-07-16,1805,193.2,48
+Enchufe_1,2026-07-17,1808,174.5,80
+Enchufe_1,2026-07-18,1804,193.7,124
+Enchufe_1,2026-07-19,1803,189.4,112
+Enchufe_1,2026-07-20,1799,167.4,96
+Enchufe_1,2026-07-21,1805,182.3,84
+Enchufe_1,2026-07-22,1799,192.5,64
+Enchufe_1,2026-07-23,1807,197.9,100
+Enchufe_1,2026-07-24,1806,205.0,200
+Enchufe_1,2026-07-25,1808,205.1,200
+Enchufe_1,2026-07-26,1807,205.0,200
+Enchufe_1,2026-07-27,1812,205.4,200
+Enchufe_1,2026-07-28,1809,205.5,140
+Enchufe_1,2026-07-29,1806,205.8,200
+Enchufe_1,2026-07-30,1806,205.6,196
+Enchufe_1,2026-07-31,1809,205.8,200
+Enchufe_1,2026-08-01,1805,204.2,104
+Enchufe_1,2026-08-02,1796,174.0,120
+Enchufe_1,2026-08-03,1802,155.2,76
+Enchufe_1,2026-08-04,1809,163.6,88
+Enchufe_1,2026-08-05,1805,163.0,104
+Enchufe_1,2026-08-06,1809,159.4,52
+Enchufe_1,2026-08-07,1806,164.3,96
+Enchufe_1,2026-08-08,1807,159.6,136
+Enchufe_1,2026-08-09,1803,154.7,112
+Enchufe_1,2026-08-10,1811,162.6,88
+Enchufe_1,2026-08-11,1805,162.1,124
+Enchufe_1,2026-08-12,1795,158.6,92
+Enchufe_1,2026-08-13,1809,180.9,136
+Enchufe_1,2026-08-14,1807,172.2,132
+Enchufe_1,2026-08-15,1807,182.7,116
+Enchufe_1,2026-08-16,1803,177.0,116
+Enchufe_1,2026-08-17,1793,182.3,116
+Enchufe_1,2026-08-18,1787,197.8,108
+Enchufe_1,2026-08-19,1806,167.2,104
+Enchufe_1,2026-08-20,1806,158.8,112
+Enchufe_1,2026-08-21,1769,147.3,100
+Enchufe_1,2026-08-22,1736,133.6,100
+Enchufe_1,2026-08-23,1801,142.1,52
+Enchufe_1,2026-08-24,734,162.4,140
+Enchufe_2,2026-07-15,613,160.8,132
+Enchufe_2,2026-07-16,1803,193.1,88
+Enchufe_2,2026-07-17,1796,174.1,88
+Enchufe_2,2026-07-18,1806,193.8,124
+Enchufe_2,2026-07-19,1804,189.5,108
+Enchufe_2,2026-07-20,1809,168.5,116
+Enchufe_2,2026-07-21,1809,188.5,80
+Enchufe_2,2026-07-22,1798,192.9,80
+Enchufe_2,2026-07-23,1805,198.0,144
+Enchufe_2,2026-07-24,1811,204.9,176
+Enchufe_2,2026-07-25,1804,205.0,200
+Enchufe_2,2026-07-26,1804,204.8,200
+Enchufe_2,2026-07-27,1798,205.4,200
+Enchufe_2,2026-07-28,1808,205.5,200
+Enchufe_2,2026-07-29,1804,205.7,200
+Enchufe_2,2026-07-30,1806,205.5,144
+Enchufe_2,2026-07-31,1805,205.6,200
+Enchufe_2,2026-08-01,1804,204.3,108
+Enchufe_2,2026-08-02,1785,175.6,128
+Enchufe_2,2026-08-03,1805,155.5,96
+Enchufe_2,2026-08-04,1797,163.8,96
+Enchufe_2,2026-08-05,1803,163.4,92
+Enchufe_2,2026-08-06,1803,159.6,112
+Enchufe_2,2026-08-07,1802,164.1,84
+Enchufe_2,2026-08-08,1802,159.5,148
+Enchufe_2,2026-08-09,1810,154.9,116
+Enchufe_2,2026-08-10,1804,162.6,92
+Enchufe_2,2026-08-11,1803,162.2,132
+Enchufe_2,2026-08-12,1804,158.9,88
+Enchufe_2,2026-08-13,1806,181.1,136
+Enchufe_2,2026-08-14,1801,173.1,136
+Enchufe_2,2026-08-15,1806,182.8,120
+Enchufe_2,2026-08-16,1806,176.9,116
+Enchufe_2,2026-08-17,1790,182.3,120
+Enchufe_2,2026-08-18,1780,198.6,116
+Enchufe_2,2026-08-19,1801,169.6,64
+Enchufe_2,2026-08-20,1809,159.0,108
+Enchufe_2,2026-08-21,1781,149.1,108
+Enchufe_2,2026-08-22,1730,135.0,100
+Enchufe_2,2026-08-23,1802,142.5,32
+Enchufe_2,2026-08-24,737,162.3,136
+Porton garage,2026-08-09,39,178.7,152
+Porton levadizo,2026-08-09,4,178.0,164
+Porton levadizo,2026-08-10,22,183.6,156
+Porton levadizo,2026-08-11,20,165.6,136
+Porton levadizo,2026-08-12,19,175.6,148
+Porton levadizo,2026-08-13,15,180.0,172
+Porton levadizo,2026-08-14,18,174.0,160
+Porton levadizo,2026-08-15,16,183.2,172
+Porton levadizo,2026-08-16,15,178.1,176
+Porton levadizo,2026-08-17,23,184.0,172
+Porton levadizo,2026-08-18,21,207.0,176
+Porton levadizo,2026-08-19,22,173.8,108
+Porton levadizo,2026-08-20,19,162.1,124
+Porton levadizo,2026-08-21,17,155.3,132
+Porton levadizo,2026-08-22,14,136.6,120
+Porton levadizo,2026-08-23,17,144.9,108
+Porton levadizo,2026-08-24,8,161.0,140
+bomba agua z,2026-07-15,525,192.5,184
+bomba agua z,2026-07-16,1522,198.4,152
+bomba agua z,2026-07-17,1533,190.3,164
+bomba agua z,2026-07-18,1522,194.8,176
+bomba agua z,2026-07-19,1529,189.4,172
+bomba agua z,2026-07-20,1524,197.5,108
+bomba agua z,2026-07-21,1516,207.9,164
+bomba agua z,2026-07-22,1522,200.9,136
+bomba agua z,2026-07-23,1515,198.8,116
+bomba agua z,2026-07-24,1511,204.9,200
+bomba agua z,2026-07-25,1514,204.9,200
+bomba agua z,2026-07-26,1511,205.1,200
+bomba agua z,2026-07-27,1514,205.4,200
+bomba agua z,2026-07-28,1513,205.5,172
+bomba agua z,2026-07-29,1515,205.4,140
+bomba agua z,2026-07-30,1512,205.5,200
+bomba agua z,2026-07-31,1514,205.6,128
+bomba agua z,2026-08-01,1516,204.2,108
+bomba agua z,2026-08-02,1523,197.5,112
+bomba agua z,2026-08-03,1523,198.6,140
+bomba agua z,2026-08-04,1523,176.0,120
+bomba agua z,2026-08-05,1528,195.5,160
+bomba agua z,2026-08-06,1534,188.9,156
+bomba agua z,2026-08-07,1533,190.0,92
+bomba agua z,2026-08-08,1532,197.1,168
+bomba agua z,2026-08-09,1526,191.8,132
+bomba agua z,2026-08-10,1526,181.7,108
+bomba agua z,2026-08-11,1524,163.0,128
+bomba agua z,2026-08-12,1532,172.4,120
+bomba agua z,2026-08-13,1559,180.9,156
+bomba agua z,2026-08-14,1541,174.9,144
+bomba agua z,2026-08-15,1521,183.6,140
+bomba agua z,2026-08-16,1534,177.0,172
+bomba agua z,2026-08-17,1515,182.3,108
+bomba agua z,2026-08-18,1529,205.2,144
+bomba agua z,2026-08-19,1528,178.0,116
+bomba agua z,2026-08-20,1532,159.4,124
+bomba agua z,2026-08-21,1525,151.6,116
+bomba agua z,2026-08-22,1528,136.4,100
+bomba agua z,2026-08-23,1527,143.7,48
+bomba agua z,2026-08-24,601,162.9,140
+luces medianera z,2026-07-15,527,160.8,136
+luces medianera z,2026-07-16,1519,194.6,88
+luces medianera z,2026-07-17,1513,175.2,80
+luces medianera z,2026-07-18,1519,193.6,124
+luces medianera z,2026-07-19,1516,189.5,164
+luces medianera z,2026-07-20,1516,168.3,92
+luces medianera z,2026-07-21,1523,183.7,112
+luces medianera z,2026-07-22,1527,192.4,80
+luces medianera z,2026-07-23,1524,197.9,100
+luces medianera z,2026-07-24,1518,205.0,200
+luces medianera z,2026-07-25,1520,204.9,200
+luces medianera z,2026-07-26,1527,204.9,192
+luces medianera z,2026-07-27,1529,205.4,200
+luces medianera z,2026-07-28,1524,205.4,200
+luces medianera z,2026-07-29,1532,205.5,140
+luces medianera z,2026-07-30,1523,205.6,200
+luces medianera z,2026-07-31,1529,205.6,144
+luces medianera z,2026-08-01,1528,204.1,108
+luces medianera z,2026-08-02,1499,175.4,116
+luces medianera z,2026-08-03,1518,155.2,128
+luces medianera z,2026-08-04,1520,163.6,92
+luces medianera z,2026-08-05,1525,163.2,120
+luces medianera z,2026-08-06,1526,159.5,116
+luces medianera z,2026-08-07,1534,164.1,88
+luces medianera z,2026-08-08,1536,159.6,144
+luces medianera z,2026-08-09,1528,155.0,100
+luces medianera z,2026-08-10,1528,162.6,108
+luces medianera z,2026-08-11,1532,162.2,128
+luces medianera z,2026-08-12,1529,160.0,104
+luces medianera z,2026-08-13,1523,181.2,144
+luces medianera z,2026-08-14,1523,172.6,136
+luces medianera z,2026-08-15,1532,182.7,116
+luces medianera z,2026-08-16,1525,177.0,124
+luces medianera z,2026-08-17,1503,182.1,116
+luces medianera z,2026-08-18,1532,199.7,116
+luces medianera z,2026-08-19,1529,168.9,100
+luces medianera z,2026-08-20,1518,158.6,112
+luces medianera z,2026-08-21,1516,148.0,100
+luces medianera z,2026-08-22,1413,133.5,96
+luces medianera z,2026-08-23,1528,141.8,48
+luces medianera z,2026-08-24,601,163.3,136
+luz exterior garage,2026-07-15,324,107.9,52
+luz exterior garage,2026-07-16,921,109.8,44
+luz exterior garage,2026-07-17,911,113.6,68
+luz exterior garage,2026-07-18,911,122.1,88
+luz exterior garage,2026-07-19,908,116.5,32
+luz exterior garage,2026-07-20,927,102.7,28
+luz exterior garage,2026-07-21,911,116.5,44
+luz exterior garage,2026-07-22,686,140.9,48
+luz exterior garage,2026-08-03,175,90.6,40
+luz exterior garage,2026-08-04,917,113.6,44
+luz exterior garage,2026-08-05,918,117.5,92
+luz exterior garage,2026-08-06,572,118.1,100
+luz exterior garage,2026-08-11,1,140.0,140
+luz exterior garage,2026-08-17,7,140.0,140
+luz exterior garage,2026-08-18,1,140.0,140
+zigbee_temp_chicos,2026-07-15,1,124.0,124
+zigbee_temp_chicos,2026-07-20,1,124.0,124
+zigbee_temp_chicos,2026-07-21,1,124.0,124
+zigbee_temp_chicos,2026-08-03,1,124.0,124
+zigbee_temp_chicos,2026-08-04,1,124.0,124
+zigbee_temp_chicos,2026-08-11,1,124.0,124
+zigbee_temp_chicos,2026-08-17,7,124.0,124
+zigbee_temp_chicos,2026-08-18,1,124.0,124
+zigbee_temp_exterior,2026-07-15,39,161.2,132
+zigbee_temp_exterior,2026-07-16,118,196.3,148
+zigbee_temp_exterior,2026-07-17,105,172.5,92
+zigbee_temp_exterior,2026-07-18,98,191.9,132
+zigbee_temp_exterior,2026-07-19,72,190.5,184
+zigbee_temp_exterior,2026-07-20,111,170.1,120
+zigbee_temp_exterior,2026-07-21,110,184.7,124
+zigbee_temp_exterior,2026-07-22,112,193.9,84
+zigbee_temp_exterior,2026-07-23,38,189.9,188
+zigbee_temp_exterior,2026-07-24,21,203.2,188
+zigbee_temp_exterior,2026-08-01,113,204.8,192
+zigbee_temp_exterior,2026-08-02,107,177.1,136
+zigbee_temp_exterior,2026-08-03,81,156.5,136
+zigbee_temp_exterior,2026-08-04,109,164.7,124
+zigbee_temp_exterior,2026-08-05,104,165.7,128
+zigbee_temp_exterior,2026-08-06,108,159.7,140
+zigbee_temp_exterior,2026-08-07,90,166.6,144
+zigbee_temp_exterior,2026-08-08,60,162.0,152
+zigbee_temp_exterior,2026-08-09,115,154.6,144
+zigbee_temp_exterior,2026-08-10,114,162.8,144
+zigbee_temp_exterior,2026-08-11,92,164.0,132
+zigbee_temp_exterior,2026-08-12,106,158.2,104
+zigbee_temp_exterior,2026-08-13,96,182.5,168
+zigbee_temp_exterior,2026-08-14,92,174.7,140
+zigbee_temp_exterior,2026-08-15,108,182.6,140
+zigbee_temp_exterior,2026-08-16,108,177.0,176
+zigbee_temp_exterior,2026-08-17,116,181.6,152
+zigbee_temp_exterior,2026-08-18,110,196.2,120
+zigbee_temp_exterior,2026-08-19,75,170.7,124
+zigbee_temp_exterior,2026-08-20,108,158.8,124
+zigbee_temp_exterior,2026-08-21,79,150.1,128
+zigbee_temp_exterior,2026-08-22,69,134.3,108
+zigbee_temp_exterior,2026-08-23,102,141.8,104
+zigbee_temp_exterior,2026-08-24,38,165.9,144
+zigbee_temp_living,2026-07-15,37,167.0,148
+zigbee_temp_living,2026-07-16,108,193.4,88
+zigbee_temp_living,2026-07-17,108,170.9,96
+zigbee_temp_living,2026-07-18,109,193.0,124
+zigbee_temp_living,2026-07-19,108,189.4,172
+zigbee_temp_living,2026-07-20,109,165.2,124
+zigbee_temp_living,2026-07-21,109,186.5,124
+zigbee_temp_living,2026-07-22,110,193.1,84
+zigbee_temp_living,2026-07-23,108,198.2,144
+zigbee_temp_living,2026-07-24,108,205.3,204
+zigbee_temp_living,2026-07-25,108,205.3,204
+zigbee_temp_living,2026-07-26,108,204.8,204
+zigbee_temp_living,2026-07-27,108,205.9,204
+zigbee_temp_living,2026-07-28,108,205.7,204
+zigbee_temp_living,2026-07-29,108,206.7,196
+zigbee_temp_living,2026-07-30,108,206.2,204
+zigbee_temp_living,2026-07-31,108,205.5,204
+zigbee_temp_living,2026-08-01,109,203.3,152
+zigbee_temp_living,2026-08-02,107,178.8,140
+zigbee_temp_living,2026-08-03,109,157.1,136
+zigbee_temp_living,2026-08-04,108,162.6,120
+zigbee_temp_living,2026-08-05,108,162.3,128
+zigbee_temp_living,2026-08-06,108,159.6,140
+zigbee_temp_living,2026-08-07,108,164.6,144
+zigbee_temp_living,2026-08-08,108,159.3,152
+zigbee_temp_living,2026-08-09,108,155.3,148
+zigbee_temp_living,2026-08-10,108,161.4,116
+zigbee_temp_living,2026-08-11,110,163.3,132
+zigbee_temp_living,2026-08-12,108,159.0,108
+zigbee_temp_living,2026-08-13,108,180.9,144
+zigbee_temp_living,2026-08-14,114,173.3,152
+zigbee_temp_living,2026-08-15,108,183.6,144
+zigbee_temp_living,2026-08-16,108,177.4,176
+zigbee_temp_living,2026-08-17,115,181.1,104
+zigbee_temp_living,2026-08-18,106,200.3,120
+zigbee_temp_living,2026-08-19,108,168.6,124
+zigbee_temp_living,2026-08-20,108,158.4,112
+zigbee_temp_living,2026-08-21,154,148.3,108
+zigbee_temp_living,2026-08-22,212,135.6,112
+zigbee_temp_living,2026-08-23,228,140.3,40
+zigbee_temp_living,2026-08-24,92,163.3,132
+zigbee_temperatura_exterior,2026-07-15,45,158.6,144
+zigbee_temperatura_exterior,2026-07-16,87,192.3,84
+zigbee_temperatura_exterior,2026-07-17,83,174.1,96
+zigbee_temperatura_exterior,2026-07-18,97,195.0,184
+zigbee_temperatura_exterior,2026-07-19,90,190.3,180
+zigbee_temperatura_exterior,2026-07-20,91,165.6,120
+zigbee_temperatura_exterior,2026-07-21,76,186.5,116
+zigbee_temperatura_exterior,2026-07-22,82,190.0,80
+zigbee_temperatura_exterior,2026-07-23,85,198.4,148
+zigbee_temperatura_exterior,2026-07-24,81,204.9,204
+zigbee_temperatura_exterior,2026-07-25,87,204.8,204
+zigbee_temperatura_exterior,2026-07-26,85,205.1,204
+zigbee_temperatura_exterior,2026-07-27,72,205.3,204
+zigbee_temperatura_exterior,2026-07-28,109,206.5,204
+zigbee_temperatura_exterior,2026-07-29,118,205.2,204
+zigbee_temperatura_exterior,2026-07-30,96,205.0,204
+zigbee_temperatura_exterior,2026-07-31,115,205.6,200
+zigbee_temperatura_exterior,2026-08-01,113,204.7,196
+zigbee_temperatura_exterior,2026-08-02,101,178.6,144
+zigbee_temperatura_exterior,2026-08-03,88,162.8,140
+zigbee_temperatura_exterior,2026-08-04,91,161.4,124
+zigbee_temperatura_exterior,2026-08-05,94,164.5,128
+zigbee_temperatura_exterior,2026-08-06,109,165.1,140
+zigbee_temperatura_exterior,2026-08-07,115,160.7,80
+zigbee_temperatura_exterior,2026-08-08,145,160.7,148
+zigbee_temperatura_exterior,2026-08-09,129,154.7,148
+zigbee_temperatura_exterior,2026-08-10,128,162.8,144
+zigbee_temperatura_exterior,2026-08-11,94,161.1,132
+zigbee_temperatura_exterior,2026-08-12,88,161.0,108
+zigbee_temperatura_exterior,2026-08-13,91,181.7,172
+zigbee_temperatura_exterior,2026-08-14,85,169.9,140
+zigbee_temperatura_exterior,2026-08-15,77,181.4,140
+zigbee_temperatura_exterior,2026-08-16,90,177.3,176
+zigbee_temperatura_exterior,2026-08-17,15,168.8,160
+zigbee_temperatura_exterior,2026-08-18,1,160.0,160
