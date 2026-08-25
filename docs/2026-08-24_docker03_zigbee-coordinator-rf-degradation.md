@@ -249,6 +249,58 @@ alerta < 145.
 
 ---
 
+## 5. Acciones aplicadas el 2026-08-25
+
+### Reubicación del dongle (mitigación informal, previa al cable apantallado)
+
+Secuencia física, confirmada por kernel log en gr-srv03 y docker03 (VM 102):
+
+| Hora local | Evento |
+|---|---|
+| 18:11:58 | Disco BACKUP retirado (`usb 2-1` disconnect) — reduce el ruido USB3 total en el chasis |
+| 21:21:06 | Dongle re-conectado con cable corto (reciclado, funda plástica blanca), mismo puerto `usb 1-1` |
+| 08-25 06:47:23 | Dongle desconectado para moverlo a una ubicación mejor — **no volvió a enumerar solo** |
+| 08-25 ~08:26 | Detectado: `zigbee2mqtt` caído (`Exited (2)`) hace ~1h40, sin dispositivo en `lsusb` ni en host ni en la VM. Outage real, no solo pendiente de medición |
+| 08-25 18:13:42 | Reconectado manualmente por el usuario → enumera en `usb 1-3` (puerto físico distinto al `1-1` anterior) → passthrough a docker03 OK → `zigbee2mqtt` up, dispositivos reconectando en <2 min |
+
+Primer LQI post-reconexión: `luces medianera z` = **200**, en línea con el piso sano
+(08-18). Una sola muestra, no es tendencia — falta un día completo de datos para
+comparar contra la tabla de la sección 2.
+
+> El movimiento del 06:47 dejó el dongle sin enumerar por ~11.5 h hasta la reconexión
+> manual a las 18:13 — el primer intento de reubicación no quedó bien asentado.
+> Verificar que el conector encastre a fondo en la nueva ubicación.
+
+### WiFi interno de gr-srv03 deshabilitado
+
+La NucBox tiene una tarjeta WiFi PCIe interna (`Realtek RTL8821CE`, `wlp1s0`) configurada
+como respaldo de red pero sin uso real (ya estaba `inet manual`, sin `auto`, y el link
+en `DOWN`). Es una fuente de RF en 2,4 GHz **dentro del mismo chasis** que el dongle
+Zigbee — mismo mecanismo de proximidad que el diagnóstico de la sección 2, pero para un
+radio propio en vez de ruido de señalización USB3.
+
+Deshabilitada por completo (no solo link down, sino el driver):
+
+```bash
+echo "blacklist rtw88_8821ce" > /etc/modprobe.d/blacklist-wifi.conf
+modprobe -r rtw88_8821ce
+```
+
+No afecta la conectividad actual (la interfaz no se usaba). Distinto de la hipótesis
+alternativa de la sección 2 (AP externo en ch 3/10 visible desde raspberrypi2z) — esa
+sigue pendiente (`Pendiente` ítem 2), esto solo descarta el propio equipo como emisor.
+
+Para revertir: `rm /etc/modprobe.d/blacklist-wifi.conf && modprobe rtw88_8821ce`.
+
+### Pendiente de esta ronda
+
+- Confirmar con un día completo de LQI si la reubicación (+ WiFi apagado) mueve la media
+  de flota de vuelta a ~180–205.
+- Si el dongle vuelve a desconectarse solo en la nueva ubicación, revisar el asentado
+  físico del conector antes de sospechar de la ubicación en sí.
+
+---
+
 ## Apéndice: mapeo NWK ↔ dispositivo
 
 | NWK | IEEE | modelo | friendly name |

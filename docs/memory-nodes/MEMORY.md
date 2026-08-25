@@ -17,7 +17,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 ## Open — needs follow-up
 
 - [project_ceres_empty_snapshots.md](project_ceres_empty_snapshots.md) — 7 months of empty backups, cause still unproven after 8 probe nights; **probe left until the 08-25 BACKUP_A rotation**
-- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after the 08-17 dongle move; shielded extension pending
+- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 relocated dongle + disabled gr-srv03 WiFi, awaiting LQI trend
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
 - [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — broker LXC 105 ready; client cutover blocked on a static IP
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
