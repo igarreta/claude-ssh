@@ -140,6 +140,24 @@ requested.
     parse as an MQTT packet). Fix was simply setting Port to `8883` to match. Confirmed
     working end-to-end with a `mosquitto_pub`/UI round-trip test.
   - Old docker03 broker connection left in place per the cutover-order/parallel-run plan below.
+  - **Recurred 2026-08-26**: the exact same Port-field bug came back — `settings.json`
+    (`/home/rsi/dockerfiles/mqtt-explorer/config/settings.json` on docker03) had this
+    connection persisted with `encryption: true` but `port: 1883`, so it silently failed again
+    (mosquitto logged a protocol error, same signature as above). The UI apparently doesn't
+    keep the two fields in sync when re-saving. Fixed by patching the port directly in the
+    persisted JSON — the file is root-owned and docker03 sudo needs a password, so `docker exec
+    mqtt-explorer node -e "..."` (container runs Node, no Python) was used to edit it from
+    inside the container as root, then `docker restart mqtt-explorer`. Confirmed working by
+    the user after reload. **If mqtt-explorer can't connect to the new broker again, check this
+    file's `port` field before anything else.**
+
+- **raspberrypi2z rtl_433**: **done, 2026-08-26.** `output mqtt://...` in
+  `/etc/rtl_433/rtl_433.conf` updated to `192.168.1.198:1883,user=rtl433_pi2z,pass=...`
+  (plaintext + auth — no TLS, per the earlier `ldd` finding that this package has no SSL
+  support). Applied via write-local + sftp-upload to `/home/rsi/rtl_433.conf.new`, then the
+  user ran the `sudo cp`/`mv`/`systemctl restart rtl433.service` sequence themselves (sudo
+  needs a password on this host). Confirmed publishing: `mosquitto_sub` against
+  `rtl_433/raspberrypi2z/#` on the new broker returned a live `Nexus-TH` reading.
 
 ## Still to do
 
@@ -149,18 +167,15 @@ requested.
    - **raspberrypi1 TTato**: add `MQTT_PORT`/`MQTT_USER`/`MQTT_PASS`/`MQTT_CA` constants in
      `GlobalThreads.py`; call `.tls_set(ca_certs=MQTT_CA)` + `.username_pw_set(...)` on all 3
      client instances before `.connect()`; `docker restart TTato`.
-   - **raspberrypi2z rtl_433**: update `output mqtt://...` in `rtl_433.conf` to the new IP +
-     `user=rtl433_pi2z,pass=...` (plaintext, no TLS); restart `rtl433.service` (needs sudo
-     password — write locally, scp, hand the sudo command to the user).
    - **cygnus tuya-link**: add `user`/`pass`/`ca_cert` to `tuya_link.toml`; small code change in
      `tuya_link.py` to call `client.username_pw_set(...)` + `client.tls_set(...)` before
      `client.connect(...)`; `sudo podman restart tuya-link` (passwordless on cygnus).
    - **Home Assistant**: manual UI step (Settings → Devices & Services → MQTT → Reconfigure) —
      new host/port/user/pass, enable TLS, upload the CA cert. No SSH/API access to this host in
      the migration session.
-2. Cutover order: ~~mqtt-explorer~~ → rtl_433 → zigbee2mqtt → tuya-link → TTato → Home Assistant
-   last (most critical). Keep docker03's old broker running in parallel until each client is
-   confirmed working on the new one.
+2. Cutover order: ~~mqtt-explorer~~ → ~~rtl_433~~ → zigbee2mqtt → tuya-link → TTato → Home
+   Assistant last (most critical). Keep docker03's old broker running in parallel until each
+   client is confirmed working on the new one.
 3. After a stable cutover, decommission the docker03 mosquitto container/compose.
 4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
    automated review.
