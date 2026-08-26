@@ -1,12 +1,12 @@
 # cygnus: Caddy TLS cert renewal failed — Let's Encrypt ARI stuck order
 
-**Status:** open
+**Status:** closed
 **Host:** cygnus
 **Supersedes:** —
 **Superseded-by:** —
 
 **Date:** 2026-08-04
-**Status detail:** unresolved as of 2026-08-04 (not urgent — see Impact)
+**Status detail:** self-resolved 2026-08-10 — see Status / next steps
 
 ## Symptom
 
@@ -77,6 +77,17 @@ matters.
   still failing as expiry approaches (say by mid-to-late August), revisit
   and consider manual intervention (e.g. contact Tailscale support, or fall
   back to a different ACME path) with more urgency.
+- **Resolved 2026-08-10**: the stuck ARI order cleared on its own (exact
+  clear time unknown — no explicit log capture at the moment it happened,
+  found retroactively 2026-08-26 by checking the live served cert). Cert
+  `notBefore=Aug 10 06:18:46 2026 GMT`, `notAfter=Nov 8 06:18:45 2026 GMT`,
+  confirmed both on disk (`/etc/caddy/cygnus.crt`) and actually served over
+  TLS (`openssl s_client` against `cygnus.tail366c79.ts.net:443` returns the
+  same dates) — Caddy picked it up and reloaded correctly, not just a stale
+  file. No manual intervention was needed; the cron's own retry succeeded
+  once Boulder's lock expired. Next renewal cycle (720h min-validity) will
+  trigger automatically around 2026-10-09, ~30 days before the Nov 8
+  expiry.
 
 ## Gotchas for next time
 

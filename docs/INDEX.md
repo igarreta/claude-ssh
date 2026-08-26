@@ -139,7 +139,7 @@ not just the default `always` →
 ## Web / TLS — cygnus
 
 - [2026-06-22_cygnus_caddy-tls-pgadmin.md](2026-06-22_cygnus_caddy-tls-pgadmin.md) — *active* — Caddy + Tailscale cert renewal via root cron
-- [2026-08-04_cygnus_caddy-cert-ari-stuck-order.md](2026-08-04_cygnus_caddy-cert-ari-stuck-order.md) — **open** — Let's Encrypt ARI stuck order, unresolved as of 2026-08-04
+- [2026-08-04_cygnus_caddy-cert-ari-stuck-order.md](2026-08-04_cygnus_caddy-cert-ari-stuck-order.md) — *closed* — Let's Encrypt ARI stuck order, self-resolved 2026-08-10
 
 ## NAS project
 

@@ -14,5 +14,8 @@ fetch certs and the tailscale operator is `rsi`.
 "run it as caddy" fix does not work.
 
 **How to apply:** `docs/2026-06-22_cygnus_caddy-tls-pgadmin.md`. A renewal failure from
-2026-08-04 (Let's Encrypt ARI stuck order) is still **open** —
-`docs/2026-08-04_cygnus_caddy-cert-ari-stuck-order.md`. Related: [[feedback_https_urls_only]].
+2026-08-04 (Let's Encrypt ARI stuck order) self-resolved 2026-08-10 — cert renewed cleanly
+(`notBefore=Aug 10`, `notAfter=Nov 8 2026`), confirmed both on disk and actually served over
+TLS. See `docs/2026-08-04_cygnus_caddy-cert-ari-stuck-order.md` (now closed) if this class of
+`409 alreadyReplaced` error recurs — it's a transient Let's Encrypt/Boulder server-side lock,
+not a local misconfiguration. Related: [[feedback_https_urls_only]].

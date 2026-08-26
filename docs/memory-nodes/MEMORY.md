@@ -22,7 +22,6 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 final wall-mounted placement lifted it to ~220; recheck 2026-09-09
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
-- [project_cygnus_caddy_tls.md](project_cygnus_caddy_tls.md) — Tailscale cert via root cron; an 08-04 ARI renewal failure is unresolved
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
 - [project_docker03_rtl-test.md](project_docker03_rtl-test.md) — garage-remote 433 MHz capture, unfinished
 
@@ -48,6 +47,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_raspberrypi2z_setup.md](project_raspberrypi2z_setup.md) — Pi Zero W for 433 MHz sensors; hardened SSH and sudo
 - [project_gr-srv03_vm100_stopped.md](project_gr-srv03_vm100_stopped.md) — VM 100 is stopped on purpose; ignore it in outage checks
 - [project_raspberrypi1_watchdog.md](project_raspberrypi1_watchdog.md) — BCM2835 hardware watchdog armed since 06-25; closes the Jun 2026 hard-freeze gap
+- [project_cygnus_caddy_tls.md](project_cygnus_caddy_tls.md) — Tailscale cert via root cron; the 08-04 ARI renewal failure self-resolved 08-10
 
 ## Heating and home automation
 
