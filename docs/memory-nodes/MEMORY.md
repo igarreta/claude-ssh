@@ -39,7 +39,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_castor_postgres.md](project_castor_postgres.md) — PostgreSQL 17 on LXC 205; must keep `10.0.100.11` in `listen_addresses`
 - [project_cygnus_podman_restart_policy.md](project_cygnus_podman_restart_policy.md) — containers survive reboots only if the restart filter matches `unless-stopped`
 - [project_docker03_zigbee2mqtt.md](project_docker03_zigbee2mqtt.md) — 07-15 outage from USB re-enumeration; stable `by-id` mapping + watchdog
-- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — new broker LXC 105 live; all 7 known clients cut over (incl. esp32-pileta, found late); brief full outage 08-26 from a bad chown
+- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — migration done; all 7 clients cut over, old docker03 broker stopped 08-26 (not yet removed)
 - [project_docker03_tailscale-key-expiry-2026-08-17.md](project_docker03_tailscale-key-expiry-2026-08-17.md) — node-key expiry, not the USB storm; MagicDNS-only resolv.conf broke container DNS
 - [project_docker03_fail2ban.md](project_docker03_fail2ban.md) — no rsyslog meant no auth.log; fixed with `backend = systemd`
 - [project_comet_tailscale_logout.md](project_comet_tailscale_logout.md) — corrupted `tailscaled.state`; unprivileged `journalctl` fakes outages

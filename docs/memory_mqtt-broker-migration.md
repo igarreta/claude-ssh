@@ -289,12 +289,25 @@ itself suggests.
 `temperatura_caja_techo`, `temperatura_calefactor`, `iluminacion_techo`, WiFi signal, pump
 hours) and switch states, all arriving on the new broker.
 
+## docker03 old broker — stopped, 2026-08-26
+
+Before stopping, verified with a 15-minute `mosquitto_sub -R -t '#'` (suppresses retained
+messages, so only live publishes would show) against `192.168.1.8:1883` from the mosquitto
+host — **zero messages** in the full window. This was prompted by the user still seeing old
+data in mqttexplorer; confirmed that was purely stale retained state in that tool, not active
+traffic — no client was still publishing.
+
+`docker stop mosquitto` on docker03 (container `mosquitto`, image `eclipse-mosquitto`, ports
+1883/8883/9001). Restart policy is `unless-stopped`, so this survives a docker03/host reboot —
+it won't silently come back. Left the container and its compose file in place (not removed) in
+case a rollback is ever needed; ports confirmed released
+(`ss -tlnp` shows nothing on 1883/8883/9001 anymore on docker03).
+
 ## Still to do
 
-1. **Decommission the docker03 mosquitto container/compose** — the whole point of keeping it
-   running in parallel was to have a fallback during cutover; with all 7 known clients (6
-   original + esp32-pileta) confirmed on the new broker, it's no longer needed. Not urgent —
-   give it a few days of the new broker running clean first.
+1. Remove the stopped `mosquitto` container/compose from docker03 entirely, once comfortable
+   there's no need to roll back (the stop above is easily reversible; a full removal is a bit
+   more final — no rush).
 2. Add `log-monitor/hosts/mosquitto.conf` so the new broker's logs join the daily automated
    review (see `docs/2026-06-30_log-monitor.md`).
 4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily

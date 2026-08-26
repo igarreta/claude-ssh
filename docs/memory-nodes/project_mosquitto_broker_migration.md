@@ -1,6 +1,6 @@
 ---
 name: project_mosquitto_broker_migration
-description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; all 7 known clients cut over (incl. esp32-pileta, found late)"
+description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105); all 7 clients cut over, old docker03 broker stopped 2026-08-26"
 metadata: 
   node_type: memory
   type: project
@@ -33,8 +33,13 @@ required. Provisioned account `esp32pileta` (plaintext 1883, `esp32-pileta/#`); 
 credentials in ESPHome Builder and reflashed; confirmed publishing (`status: online` + live
 sensor/switch states).
 
-**Remaining**: decommission the docker03 mosquitto container once the new broker's run clean
-for a few days; add `log-monitor/hosts/mosquitto.conf`.
+**Old broker stopped, 2026-08-26**: verified first with a 15-min `mosquitto_sub -R` (no
+retained messages) against the old broker — zero live traffic — then `docker stop mosquitto`
+on docker03 (`unless-stopped` policy, survives reboot, ports confirmed released). Container
+left in place, not removed, for easy rollback.
+
+**Remaining**: remove the stopped container/compose entirely once comfortable no rollback is
+needed; add `log-monitor/hosts/mosquitto.conf`.
 
 **Caused a brief full outage 2026-08-26** chasing a mosquitto_passwd ownership warning —
 `chown root:root` on `passwd`/`acl` (mosquitto's own suggested fix) broke the broker

@@ -86,9 +86,8 @@ daily restart in place →
 
 ## MQTT
 
-**Current:** dedicated broker LXC 105 built and verified (auth + TLS); **all 6 clients cut
-over** (2026-08-26) — old docker03 broker kept running a few more days as fallback before
-decommission →
+**Current:** dedicated broker LXC 105 live; **all 7 clients cut over** (2026-08-26, incl.
+esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet removed →
 [memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md)
 
 - [memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md) — **open**
