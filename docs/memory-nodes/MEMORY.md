@@ -20,7 +20,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 final wall-mounted placement lifted it to ~220; recheck 2026-09-09
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
-- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — broker LXC 105 ready; mqtt-explorer + rtl_433 + zigbee2mqtt + tuya-link cut over, 2 clients left
+- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — broker LXC 105 ready; 5 of 6 clients cut over, only Home Assistant (manual UI step) left
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
 - [project_cygnus_caddy_tls.md](project_cygnus_caddy_tls.md) — Tailscale cert via root cron; an 08-04 ARI renewal failure is unresolved
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated

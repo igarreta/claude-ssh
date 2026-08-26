@@ -201,20 +201,40 @@ requested.
     (e.g. `(mosquitto_sub ... -C 1 & sleep 2; mosquitto_pub ...; wait)`). This cost significant
     time chasing a phantom ACL/broker bug before the artifact was identified.
 
+- **raspberrypi1 TTato**: **done, 2026-08-26.** `GlobalThreads.py`: `MQTT_BROKER` →
+  `192.168.1.198`, added `MQTT_PORT`/`MQTT_USER`/`MQTT_PASS`/`MQTT_CA` (`MQTT_CA = str(base_dir
+  / "ca.crt")` — `base_dir` already resolves to `/TTato/` in-container since the whole repo
+  root is bind-mounted there via `compose.yaml`'s `./:/TTato`, so `ca.crt` just needed to land
+  at the repo root, no volume change needed); `username_pw_set`/`tls_set` added on both
+  `_client_rtl` and `_client_oth` in `launch()`, `connect()` calls in `relaunch()` updated to
+  pass `MQTT_PORT`. `TTato.py`: imports the 4 new constants from `GlobalThreads`, same
+  `username_pw_set`/`tls_set` added before its own `mqtt_client.connect(MQTT_BROKER,
+  MQTT_PORT)`. `docker restart TTato` (no sudo needed, `rsi` is in the `docker` group on this
+  host, unlike docker03/cygnus).
+  - Confirmed via a live `TTato/status` publish arriving on the new broker (`mode: A, boiler:
+    0, ...`) — direct proof for the `mqtt_client` (TTato.py) connection. The two
+    `GlobalThreads.py` clients (`_client_rtl`, `_client_oth`, feeding zigbee2mqtt/rtl_433/
+    granev sensor readings into the boiler-control logic) weren't independently proven the same
+    way — didn't want to spoof a fake sensor reading on a real topic just to test, since a bad
+    injected temperature could trigger a wrong heating decision. They use the identical
+    connect/auth pattern and the container logged zero exceptions since restart, so treated as
+    working; **if a "Sensor ... sin datos" warning reappears for a zigbee2mqtt/rtl_433-fed
+    sensor in the hours after 2026-08-26 18:31, re-check these two clients specifically.**
+  - **Known gap, not a bug**: TTato's `_client_oth` also subscribes to `granev/temp/#`, which
+    Home Assistant publishes to — and HA is still on the old docker03 broker (last remaining
+    cutover). Until HA moves, TTato won't receive `granev/temp/*` on the new broker even though
+    its own connection is fine. See
+    [2026-07-20_raspberrypi1_ttato-granev-integration.md](2026-07-20_raspberrypi1_ttato-granev-integration.md).
+
 ## Still to do
 
-1. Update each remaining client (write-local-then-scp per this repo's convention; for a
-   `ca.crt` drop specifically, see the ownership/redaction gotchas noted under zigbee2mqtt
-   above):
-   - **raspberrypi1 TTato**: add `MQTT_PORT`/`MQTT_USER`/`MQTT_PASS`/`MQTT_CA` constants in
-     `GlobalThreads.py`; call `.tls_set(ca_certs=MQTT_CA)` + `.username_pw_set(...)` on all 3
-     client instances before `.connect()`; `docker restart TTato`.
+1. Last remaining client:
    - **Home Assistant**: manual UI step (Settings → Devices & Services → MQTT → Reconfigure) —
      new host/port/user/pass, enable TLS, upload the CA cert. No SSH/API access to this host in
      the migration session.
-2. Cutover order: ~~mqtt-explorer~~ → ~~rtl_433~~ → ~~zigbee2mqtt~~ → ~~tuya-link~~ → TTato →
-   Home Assistant last (most critical). Keep docker03's old broker running in parallel until
-   each client is confirmed working on the new one.
+2. Cutover order: ~~mqtt-explorer~~ → ~~rtl_433~~ → ~~zigbee2mqtt~~ → ~~tuya-link~~ →
+   ~~TTato~~ → Home Assistant last (most critical, and the only one left). Keep docker03's old
+   broker running in parallel until Home Assistant is confirmed working on the new one.
 3. After a stable cutover, decommission the docker03 mosquitto container/compose.
 4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
    automated review.

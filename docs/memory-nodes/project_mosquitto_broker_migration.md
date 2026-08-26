@@ -1,6 +1,6 @@
 ---
 name: project_mosquitto_broker_migration
-description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; client cutover in progress, 4 of 6 clients done"
+description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; 5 of 6 clients cut over, only Home Assistant left"
 metadata: 
   node_type: memory
   type: project
@@ -21,10 +21,14 @@ anonymous.
 **Static IP** (was the blocker) resolved 2026-08-16 — `192.168.1.198` is now a router DHCP
 reservation, no cert regeneration needed.
 
-**Client cutover in progress**: mqtt-explorer, raspberrypi2z rtl_433, docker03 zigbee2mqtt, and
-cygnus tuya-link (all 2026-08-26 except mqtt-explorer's initial cutover on 08-16) done and
-confirmed publishing/connecting. Still on the old docker03 broker: TTato, Home Assistant — in
-that order, old broker kept running in parallel until each is confirmed.
+**Client cutover nearly done**: mqtt-explorer, raspberrypi2z rtl_433, docker03 zigbee2mqtt,
+cygnus tuya-link, and raspberrypi1 TTato (all 2026-08-26 except mqtt-explorer's initial cutover
+on 08-16) done and confirmed publishing/connecting. Only **Home Assistant** left, on the old
+docker03 broker — manual UI step, no SSH access to that host. Old broker stays up until HA is
+confirmed working on the new one, then decommission it.
+
+**TTato caveat**: its `granev/temp/#` subscription won't see live data until HA cuts over too
+(HA is the publisher on that topic) — not a bug, just sequencing.
 
 **A `ca.crt` file's base64 body is high-entropy enough that the harness redacts it out of any
 command output or SFTP-download content before it reaches the assistant's context** — even
