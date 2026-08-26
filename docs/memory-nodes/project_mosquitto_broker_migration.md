@@ -1,6 +1,6 @@
 ---
 name: project_mosquitto_broker_migration
-description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; 5 of 6 clients cut over, only Home Assistant left"
+description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; all 6 clients cut over, old broker pending decommission"
 metadata: 
   node_type: memory
   type: project
@@ -21,11 +21,14 @@ anonymous.
 **Static IP** (was the blocker) resolved 2026-08-16 — `192.168.1.198` is now a router DHCP
 reservation, no cert regeneration needed.
 
-**Client cutover nearly done**: mqtt-explorer, raspberrypi2z rtl_433, docker03 zigbee2mqtt,
-cygnus tuya-link, and raspberrypi1 TTato (all 2026-08-26 except mqtt-explorer's initial cutover
-on 08-16) done and confirmed publishing/connecting. Only **Home Assistant** left, on the old
-docker03 broker — manual UI step, no SSH access to that host. Old broker stays up until HA is
-confirmed working on the new one, then decommission it.
+**Client cutover complete, 2026-08-26**: mqtt-explorer (initial cutover 08-16), raspberrypi2z
+rtl_433, docker03 zigbee2mqtt, cygnus tuya-link, raspberrypi1 TTato, and Home Assistant (manual
+UI reconfigure — no SSH access to that host) all confirmed publishing/subscribing on the new
+broker. HA verification done via its own Developer Tools → MQTT → "Listen to a topic", not an
+external tool (mqttexplorer's view looked stale and caused a false scare — see below).
+
+**Remaining**: decommission the docker03 mosquitto container once the new broker's run clean
+for a few days, and add `log-monitor/hosts/mosquitto.conf` for the daily log review.
 
 **TTato caveat**: its `granev/temp/#` subscription won't see live data until HA cuts over too
 (HA is the publisher on that topic) — not a bug, just sequencing.
@@ -43,7 +46,7 @@ with `encryption: true` but `port: 1883` (the plaintext listener), which mosquit
 protocol error — it has now happened twice. If mqtt-explorer can't connect, check `port` in its
 `settings.json` on docker03 before anything else.
 
-**How to apply**: before doing anything with MQTT clients in this environment, check which
-clients have been cut over (see "Client cutover in progress" above) — anything not listed as
-done is still pointed at the old docker03 broker. Full plan and exact per-host edits:
-[[docs/memory_mqtt-broker-migration.md]] in the claude-ssh repo.
+**How to apply**: all MQTT clients now point at the new broker (`192.168.1.198:8883` TLS, or
+`:1883` plaintext+auth for raspberrypi2z's rtl_433 only) — the old docker03 broker is a
+fallback pending decommission, not a live source of truth. Full history and exact per-host
+edits: [[docs/memory_mqtt-broker-migration.md]] in the claude-ssh repo.

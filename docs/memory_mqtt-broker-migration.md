@@ -1,4 +1,4 @@
-# MQTT broker migration: docker03 → dedicated gr-srv03 LXC (in progress)
+# MQTT broker migration: docker03 → dedicated gr-srv03 LXC
 
 **Status:** open
 **Host:** mosquitto, docker03
@@ -226,15 +226,33 @@ requested.
     its own connection is fine. See
     [2026-07-20_raspberrypi1_ttato-granev-integration.md](2026-07-20_raspberrypi1_ttato-granev-integration.md).
 
+## Home Assistant — done, 2026-08-26
+
+Manual UI step (no SSH/API access to this host): **Settings → Devices & Services → MQTT →
+Reconfigure** (not delete — keeps existing entities/history attached). Broker `192.168.1.198`,
+port `8883`, user `homeassistant`, TLS on with the CA cert uploaded through the wizard's
+advanced/TLS page. **Left "Utilizar un certificado de cliente" (client cert) off** — the broker
+only requires username/password over a CA-verified TLS connection, not mutual TLS; that toggle
+is for a different auth model this setup doesn't use.
+
+Verification false start: checking mqttexplorer and assuming its stale retained-message view
+(timestamped 18:03, from the earlier zigbee2mqtt cutover) meant HA wasn't connected — it
+wasn't HA at all, just a different tool showing old state. Actually confirmed via **Home
+Assistant's own Developer Tools → MQTT → "Listen to a topic"** (topic `#`) live at 18:55:
+received both a real-time `TTato/status` publish and the full retained zigbee2mqtt/tuya-link
+discovery set — proof HA itself is subscribed and receiving on the new broker.
+
+**Cutover order, all done**: mqtt-explorer (08-16) → rtl_433 → zigbee2mqtt → tuya-link → TTato
+→ Home Assistant (all 08-26).
+
 ## Still to do
 
-1. Last remaining client:
-   - **Home Assistant**: manual UI step (Settings → Devices & Services → MQTT → Reconfigure) —
-     new host/port/user/pass, enable TLS, upload the CA cert. No SSH/API access to this host in
-     the migration session.
-2. Cutover order: ~~mqtt-explorer~~ → ~~rtl_433~~ → ~~zigbee2mqtt~~ → ~~tuya-link~~ →
-   ~~TTato~~ → Home Assistant last (most critical, and the only one left). Keep docker03's old
-   broker running in parallel until Home Assistant is confirmed working on the new one.
+1. **Decommission the docker03 mosquitto container/compose** — the whole point of keeping it
+   running in parallel was to have a fallback during cutover; with all 6 clients confirmed on
+   the new broker, it's no longer needed. Not urgent — give it a few days of the new broker
+   running clean first.
+2. Add `log-monitor/hosts/mosquitto.conf` so the new broker's logs join the daily automated
+   review (see `docs/2026-06-30_log-monitor.md`).
 3. After a stable cutover, decommission the docker03 mosquitto container/compose.
 4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
    automated review.

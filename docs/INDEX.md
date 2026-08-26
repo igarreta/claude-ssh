@@ -86,8 +86,9 @@ daily restart in place →
 
 ## MQTT
 
-**Current:** dedicated broker LXC 105 built and verified (auth + TLS); **client cutover not
-started**, blocked on a static LAN IP →
+**Current:** dedicated broker LXC 105 built and verified (auth + TLS); **all 6 clients cut
+over** (2026-08-26) — old docker03 broker kept running a few more days as fallback before
+decommission →
 [memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md)
 
 - [memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md) — **open**

@@ -20,7 +20,6 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 final wall-mounted placement lifted it to ~220; recheck 2026-09-09
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
-- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — broker LXC 105 ready; 5 of 6 clients cut over, only Home Assistant (manual UI step) left
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
 - [project_cygnus_caddy_tls.md](project_cygnus_caddy_tls.md) — Tailscale cert via root cron; an 08-04 ARI renewal failure is unresolved
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
@@ -40,6 +39,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_castor_postgres.md](project_castor_postgres.md) — PostgreSQL 17 on LXC 205; must keep `10.0.100.11` in `listen_addresses`
 - [project_cygnus_podman_restart_policy.md](project_cygnus_podman_restart_policy.md) — containers survive reboots only if the restart filter matches `unless-stopped`
 - [project_docker03_zigbee2mqtt.md](project_docker03_zigbee2mqtt.md) — 07-15 outage from USB re-enumeration; stable `by-id` mapping + watchdog
+- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — new broker LXC 105 live; all 6 clients cut over 08-26, old docker03 broker pending decommission
 - [project_docker03_tailscale-key-expiry-2026-08-17.md](project_docker03_tailscale-key-expiry-2026-08-17.md) — node-key expiry, not the USB storm; MagicDNS-only resolv.conf broke container DNS
 - [project_docker03_fail2ban.md](project_docker03_fail2ban.md) — no rsyslog meant no auth.log; fixed with `backend = systemd`
 - [project_comet_tailscale_logout.md](project_comet_tailscale_logout.md) — corrupted `tailscaled.state`; unprivileged `journalctl` fakes outages
