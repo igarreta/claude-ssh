@@ -16,8 +16,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 ## Open — needs follow-up
 
-- [project_ceres_empty_snapshots.md](project_ceres_empty_snapshots.md) — 7 months of empty backups, cause still unproven after 8 probe nights; **probe left until the 08-25 BACKUP_A rotation**
-- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 relocated dongle + disabled gr-srv03 WiFi, awaiting LQI trend
+- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 final wall-mounted placement lifted it to ~220; recheck 2026-09-09
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
 - [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — broker LXC 105 ready; client cutover blocked on a static IP
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
@@ -27,6 +26,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 ## Backups and storage
 
+- [project_ceres_empty_snapshots.md](project_ceres_empty_snapshots.md) — 7 months of empty backups, cause never reproduced across 3 probe readings; closed 2026-08-26, health monitor is now the safety net
 - [project_backup_schedule.md](project_backup_schedule.md) — **read before adding any job**: the 02:25–03:30 disk-wake window
 - [project_gr-srv03_powered-hub-instability.md](project_gr-srv03_powered-hub-instability.md) — Zigbee drops were BACKUP_A/_B hot-plug transients on the shared 5V rail
 - [project_contabo2_nfs-backup-rclone-fix.md](project_contabo2_nfs-backup-rclone-fix.md) — NFS over WAN hung; migrated to rclone/SFTP

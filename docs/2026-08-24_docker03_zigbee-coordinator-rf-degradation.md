@@ -5,9 +5,10 @@
 **Supersedes:** —
 **Superseded-by:** —
 
-**Status detail (es):** causa raíz identificada con alta confianza, **corrección física pendiente**
-(cable de extensión USB, ~2 meses de demora). Mitigaciones y detección aplicadas
-2026-08-24.
+**Status detail (es):** causa raíz identificada con alta confianza. Ubicación final del
+dongle fijada el 08-25 (atornillada a la pared, puerto USB dedicado); LQI recuperado y
+estable desde entonces. **Decisión sobre el cable apantallado en espera de la revisión del
+2026-09-09** (dos semanas) — sin apuro, la compra ya estaba a ~2 meses.
 
 Investigación disparada por un `switch.turn_on` de Home Assistant que nunca llegó al
 relé, el 2026-08-22 18:46:11 (hora local, UTC-3).
@@ -218,11 +219,13 @@ Los logs de archivo propios de z2m (`data/log/*/log*.log`) sólo retienen ~22 h 
 
 ## 4. Pendiente
 
-1. **Cable de extensión USB 2.0 apantallado con ferrita** (~2 meses). Separar el dongle
-   0,5–1 m del chasis. Ver
-   [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md).
-   Un cable USB 2.0 común comprado localmente daría la mayor parte del beneficio antes —
-   **la distancia es el término dominante**, el apantallamiento es refinamiento.
+1. ~~Cable de extensión USB 2.0 apantallado con ferrita (~2 meses).~~ **En espera.** El
+   08-25 se fijó una ubicación final con el cable reciclado: dongle atornillado a la pared,
+   en un puerto USB dedicado (bus separado del de los discos de backup — `usb 1-3` en bus
+   001, los discos están en bus 002). El LQI se recuperó y sostuvo ~220–226 desde entonces
+   (§6). Como la mejora vino de la distancia, no del apantallamiento — consistente con lo
+   ya previsto acá — **la compra de la ferrita queda en espera de la revisión del
+   2026-09-09**; se cancela si dos semanas sin degradación la confirman innecesaria.
 2. **Mover el AP de WiFi ch 3 → ch 6 u 11** y fijarlo (desactivar auto-channel, para que
    no se vaya al ch 1). Gratis y descarta la hipótesis alternativa.
    - **No** cambiar el canal Zigbee: los routers suelen seguir el cambio, pero los end
@@ -298,6 +301,52 @@ Para revertir: `rm /etc/modprobe.d/blacklist-wifi.conf && modprobe rtw88_8821ce`
   de flota de vuelta a ~180–205.
 - Si el dongle vuelve a desconectarse solo en la nueva ubicación, revisar el asentado
   físico del conector antes de sospechar de la ubicación en sí.
+
+---
+
+## 6. Confirmación 2026-08-26: el ajuste de posición del 08-25 21:30 mejoró el LQI
+
+Extraído de `zigbee2mqtt` (`MQTT publish` en `info`, logs `/app/data/log/2026-08-25.18-15-08/{log1,log}.log`),
+promedio horario de `linkquality` desde la reconexión del 08-25 18:13 hasta el 08-26 09:00.
+Mismo patrón en los 4 dispositivos con reporte frecuente — 1 salto (`bomba agua z`,
+`Enchufe_1/2`) y 2 saltos (`luces medianera z`):
+
+| Hora local | `luces medianera z` | `bomba agua z` | `Enchufe_1` | `Enchufe_2` |
+|---|---|---|---|---|
+| 18:00–20:00 | 189–190 | 187–191 | 188–189 | 186–189 |
+| 21:00 | 198 | 198 | 197 | 198 |
+| 22:00–03:00 | 220–226 | 220–222 | 220–222 | 220–222 |
+| 04:00–08:00 (08-26) | 212–225 | — | — | — |
+
+El salto real ocurre en dos escalones, minuto a minuto sobre `luces medianera z`:
+`21:31:09` 188→192, y el salto grande `21:43:26`→`21:45:26` 188→220. Coincide con "ajuste
+de posición ~21:30" del usuario — unos 15 min de holgura entre el ajuste y que se estabilice
+la nueva ruta/RF es razonable.
+
+**Es fleet-wide, no de un solo dispositivo** — mismo salto simultáneo en 1 salto y 2 saltos
+— la misma firma que identificó al coordinador como la fuente en la sección 2, ahora en la
+dirección de mejora en vez de degradación. Se mantuvo estable ~220 durante toda la noche y
+la mañana siguiente (**+30 sobre el piso del 08-22 = 134, en línea con el piso sano
+180–205**).
+
+Errores de ruta en la ventana completa (~15 h): sólo **2**, uno antes del ajuste
+(`19:31`, `ROUTE_ERROR_MANY_TO_ONE`, hacia un end device a pila) y uno después (`05:57`,
+`ROUTE_ERROR_INDIRECT_TRANSACTION_EXPIRY`, hacia el Portón) — ambos de severidad baja y sin
+relación aparente con el ajuste, muy lejos de los 825 del 08-22.
+
+**Conclusión:** el ajuste de posición del 08-25 21:30 mejoró el LQI, no lo empeoró.
+
+### Ubicación final (2026-08-25)
+
+El usuario fijó la ubicación de forma permanente: dongle atornillado a la pared, en un
+puerto USB dedicado (no compartido con los discos BACKUP_A/B, que rotan semanalmente).
+Cable reciclado, en buen estado visual. Con esto la mayor incertidumbre pendiente —que la
+posición fuera accidental y se perdiera en el próximo cambio de disco— queda resuelta: ya
+no depende de que nadie mueva nada.
+
+**Próxima revisión: 2026-09-09** (dos semanas). Si el LQI se mantiene ~200+ sin señales de
+la degradación gradual de cuatro días vista en agosto, cerrar este documento y cancelar la
+compra del cable apantallado (sección 4, ítem 1).
 
 ---
 

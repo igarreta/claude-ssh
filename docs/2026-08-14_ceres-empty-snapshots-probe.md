@@ -1,14 +1,18 @@
-# Sonda abierta: snapshots vacíos de ceres → BACKUP_A/B
+# Sonda cerrada: snapshots vacíos de ceres → BACKUP_A/B
 
-**Status:** open
+**Status:** closed
 **Host:** ceres, gr-srv03
 **Supersedes:** —
 **Superseded-by:** —
 
-**Fecha:** 2026-08-14
-**Status detail (es):** diagnóstico ABIERTO. Dos lecturas hechas (2026-08-15 y 2026-08-24, ver abajo).
-El origen nunca se cayó en 8 noches, así que la causa sigue sin probarse. La sonda **se deja puesta
-hasta la rotación de BACKUP_A del 2026-08-25**, que es la única corrida que todavía podría reproducirla.
+**Fecha:** 2026-08-14 (cerrada 2026-08-26)
+**Status detail (es):** causa de origen **nunca probada** — el origen no falló en ninguna de
+las tres lecturas (08-15, 08-24, 08-26), incluida la noche de rotación de BACKUP_A del
+08-25→08-26 que el plan original marcaba como la última corrida que podía reproducirla.
+Sonda retirada de ceres el 2026-08-26 (crontab + script); el log queda como evidencia. El
+monitor de salud arithmetic ([[project_backup_health_monitor]]) es la red de seguridad
+permanente que la reemplaza. El bind mount obsoleto de BACKUP_A sigue ocurriendo y sigue
+auto-curándose — eso no cambió y no forma parte de lo que se cierra acá.
 **Relacionado:** [[2026-08-14_backup-health-monitor-design]]
 
 ## Qué pasó
@@ -166,15 +170,50 @@ bien con sus 3 entradas; lo que no aguanta dos filas es el formato de una línea
 
 **Decisión (2026-08-24):** la sonda queda puesta hasta la rotación de BACKUP_A del 2026-08-25.
 
-## Limpieza cuando se cierre
+## Tercera lectura: 2026-08-26 (rotación de BACKUP_A)
+
+Esta era la corrida que el plan original señalaba como la última oportunidad de
+reproducir la falla. BACKUP_A volvió a conectarse el 08-25 a las 19:11 (`sdc`, WD
+Elements 4 TB, `WD-WXA2D55E3DVH`) para esta rotación.
+
+```
+00:37–00:39  src=/dev/sdb1  top=18  pcfg-daily=7  vm-containers=4  backup_a=-
+02:10–02:14  src=/dev/sdb1  top=18  pcfg-daily=7  vm-containers=4  backup_a=-
+02:59–03:03  src=/dev/sdb1  top=18  pcfg-daily=7  vm-containers=4  backup_a=/dev/sdc1(3)
+```
+
+**Escenario 3 otra vez**, idéntico a la primera lectura del 08-15: `backup_a` obsoleto en
+00:35 y 02:10, curado por `check-ceres-mount-sync.sh` a las 02:20 (`pct reboot 203`,
+confirmado en `/var/log/proxmox-backup.log`), sano en 02:59. El **origen no falló ni una
+vez** — tercera confirmación consecutiva.
+
+El backup de las 03:00 corrió después del reinicio (`gickup` a las 03:15:32, 1019.444 MiB)
+y **los 7 tags pasaron su floor check** según el backup health monitor
+([[project_backup_health_monitor]]):
+
+```
+homeassistant, containers, castor-pg, proxmox-config, vm-images, raspberrypi, gickup
+→ floor check passed, "Backup completed successfully"
+```
+
+### Decisión
+
+Con esto se agotan las tres ventanas de observación previstas más la corrida que el plan
+señalaba como definitiva, sin reproducir jamás el origen caído. **Cerrada 2026-08-26**: el
+monitor de salud (arithmetic floor check, ya deployado) es la red de seguridad permanente
+que reemplaza el chequeo manual; el bind obsoleto de BACKUP_A sigue sucediendo pero está
+probado como auto-curable (`docs/memory_gr-srv03_stale-mount-investigation.md`) y no vacía
+snapshots cuando se cura antes de las 03:00.
+
+## Limpieza ejecutada (2026-08-26)
 
 ```bash
 ssh ceres "crontab -l | grep -v probe-usb1-mount | crontab -"
+ssh ceres "crontab -l | grep -v 'TEMP diagnostic 2026-08-13' | crontab -"  # comentario huérfano
 ssh ceres "rm ~/probe-usb1-mount.sh"
 ```
 
-El log puede quedar como evidencia. La sonda es temporal y está marcada como tal en su propio
-encabezado.
+El log queda como evidencia en `~/backup_greven/logs/probe-usb1-mount.log` (ceres).
 
 ## Nota
 

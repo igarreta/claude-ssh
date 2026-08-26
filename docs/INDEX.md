@@ -43,11 +43,12 @@ commit `b24d961`); Manual-mode phantom-zero bugs fixed 2026-08-01 →
 ## USB, Zigbee and RF (gr-srv03 + docker03)
 
 **Current:** powered hub removed 2026-08-17, root cause confirmed 08-19 (BACKUP_A/_B hot-plug
-transients on the shared xHCI 5V rail). Coordinator RF has since degraded in its bare chassis
-port — **shielded USB extension still pending** →
+transients on the shared xHCI 5V rail). Coordinator RF degraded in its bare chassis port, then
+**recovered to ~220 LQI after the 08-25 wall-mounted final placement** — recheck 2026-09-09
+before closing and cancelling the shielded-cable purchase →
 [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md)
 
-- [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md) — **open** — fleet LQI 200→134; physical fix ~2 months out. Baselines in [data/](data/)
+- [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md) — **open** — fleet LQI 200→134, recovered to ~220 after 08-25 final placement; recheck 2026-09-09. Baselines in [data/](data/)
 - [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) — **open** — port-3 layout undecided, nothing purchased
 - [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md) — **open** — storage hub decided (Rosonway RSH-A10), dongle hub open
 - [memory_gr-srv03_powered-hub-instability.md](memory_gr-srv03_powered-hub-instability.md) — *closed* — root cause + current post-incident topology
@@ -70,12 +71,12 @@ daily restart in place →
 ## Backups
 
 **Current:** health monitor phases 1–3 deployed 2026-08-15, **tests being finished as of
-2026-08-24**; ceres empty-snapshot cause still unproven — probe read 2026-08-24, never reproduced, held for the
-08-25 BACKUP_A rotation →
+2026-08-24**; ceres empty-snapshot cause never reproduced across 3 probe readings incl. the
+08-25→08-26 BACKUP_A rotation — probe **closed and removed 2026-08-26** →
 [2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md)
 
 - [2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md) — *active* — design + deployed implementation; finishing tests
-- [2026-08-14_ceres-empty-snapshots-probe.md](2026-08-14_ceres-empty-snapshots-probe.md) — **open** — 7 months of empty snapshots; `pct reboot 203` fixed it, cause unproven after 8 probe nights, probe held for the 08-25 BACKUP_A rotation
+- [2026-08-14_ceres-empty-snapshots-probe.md](2026-08-14_ceres-empty-snapshots-probe.md) — *closed* — 7 months of empty snapshots; `pct reboot 203` fixed it, cause never proven after 3 probe readings, probe removed 2026-08-26
 - [memory_backup_schedule.md](memory_backup_schedule.md) — *active* — **read before adding any job**: disk-wake window 02:25–03:30
 - [Backup_Drives_Mounting_Configuration.md](Backup_Drives_Mounting_Configuration.md) — *active* — fstab + udev/systemd mount units for BACKUP_USB1 / A / B
 - [2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md](2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md) — *closed* — NFS over WAN → rclone/SFTP
