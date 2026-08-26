@@ -64,7 +64,16 @@ with `encryption: true` but `port: 1883` (the plaintext listener), which mosquit
 protocol error — it has now happened twice. If mqtt-explorer can't connect, check `port` in its
 `settings.json` on docker03 before anything else.
 
+**Uptime Kuma monitoring added 2026-08-26**: `uptimekuma` user (read-only `#`), URL form
+`mqtt://192.168.1.198`. MQTT ACL wildcards (`#`, `+`) never match `$`-prefixed topics by
+protocol convention, so monitoring broker-level `$SYS/broker/uptime` needed an explicit
+`topic read $SYS/#` line (added for `uptimekuma` and, for consistency, `mqttexplorer` too).
+Deliberately not using a client topic like `zigbee2mqtt/bridge/state` — that would make the
+health check go down with one client instead of the broker itself.
+
 **How to apply**: all MQTT clients now point at the new broker (`192.168.1.198:8883` TLS, or
 `:1883` plaintext+auth for raspberrypi2z's rtl_433 only) — the old docker03 broker is a
-fallback pending decommission, not a live source of truth. Full history and exact per-host
-edits: [[docs/memory_mqtt-broker-migration.md]] in the claude-ssh repo.
+fallback pending decommission, not a live source of truth. Any new client/monitor needs both
+a `passwd` entry and an explicit ACL line — `$SYS` topics need their own `topic read $SYS/#`
+even with a broad `#` grant. Full history and exact per-host edits:
+[[docs/memory_mqtt-broker-migration.md]] in the claude-ssh repo.
