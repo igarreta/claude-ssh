@@ -180,6 +180,27 @@ requested.
     into place. **Same likely applies to any other client whose data dir needs a `ca.crt`
     dropped in — check ownership before assuming a plain `scp` will work.**
 
+- **cygnus tuya-link**: **done, 2026-08-26.** `tuya_link.toml` `[mqtt]` block → `host =
+  "192.168.1.198"`, `port = 8883`, `user`/`password`, `ca_cert = "/tuya-link/bin/ca.crt"` (the
+  container already bind-mounts `./bin/`, so the cert just needed to land there — no
+  `compose.yaml` volume change needed, unlike zigbee2mqtt). `bin/tuya_link.py`'s `main()` got
+  `client.username_pw_set(...)` + `client.tls_set(ca_certs=...)` inserted before
+  `client.connect(...)` (previously connected plaintext/anonymous, no `on_connect` callback —
+  worth remembering if this ever needs debugging again, since paho silently drops
+  ACL-disallowed publishes with **no error surfaced to the app at all**, and `connect()` itself
+  doesn't raise or block on bad auth either). `sudo podman compose up -d --force-recreate`
+  (`tuya-link/`'s files are all `rsi`-owned, unlike zigbee2mqtt's data dir, so `ca.crt` needed
+  no `sudo mv` step). Confirmed via a live `granev_tank_level` reading and the retained HA
+  discovery config, both arriving on the new broker.
+  - **False alarm during verification, worth remembering**: two separate MCP `run-command`
+    calls issued "in parallel" (one `mosquitto_sub` with a timeout, one delayed `mosquitto_pub`)
+    are **not actually concurrent** — this connector appears to run them sequentially, so the
+    subscriber's whole timeout window elapses before the publish command even starts, making
+    every such pub/sub race test fail regardless of whether the broker/client actually works.
+    A real concurrency test needs both commands **backgrounded inside one single command**
+    (e.g. `(mosquitto_sub ... -C 1 & sleep 2; mosquitto_pub ...; wait)`). This cost significant
+    time chasing a phantom ACL/broker bug before the artifact was identified.
+
 ## Still to do
 
 1. Update each remaining client (write-local-then-scp per this repo's convention; for a
@@ -188,15 +209,12 @@ requested.
    - **raspberrypi1 TTato**: add `MQTT_PORT`/`MQTT_USER`/`MQTT_PASS`/`MQTT_CA` constants in
      `GlobalThreads.py`; call `.tls_set(ca_certs=MQTT_CA)` + `.username_pw_set(...)` on all 3
      client instances before `.connect()`; `docker restart TTato`.
-   - **cygnus tuya-link**: add `user`/`pass`/`ca_cert` to `tuya_link.toml`; small code change in
-     `tuya_link.py` to call `client.username_pw_set(...)` + `client.tls_set(...)` before
-     `client.connect(...)`; `sudo podman restart tuya-link` (passwordless on cygnus).
    - **Home Assistant**: manual UI step (Settings → Devices & Services → MQTT → Reconfigure) —
      new host/port/user/pass, enable TLS, upload the CA cert. No SSH/API access to this host in
      the migration session.
-2. Cutover order: ~~mqtt-explorer~~ → ~~rtl_433~~ → ~~zigbee2mqtt~~ → tuya-link → TTato → Home
-   Assistant last (most critical). Keep docker03's old broker running in parallel until each
-   client is confirmed working on the new one.
+2. Cutover order: ~~mqtt-explorer~~ → ~~rtl_433~~ → ~~zigbee2mqtt~~ → ~~tuya-link~~ → TTato →
+   Home Assistant last (most critical). Keep docker03's old broker running in parallel until
+   each client is confirmed working on the new one.
 3. After a stable cutover, decommission the docker03 mosquitto container/compose.
 4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
    automated review.

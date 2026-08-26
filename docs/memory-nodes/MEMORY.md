@@ -14,12 +14,13 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [feedback_no_passwordless_sudo_castor.md](feedback_no_passwordless_sudo_castor.md) — keep castor's sudo requiring a password
 - [feedback_cygnus_podman_compose.md](feedback_cygnus_podman_compose.md) — on cygnus use `sudo podman compose`, not `sudo podman-compose`
 - [feedback_sudo_commands_no_ssh_wrap.md](feedback_sudo_commands_no_ssh_wrap.md) — never wrap a sudo command in `ssh` — user runs it in a session already open on the host
+- [feedback_mcp_ssh_no_true_parallelism.md](feedback_mcp_ssh_no_true_parallelism.md) — "parallel" MCP run-command calls execute sequentially; background both in one command to test races
 
 ## Open — needs follow-up
 
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 final wall-mounted placement lifted it to ~220; recheck 2026-09-09
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
-- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — broker LXC 105 ready; mqtt-explorer + rtl_433 + zigbee2mqtt cut over, 3 clients left
+- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — broker LXC 105 ready; mqtt-explorer + rtl_433 + zigbee2mqtt + tuya-link cut over, 2 clients left
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
 - [project_cygnus_caddy_tls.md](project_cygnus_caddy_tls.md) — Tailscale cert via root cron; an 08-04 ARI renewal failure is unresolved
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
