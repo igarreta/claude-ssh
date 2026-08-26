@@ -245,14 +245,58 @@ discovery set — proof HA itself is subscribed and receiving on the new broker.
 **Cutover order, all done**: mqtt-explorer (08-16) → rtl_433 → zigbee2mqtt → tuya-link → TTato
 → Home Assistant (all 08-26).
 
+## esp32-pileta — discovered late, added 2026-08-26
+
+Not in the original client inventory (missed during the 08-15 discovery pass) — an ESPHome
+device (`esp32-pileta`, roof-box pool-area temperature sensor, see
+`docs/2026-06-27_rtl433-production-migration.md` and
+`docs/2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md` for its role in HA's
+sensor-priority chain) that publishes to MQTT directly, separately from its native ESPHome API
+integration with HA. User repointed its broker address in ESPHome Builder to `192.168.1.198`
+before realizing the new broker requires auth (`allow_anonymous false`) — old broker was fully
+anonymous, so the device likely has no MQTT credentials configured yet.
+
+Provisioned a new broker account: user `esp32pileta`, plaintext port 1883 (no TLS — ESPHome's
+MQTT component TLS support is impractical enough on this device that it wasn't worth pursuing,
+same call as raspberrypi2z's rtl_433), ACL `readwrite esp32-pileta/#` (topic prefix confirmed
+by the user). Added via `mosquitto_passwd -b` + appending to `/etc/mosquitto/acl` — both
+require sudo, done by the user directly since MCP blocks privileged commands on this host.
+
+**Incident during setup**: `mosquitto_passwd` warned the passwd file wasn't root-owned
+("future versions will refuse to load this file"). Assumed mosquitto reads its config files
+while still root before dropping to the `mosquitto` user (matching the warning's own suggested
+fix), so had the user `chown root:root` both `passwd` and `acl` and restart — **this broke the
+broker** (`ExecStart` exited status 13/EACCES, `activating (auto-restart)` loop), a live outage
+affecting all 6 already-migrated clients for a few minutes. The assumption was wrong: this
+mosquitto build apparently does NOT retain root long enough to read these files after a
+`chown root:root` (unclear exact mechanism — no explicit `User=` line found in the two
+`mosquitto.service` paths checked, so it may be set via a drop-in not yet located, or the
+warning is aspirational for a not-yet-enforced future mosquitto version). **Reverted to
+`chown mosquitto:mosquitto`** and restarted — broker recovered immediately, all clients
+reconnected on their own (confirmed via live `TTato/status` and `zigbee2mqtt/bridge/state`
+messages). The `esp32pileta` passwd/ACL entries created before the incident survived the
+ownership revert intact (only ownership was ever wrong, not content) and were confirmed working
+after recovery.
+
+**Do not attempt the root:root chown again** without first finding the actual privilege-drop
+mechanism (check for a `mosquitto.service.d/*.conf` override, or test on a non-critical
+mosquitto instance first) — the warning is real but this build doesn't tolerate the fix mosquitto
+itself suggests.
+
+**Still needed**: user adds MQTT username/password (`esp32pileta` / see
+`mosquitto-credentials.txt` on the mosquitto host) to the ESPHome YAML's `mqtt:` component and
+reflashes via ESPHome Builder. No SSH access to the ESPHome device itself to verify directly —
+confirm via `mosquitto_sub -t 'esp32-pileta/#'` on the broker after reflash.
+
 ## Still to do
 
 1. **Decommission the docker03 mosquitto container/compose** — the whole point of keeping it
-   running in parallel was to have a fallback during cutover; with all 6 clients confirmed on
-   the new broker, it's no longer needed. Not urgent — give it a few days of the new broker
-   running clean first.
+   running in parallel was to have a fallback during cutover; with all 6 original clients
+   confirmed on the new broker, it's no longer needed. Not urgent — give it a few days of the
+   new broker running clean first.
 2. Add `log-monitor/hosts/mosquitto.conf` so the new broker's logs join the daily automated
    review (see `docs/2026-06-30_log-monitor.md`).
+3. Finish esp32-pileta cutover (see above) once the user reflashes it.
 3. After a stable cutover, decommission the docker03 mosquitto container/compose.
 4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
    automated review.

@@ -1,6 +1,6 @@
 ---
 name: project_mosquitto_broker_migration
-description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; all 6 clients cut over, old broker pending decommission"
+description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; 6 original clients cut over, esp32-pileta discovered late and pending"
 metadata: 
   node_type: memory
   type: project
@@ -28,7 +28,17 @@ broker. HA verification done via its own Developer Tools → MQTT → "Listen to
 external tool (mqttexplorer's view looked stale and caused a false scare — see below).
 
 **Remaining**: decommission the docker03 mosquitto container once the new broker's run clean
-for a few days, and add `log-monitor/hosts/mosquitto.conf` for the daily log review.
+for a few days; add `log-monitor/hosts/mosquitto.conf`; finish **esp32-pileta**, an ESPHome
+device found late (missed in the original inventory) — broker account `esp32pileta` is
+provisioned (plaintext 1883, `esp32-pileta/#`), waiting on the user to add those credentials in
+ESPHome Builder and reflash.
+
+**Caused a brief full outage 2026-08-26** chasing a mosquitto_passwd ownership warning —
+`chown root:root` on `passwd`/`acl` (mosquitto's own suggested fix) broke the broker
+(EACCES on start) for all 6 clients. Reverting to `chown mosquitto:mosquitto` fixed it
+immediately. **Don't retry that chown** without finding the actual privilege-drop mechanism
+first — see [[docs/memory_mqtt-broker-migration.md]] for full detail, and
+[[feedback_dont-trust-vendor-fix-on-prod]] for the general lesson.
 
 **TTato caveat**: its `granev/temp/#` subscription won't see live data until HA cuts over too
 (HA is the publisher on that topic) — not a bug, just sequencing.

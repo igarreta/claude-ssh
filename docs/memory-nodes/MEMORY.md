@@ -15,6 +15,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [feedback_cygnus_podman_compose.md](feedback_cygnus_podman_compose.md) — on cygnus use `sudo podman compose`, not `sudo podman-compose`
 - [feedback_sudo_commands_no_ssh_wrap.md](feedback_sudo_commands_no_ssh_wrap.md) — never wrap a sudo command in `ssh` — user runs it in a session already open on the host
 - [feedback_mcp_ssh_no_true_parallelism.md](feedback_mcp_ssh_no_true_parallelism.md) — "parallel" MCP run-command calls execute sequentially; background both in one command to test races
+- [feedback_dont-trust-vendor-fix-on-prod.md](feedback_dont-trust-vendor-fix-on-prod.md) — verify a tool's own suggested fix against this host's actual config before running it on a live service
 
 ## Open — needs follow-up
 
@@ -39,7 +40,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_castor_postgres.md](project_castor_postgres.md) — PostgreSQL 17 on LXC 205; must keep `10.0.100.11` in `listen_addresses`
 - [project_cygnus_podman_restart_policy.md](project_cygnus_podman_restart_policy.md) — containers survive reboots only if the restart filter matches `unless-stopped`
 - [project_docker03_zigbee2mqtt.md](project_docker03_zigbee2mqtt.md) — 07-15 outage from USB re-enumeration; stable `by-id` mapping + watchdog
-- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — new broker LXC 105 live; all 6 clients cut over 08-26, old docker03 broker pending decommission
+- [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — new broker LXC 105 live; 6 original clients cut over, esp32-pileta pending (found late), brief full outage 08-26 from a bad chown
 - [project_docker03_tailscale-key-expiry-2026-08-17.md](project_docker03_tailscale-key-expiry-2026-08-17.md) — node-key expiry, not the USB storm; MagicDNS-only resolv.conf broke container DNS
 - [project_docker03_fail2ban.md](project_docker03_fail2ban.md) — no rsyslog meant no auth.log; fixed with `backend = systemd`
 - [project_comet_tailscale_logout.md](project_comet_tailscale_logout.md) — corrupted `tailscaled.state`; unprivileged `journalctl` fakes outages
