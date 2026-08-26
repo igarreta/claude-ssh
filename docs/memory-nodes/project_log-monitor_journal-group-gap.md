@@ -1,6 +1,6 @@
 ---
 name: project_log-monitor_journal-group-gap
-description: "log-monitor silently collects nothing on a host if its SSH user isn't in adm/systemd-journal — found on docker03 and mosquitto, other hosts unverified"
+description: "log-monitor silently collects nothing on a host if its SSH user isn't in adm/systemd-journal — found and fixed on docker03, mosquitto, and contabo2; all hosts now verified"
 metadata:
   node_type: memory
   type: project
@@ -15,8 +15,10 @@ error anywhere.
 and turned out not to be on **docker03** either, despite that host's log-monitor config having
 been active for a while already. Fixed both with `sudo usermod -aG systemd-journal rsi`.
 
-**How to apply:** before trusting a "quiet" daily report from any log-monitor host, or when
-adding a new one, verify the SSH user's groups (`ssh <host> groups`) include `adm` or
-`systemd-journal`. **Not yet re-verified**: `raspberrypi1`, `raspberrypi2z`, `contabo2`,
-`gr-srv03` — check these before relying on their reports being complete. Full detail:
-[[docs/2026-06-30_log-monitor.md]].
+**Resolved 2026-08-26** — every configured host checked: `raspberrypi1`/`raspberrypi2z` already
+had `adm`; `gr-srv03` connects as `root` (moot); `contabo2` had the same gap and was fixed the
+same way. All log-monitor hosts now actually see their system journal.
+
+**How to apply:** when adding any new log-monitor host, verify the SSH user's groups (`ssh
+<host> groups`) include `adm` or `systemd-journal` before trusting its reports — this doesn't
+self-heal or error visibly if missed. Full detail: [[docs/2026-06-30_log-monitor.md]].

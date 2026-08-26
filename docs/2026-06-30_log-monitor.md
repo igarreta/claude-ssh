@@ -89,9 +89,13 @@ here) — no re-login needed, a fresh SSH session (which `collect.sh` spawns eac
 picks up the new group. Verified via a manual `journalctl -p warning` from comet showing real
 system messages post-fix on both hosts.
 
-**Check every configured host's SSH user is actually in one of these groups**, not just newly
-added ones — `raspberrypi1`, `raspberrypi2z`, `contabo2`, and `gr-srv03` were not re-verified
-during this fix and may have the same gap.
+**All configured hosts re-verified 2026-08-26**:
+- `raspberrypi1`, `raspberrypi2z` — already had `adm`, no gap.
+- `gr-srv03` — connects as `root`, group membership is moot.
+- `contabo2` — had the same gap, fixed the same way (`sudo usermod -aG systemd-journal rsi`).
+  Post-fix journal shows mostly `[UFW BLOCK]` port-scan noise from the public internet, which
+  is expected background noise for an internet-facing box — may be worth a
+  `SUPPRESS_PATTERN` if it turns out to dominate the daily digest, not done yet.
 
 ## Noise suppression (SUPPRESS_PATTERN)
 

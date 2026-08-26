@@ -24,7 +24,6 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
 - [project_docker03_rtl-test.md](project_docker03_rtl-test.md) — garage-remote 433 MHz capture, unfinished
-- [project_log-monitor_journal-group-gap.md](project_log-monitor_journal-group-gap.md) — log-monitor silently blind without adm/systemd-journal; fixed on docker03+mosquitto, raspberrypi1/2z/contabo2/gr-srv03 unverified
 
 ## Backups and storage
 
@@ -43,6 +42,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — migration done; all 7 clients cut over, old docker03 broker stopped 08-26 (not yet removed)
 - [project_docker03_tailscale-key-expiry-2026-08-17.md](project_docker03_tailscale-key-expiry-2026-08-17.md) — node-key expiry, not the USB storm; MagicDNS-only resolv.conf broke container DNS
 - [project_docker03_fail2ban.md](project_docker03_fail2ban.md) — no rsyslog meant no auth.log; fixed with `backend = systemd`
+- [project_log-monitor_journal-group-gap.md](project_log-monitor_journal-group-gap.md) — log-monitor was silently blind on docker03/mosquitto/contabo2 without adm/systemd-journal; all hosts now fixed and verified
 - [project_comet_tailscale_logout.md](project_comet_tailscale_logout.md) — corrupted `tailscaled.state`; unprivileged `journalctl` fakes outages
 - [project_comet_zed_tmux_claude.md](project_comet_zed_tmux_claude.md) — the working Zed + tmux + Claude Code setup
 - [project_raspberrypi2z_setup.md](project_raspberrypi2z_setup.md) — Pi Zero W for 433 MHz sensors; hardened SSH and sudo
