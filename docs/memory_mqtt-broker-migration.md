@@ -59,15 +59,20 @@ rather than maintaining a custom TLS-enabled build for one sensor node on the sa
   CA (10-year validity — chosen to avoid a renewal process for a broker designed to run without
   internet dependency; **CA/server cert expire ~2036-08-15**, note for a future reminder).
 - Users (one per client) in `/etc/mosquitto/passwd`: `ttato`, `rtl433_pi2z`, `zigbee2mqtt`,
-  `tuyalink`, `homeassistant`, `mqttexplorer`, `admin`.
+  `tuyalink`, `homeassistant`, `mqttexplorer`, `admin`, `uptimekuma`.
 - ACLs in `/etc/mosquitto/acl`:
   - `ttato`: readwrite `TTato/#`; read `rtl_433/raspberrypi2z/#`, `zigbee2mqtt/#`, `granev/temp/#`; write `homeassistant/#`
   - `rtl433_pi2z`: readwrite `rtl_433/raspberrypi2z/#`; write `homeassistant/#`
   - `zigbee2mqtt`: readwrite `zigbee2mqtt/#`; write `homeassistant/#`
   - `tuyalink`: readwrite `tuya-link/#`; write `homeassistant/#`
   - `homeassistant`: broad `#` (it's the automation hub)
-  - `mqttexplorer`: read-only `#`
+  - `mqttexplorer`: read-only `#` + `$SYS/#`
+  - `uptimekuma`: read-only `#` + `$SYS/#` (Uptime Kuma health check)
   - `admin`: broad `#`, for manual `mosquitto_pub`/`sub` debugging
+
+  **Note**: MQTT ACL wildcards (`#`, `+`) never match `$`-prefixed topics by protocol
+  convention — a client needs an explicit `topic read $SYS/#` line to see broker `$SYS`
+  stats even if it already has a broad `#` grant.
 - **Credentials**: generated randomly by the setup script, saved to
   `/home/rsi/mosquitto-credentials.txt` on the mosquitto host itself (600, rsi-owned) — **not
   committed to git**. CA cert (public, safe to distribute) at `/etc/mosquitto/certs/ca.crt`.
@@ -302,6 +307,19 @@ traffic — no client was still publishing.
 it won't silently come back. Left the container and its compose file in place (not removed) in
 case a rollback is ever needed; ports confirmed released
 (`ss -tlnp` shows nothing on 1883/8883/9001 anymore on docker03).
+
+## Uptime Kuma monitoring — added 2026-08-26
+
+Added a dedicated `uptimekuma` user (read-only `#`) after Uptime Kuma's broker IP was
+repointed to `192.168.1.198` and started failing auth. Uptime Kuma's MQTT monitor URL field
+takes the form `mqtt://192.168.1.198`.
+
+First attempt monitored `$SYS/broker/uptime`, but the plain `#` grant doesn't cover
+`$SYS/#` (see ACL note above) — added an explicit `topic read $SYS/#` line for `uptimekuma`
+(and, for consistency, `mqttexplorer` too, since it's already a broad-read debugging user).
+Confirmed working: Uptime Kuma now shows broker uptime correctly, decoupled from any single
+client's health (an earlier idea of using `zigbee2mqtt/bridge/state` was rejected for that
+reason — it would falsely report the broker down if only z2m dropped).
 
 ## Still to do
 
