@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 97d638ec-9b13-4d17-b59f-d4177f7a58f7
-  modified: 2026-08-26T20:51:23.024Z
+  modified: 2026-08-26T21:00:17.309Z
 ---
 
 When a host needs a password for `sudo` and I hand the user a command to run themselves, give
@@ -23,3 +23,8 @@ the wrapping was correct.
 [[feedback_no_passwordless_sudo_castor]]). Write the script/change locally, `scp`/sftp-upload
 it to the target host, then give the user the bare command (e.g. `sudo bash /tmp/script.sh` or
 a direct `sudo mv ...`/`sudo systemctl restart ...`) with no `ssh` prefix.
+
+**Caveat found 2026-08-26**: when a task spans two hosts (e.g. an scp from comet, then a sudo
+move on the receiving host), label which host each command block runs on explicitly — a bare
+command with no host label, right after an scp command, reads as "run this next in the same
+place" and caused the user to try it on comet where it doesn't apply.

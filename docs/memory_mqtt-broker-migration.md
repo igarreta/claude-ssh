@@ -159,11 +159,32 @@ requested.
   needs a password on this host). Confirmed publishing: `mosquitto_sub` against
   `rtl_433/raspberrypi2z/#` on the new broker returned a live `Nexus-TH` reading.
 
+- **docker03 zigbee2mqtt**: **done, 2026-08-26.** `data/configuration.yaml` `mqtt:` block →
+  `server: mqtts://192.168.1.198:8883` + `user: zigbee2mqtt` + `password: ...` + `ca:
+  /app/data/ca.crt`; `compose.yaml`'s `MQTT_SERVER` env var updated to match (unclear if the
+  official image actually reads plain `MQTT_SERVER` vs the documented
+  `ZIGBEE2MQTT_CONFIG_MQTT_SERVER` prefix — updated anyway so it can't drift out of sync with
+  the real config). `docker compose up -d` (not just `restart`, since the compose file itself
+  changed) to recreate the container and pick up both the new env var and the newly mounted
+  `ca.crt`. Log confirms `Connected to MQTT server`; `zigbee2mqtt/bridge/state` verified
+  `online` on the new broker via `mosquitto_sub`.
+  - **Getting `ca.crt` onto docker03 hit a wall**: it's a small public file but its base64 body
+    is high-entropy, so the harness's secret-redaction filter blanked it out of both a `cat`
+    command's output and an SFTP-download's returned content — it never made it into the
+    assistant's context however retrieved. Installing an SSH key for a direct host-to-host
+    copy was offered but declined; resolved by having the user `scp` it manually in two hops
+    (mosquitto → comet → docker03) from their own terminal, which isn't subject to the filter.
+    Also hit a permission wall on the second hop: `.../zigbee2mqtt/data/` is root-owned even
+    though the files inside are `rsi:root` — `scp` as `rsi` can't create a new file in that
+    directory, so it has to land in `/home/rsi/` first, then `sudo mv` + `sudo chown rsi:root`
+    into place. **Same likely applies to any other client whose data dir needs a `ca.crt`
+    dropped in — check ownership before assuming a plain `scp` will work.**
+
 ## Still to do
 
-1. Update each remaining client (write-local-then-scp per this repo's convention):
-   - **docker03 zigbee2mqtt**: `configuration.yaml` → `mqtt.server: mqtts://192.168.1.198:8883` +
-     `mqtt.ca`/`mqtt.user`/`mqtt.password`; mount `ca.crt` into the container via `compose.yaml`.
+1. Update each remaining client (write-local-then-scp per this repo's convention; for a
+   `ca.crt` drop specifically, see the ownership/redaction gotchas noted under zigbee2mqtt
+   above):
    - **raspberrypi1 TTato**: add `MQTT_PORT`/`MQTT_USER`/`MQTT_PASS`/`MQTT_CA` constants in
      `GlobalThreads.py`; call `.tls_set(ca_certs=MQTT_CA)` + `.username_pw_set(...)` on all 3
      client instances before `.connect()`; `docker restart TTato`.
@@ -173,7 +194,7 @@ requested.
    - **Home Assistant**: manual UI step (Settings → Devices & Services → MQTT → Reconfigure) —
      new host/port/user/pass, enable TLS, upload the CA cert. No SSH/API access to this host in
      the migration session.
-2. Cutover order: ~~mqtt-explorer~~ → ~~rtl_433~~ → zigbee2mqtt → tuya-link → TTato → Home
+2. Cutover order: ~~mqtt-explorer~~ → ~~rtl_433~~ → ~~zigbee2mqtt~~ → tuya-link → TTato → Home
    Assistant last (most critical). Keep docker03's old broker running in parallel until each
    client is confirmed working on the new one.
 3. After a stable cutover, decommission the docker03 mosquitto container/compose.

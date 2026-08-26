@@ -1,6 +1,6 @@
 ---
 name: project_mosquitto_broker_migration
-description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; client cutover in progress, 2 of 6 clients done"
+description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; client cutover in progress, 3 of 6 clients done"
 metadata: 
   node_type: memory
   type: project
@@ -21,10 +21,18 @@ anonymous.
 **Static IP** (was the blocker) resolved 2026-08-16 — `192.168.1.198` is now a router DHCP
 reservation, no cert regeneration needed.
 
-**Client cutover in progress**: mqtt-explorer (2026-08-16) and raspberrypi2z rtl_433
-(2026-08-26) done and confirmed publishing/connecting. Still on the old docker03 broker:
-zigbee2mqtt, tuya-link, TTato, Home Assistant — in that cutover order, old broker kept running
-in parallel until each is confirmed.
+**Client cutover in progress**: mqtt-explorer, raspberrypi2z rtl_433, and docker03 zigbee2mqtt
+(all 2026-08-26 except mqtt-explorer's initial cutover on 08-16) done and confirmed
+publishing/connecting. Still on the old docker03 broker: tuya-link, TTato, Home Assistant — in
+that cutover order, old broker kept running in parallel until each is confirmed.
+
+**A `ca.crt` file's base64 body is high-entropy enough that the harness redacts it out of any
+command output or SFTP-download content before it reaches the assistant's context** — even
+though a CA cert is public, not a secret. Moving it between hosts needs either a user-run scp
+(their terminal isn't filtered) or a pre-approved direct host-to-host key. Also: several
+docker03 `dockerfiles/*/data/` directories are root-owned even though the files inside are
+`rsi:root` — a plain `scp`/upload into them as `rsi` fails; land it in `/home/rsi/` first, then
+`sudo mv`+`chown`.
 
 **Watch for**: the mqtt-explorer UI has a recurring bug where its persisted connection ends up
 with `encryption: true` but `port: 1883` (the plaintext listener), which mosquitto rejects as a
