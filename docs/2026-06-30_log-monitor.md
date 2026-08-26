@@ -70,7 +70,28 @@ carries full detail regardless.
 
 ## Adding a host
 Drop `hosts/<name>.conf` (copy `gr-srv03.conf`, set `SSH_TARGET`/`SSH_PORT`/`PRIORITY_FLOOR`).
-No other changes.
+**Also confirm the SSH user is in the `adm` or `systemd-journal` group on that host** — see
+the gotcha below; a config file alone doesn't guarantee `collect.sh` sees anything.
+
+### Gotcha: silent blind collection without `adm`/`systemd-journal` (found 2026-08-26)
+`collect.sh` runs plain `journalctl` over SSH with **no `sudo`** (`log-monitor/collect.sh`).
+If the SSH user isn't in `adm` or `systemd-journal` on the target, `journalctl` silently
+restricts to that user's own messages only — `--since`/`-p warning` then returns "no entries"
+or near-empty output even on a host with real warnings/errors, and the daily report reads as a
+clean, quiet host when it's actually just not seeing anything. No error, no crash — this is a
+correctness bug, not a connection failure, so it doesn't surface on its own.
+
+Found while adding `mosquitto.conf`: `rsi` wasn't in either group there, **and turned out not
+to be on docker03 either**, despite `docker03.conf` already being an active host — meaning
+docker03's log-monitor coverage had this same blind spot the whole time it's been configured.
+Fixed on both with `sudo usermod -aG systemd-journal rsi` (run by the user; MCP blocks sudo
+here) — no re-login needed, a fresh SSH session (which `collect.sh` spawns each run) already
+picks up the new group. Verified via a manual `journalctl -p warning` from comet showing real
+system messages post-fix on both hosts.
+
+**Check every configured host's SSH user is actually in one of these groups**, not just newly
+added ones — `raspberrypi1`, `raspberrypi2z`, `contabo2`, and `gr-srv03` were not re-verified
+during this fix and may have the same gap.
 
 ## Noise suppression (SUPPRESS_PATTERN)
 

@@ -24,6 +24,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
 - [project_docker03_rtl-test.md](project_docker03_rtl-test.md) — garage-remote 433 MHz capture, unfinished
+- [project_log-monitor_journal-group-gap.md](project_log-monitor_journal-group-gap.md) — log-monitor silently blind without adm/systemd-journal; fixed on docker03+mosquitto, raspberrypi1/2z/contabo2/gr-srv03 unverified
 
 ## Backups and storage
 
