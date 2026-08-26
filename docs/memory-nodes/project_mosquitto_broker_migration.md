@@ -1,6 +1,6 @@
 ---
 name: project_mosquitto_broker_migration
-description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; 6 original clients cut over, esp32-pileta discovered late and pending"
+description: "MQTT broker migrated from docker03 to dedicated gr-srv03 LXC (mosquitto, VMID 105) with auth+TLS; all 7 known clients cut over (incl. esp32-pileta, found late)"
 metadata: 
   node_type: memory
   type: project
@@ -27,11 +27,14 @@ UI reconfigure — no SSH access to that host) all confirmed publishing/subscrib
 broker. HA verification done via its own Developer Tools → MQTT → "Listen to a topic", not an
 external tool (mqttexplorer's view looked stale and caused a false scare — see below).
 
+**esp32-pileta** (ESPHome, roof-box pool sensor) was missed in the original inventory — found
+2026-08-26 when the user had already repointed it at the new broker without realizing auth was
+required. Provisioned account `esp32pileta` (plaintext 1883, `esp32-pileta/#`); user added
+credentials in ESPHome Builder and reflashed; confirmed publishing (`status: online` + live
+sensor/switch states).
+
 **Remaining**: decommission the docker03 mosquitto container once the new broker's run clean
-for a few days; add `log-monitor/hosts/mosquitto.conf`; finish **esp32-pileta**, an ESPHome
-device found late (missed in the original inventory) — broker account `esp32pileta` is
-provisioned (plaintext 1883, `esp32-pileta/#`), waiting on the user to add those credentials in
-ESPHome Builder and reflash.
+for a few days; add `log-monitor/hosts/mosquitto.conf`.
 
 **Caused a brief full outage 2026-08-26** chasing a mosquitto_passwd ownership warning —
 `chown root:root` on `passwd`/`acl` (mosquitto's own suggested fix) broke the broker

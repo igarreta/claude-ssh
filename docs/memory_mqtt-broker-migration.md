@@ -283,20 +283,19 @@ mechanism (check for a `mosquitto.service.d/*.conf` override, or test on a non-c
 mosquitto instance first) — the warning is real but this build doesn't tolerate the fix mosquitto
 itself suggests.
 
-**Still needed**: user adds MQTT username/password (`esp32pileta` / see
-`mosquitto-credentials.txt` on the mosquitto host) to the ESPHome YAML's `mqtt:` component and
-reflashes via ESPHome Builder. No SSH access to the ESPHome device itself to verify directly —
-confirm via `mosquitto_sub -t 'esp32-pileta/#'` on the broker after reflash.
+**Done, 2026-08-26.** User added `username`/`password`/explicit `port: 1883` to the YAML's
+`mqtt:` block and reflashed via ESPHome Builder. Confirmed via `mosquitto_sub -t
+'esp32-pileta/#'`: `status online` plus live sensor state (`temperatura_agua`,
+`temperatura_caja_techo`, `temperatura_calefactor`, `iluminacion_techo`, WiFi signal, pump
+hours) and switch states, all arriving on the new broker.
 
 ## Still to do
 
 1. **Decommission the docker03 mosquitto container/compose** — the whole point of keeping it
-   running in parallel was to have a fallback during cutover; with all 6 original clients
-   confirmed on the new broker, it's no longer needed. Not urgent — give it a few days of the
-   new broker running clean first.
+   running in parallel was to have a fallback during cutover; with all 7 known clients (6
+   original + esp32-pileta) confirmed on the new broker, it's no longer needed. Not urgent —
+   give it a few days of the new broker running clean first.
 2. Add `log-monitor/hosts/mosquitto.conf` so the new broker's logs join the daily automated
    review (see `docs/2026-06-30_log-monitor.md`).
-3. Finish esp32-pileta cutover (see above) once the user reflashes it.
-3. After a stable cutover, decommission the docker03 mosquitto container/compose.
 4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
    automated review.
