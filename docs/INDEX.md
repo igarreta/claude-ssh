@@ -97,6 +97,16 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 
 - [2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md](2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md) — *closed* — zigbee2mqtt discovery entities never go `unavailable`; guard on `last_reported`, not `last_changed`
 
+## docker03 decommission
+
+**Current:** planning complete 2026-08-27, execution not started. zigbee2mqtt and rtl_433
+(backup/test role) each get a new dedicated bare LXC (3 GB, USB-isolated from each other and
+from cygnus); everything else non-USB moves to cygnus; mosquitto/pool_heat/dynu/mqtt_log/
+apache2/portainer/orphaned projects are dropped, not migrated →
+[memory_docker03-decommission.md](memory_docker03-decommission.md)
+
+- [memory_docker03-decommission.md](memory_docker03-decommission.md) — **open** — full inventory + destination for every service, cron job, and mount
+
 ## Containers — podman (cygnus) and docker (docker03)
 
 **Current:** `podman-restart.service` needs a drop-in whose filter matches `unless-stopped`,

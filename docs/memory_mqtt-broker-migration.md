@@ -321,12 +321,17 @@ Confirmed working: Uptime Kuma now shows broker uptime correctly, decoupled from
 client's health (an earlier idea of using `zigbee2mqtt/bridge/state` was rejected for that
 reason — it would falsely report the broker down if only z2m dropped).
 
+## log-monitor added, 2026-08-27
+
+`log-monitor/hosts/mosquitto.conf` added. First run (2026-08-27, 24h bootstrap window) fired a
+critical alert, but it was just sweeping up the already-resolved `chown root:root` incident
+above (crashes at 19:08 on 08-26, fixed within seconds, broker running clean since) — not a
+new problem. Confirmed broker healthy: `active (running)` 13h+ uptime, both listeners
+(1883/8883) bound, clients connected. Unrelated `ssh.socket` failed-unit noise (failed since
+08-16, `ssh.service` handles connections fine) — left as-is, not urgent.
+
 ## Still to do
 
 1. Remove the stopped `mosquitto` container/compose from docker03 entirely, once comfortable
    there's no need to roll back (the stop above is easily reversible; a full removal is a bit
    more final — no rush).
-2. Add `log-monitor/hosts/mosquitto.conf` so the new broker's logs join the daily automated
-   review (see `docs/2026-06-30_log-monitor.md`).
-4. Add `log-monitor/hosts/mosquitto.conf` once the host is stable, so its logs join the daily
-   automated review.
