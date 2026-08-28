@@ -5,8 +5,9 @@
 **Supersedes:** —
 **Superseded-by:** —
 
-**Status detail:** planned 2026-08-28. Phase 1 (prepare CT206) executed 2026-08-28;
-phases 2–5 (state copy, dongle move, cutover, cleanup) deliberately deferred to another day.
+**Status detail:** planned 2026-08-28. Phase 1 (prepare CT206) complete 2026-08-28, including
+the Tailscale join; phases 2–5 (state copy, dongle move, cutover, cleanup) deliberately
+deferred to another day. docker03 still serves Zigbee untouched in the meantime.
 
 ## Why
 
@@ -113,9 +114,15 @@ returns clean.
 network even if started by accident); `zigbee2mqtt` in `dialout`; `dist/` built;
 installed size 347 MB; 1.2 GB free.
 
-**Still outstanding from phase 1:** the Tailscale login on CT206 is interactive and has not
-been done — `tailscale up` must be run by hand. Until then the frontend has no access path,
-though nothing else in the migration depends on it.
+**Tailscale:** joined 2026-08-28 as `zigbee2mqtt`, **100.86.144.9**. Verified direct
+(non-DERP) from comet and SSH-able over it. `tailscale up` is interactive, so it was run via
+`pct exec` from gr-srv03 and the auth URL handed to the user. Deliberately no
+`--accept-routes` — that flag previously broke connectivity on this fleet.
+
+Once phase 4 starts the service the frontend is at `http://100.86.144.9:8080`, or
+`http://zigbee2mqtt:8080` via MagicDNS. Plain HTTP: z2m's built-in frontend has no TLS, and
+this is Tailscale-only, not public. An HTTPS name would mean a Caddy vhost on cygnus —
+considered and not done, since it would make z2m's UI depend on cygnus being up.
 
 ## Phases 2–5 — not yet executed
 
