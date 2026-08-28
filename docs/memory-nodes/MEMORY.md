@@ -16,6 +16,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [feedback_sudo_commands_no_ssh_wrap.md](feedback_sudo_commands_no_ssh_wrap.md) — never wrap a sudo command in `ssh` — user runs it in a session already open on the host
 - [feedback_mcp_ssh_no_true_parallelism.md](feedback_mcp_ssh_no_true_parallelism.md) — "parallel" MCP run-command calls execute sequentially; background both in one command to test races
 - [feedback_dont-trust-vendor-fix-on-prod.md](feedback_dont-trust-vendor-fix-on-prod.md) — verify a tool's own suggested fix against this host's actual config before running it on a live service
+- [feedback_mcp_privileged_policy_denied.md](feedback_mcp_privileged_policy_denied.md) — MCP `privileged-command` is policy-denied on all "prod" host-group connectors, not just docker03
 
 ## Open — needs follow-up
 
@@ -40,6 +41,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_cygnus_podman_restart_policy.md](project_cygnus_podman_restart_policy.md) — containers survive reboots only if the restart filter matches `unless-stopped`
 - [project_docker03_zigbee2mqtt.md](project_docker03_zigbee2mqtt.md) — 07-15 outage from USB re-enumeration; stable `by-id` mapping + watchdog
 - [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — migration done, all clients cut over; `uptimekuma`/`mqttexplorer` need explicit `$SYS/#` ACL line, `#` doesn't cover it
+- [project_mosquitto_ssh-socket-failed.md](project_mosquitto_ssh-socket-failed.md) — ssh.socket failed-unit noise was a harmless port race with ssh.service, disabled 2026-08-28
 - [project_docker03_tailscale-key-expiry-2026-08-17.md](project_docker03_tailscale-key-expiry-2026-08-17.md) — node-key expiry, not the USB storm; MagicDNS-only resolv.conf broke container DNS
 - [project_docker03_fail2ban.md](project_docker03_fail2ban.md) — no rsyslog meant no auth.log; fixed with `backend = systemd`
 - [project_log-monitor_journal-group-gap.md](project_log-monitor_journal-group-gap.md) — log-monitor was silently blind on docker03/mosquitto/contabo2 without adm/systemd-journal; all hosts now fixed and verified

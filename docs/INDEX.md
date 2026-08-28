@@ -92,6 +92,7 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 
 - [memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md) — **open**
 - [HomeAssistant_MQTT_Autodiscovery.md](HomeAssistant_MQTT_Autodiscovery.md) — *active* — always use autodiscovery; lesson learned the hard way
+- [2026-08-28_mosquitto_ssh-socket-failed.md](2026-08-28_mosquitto_ssh-socket-failed.md) — *closed* — `ssh.socket` vs `ssh.service` port race, cosmetic only, disabled the socket unit
 
 ## Home Assistant
 

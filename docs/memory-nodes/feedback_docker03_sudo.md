@@ -12,7 +12,9 @@ metadata:
 
 **Why:** No passwordless sudoers entry for `rsi` on docker03 (same as raspberrypi2z and castor). See [[project_docker03_fail2ban]].
 
-`mcp__docker03__privileged-command` is also policy-denied outright: `POLICY_DENIED: Role "admin" on host group "prod" cannot run "privileged" commands`.
+`mcp__docker03__privileged-command` is also policy-denied outright — see
+[[feedback_mcp_privileged_policy_denied]], a fleet-wide "prod" host-group rule, not
+specific to docker03.
 
 **How to apply:**
 - **Read-only root diagnostics (journals, configs): use the QEMU guest agent from gr-srv03**, whose MCP connector runs as root. docker03 is VM 102 with `agent: enabled=1`:
