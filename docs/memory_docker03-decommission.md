@@ -31,8 +31,12 @@ notion, pool_heat.
 
 ### New dedicated LXCs (bare/native install, no podman) — 3 GB disk each
 
-Built from a **new smaller template replacing CT900** (currently 6 GB) — one-off rebuild,
-CT900 deleted afterward. Sizing based on mosquitto's real usage as the closest comparable
+Built from **CT901** (`deb13templ2`), a new 3 GB template restored from CT900's own vzdump —
+done 2026-08-28, see
+[2026-08-28_gr-srv03_ct901-new-template.md](2026-08-28_gr-srv03_ct901-new-template.md) for how
+and its full inventory (sudo password required, baked-in personal GitHub deploy key, etc.).
+**CT900 kept, not deleted** — user chose to retain it for now (2026-08-28), harmless since it's
+no longer the clone source. Sizing based on mosquitto's real usage as the closest comparable
 (bare Debian 13 + one native service): 1.8 GB used of 5.9 GB (1.3 GB base OS, 502 MB
 `/var`). 3 GB covers either service with growth margin.
 

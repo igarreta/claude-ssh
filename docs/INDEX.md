@@ -100,13 +100,15 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 
 ## docker03 decommission
 
-**Current:** planning complete 2026-08-27, execution not started. zigbee2mqtt and rtl_433
-(backup/test role) each get a new dedicated bare LXC (3 GB, USB-isolated from each other and
-from cygnus); everything else non-USB moves to cygnus; mosquitto/pool_heat/dynu/mqtt_log/
+**Current:** planning complete 2026-08-27; template rebuild done 2026-08-28 (CT901 replaces
+CT900 as the clone source, CT900 kept as rollback, not deleted). LXC creation for zigbee2mqtt
+and rtl_433 (backup/test role, 3 GB each, USB-isolated from each other and from cygnus) not yet
+started; everything else non-USB moves to cygnus; mosquitto/pool_heat/dynu/mqtt_log/
 apache2/portainer/orphaned projects are dropped, not migrated →
 [memory_docker03-decommission.md](memory_docker03-decommission.md)
 
 - [memory_docker03-decommission.md](memory_docker03-decommission.md) — **open** — full inventory + destination for every service, cron job, and mount
+- [2026-08-28_gr-srv03_ct901-new-template.md](2026-08-28_gr-srv03_ct901-new-template.md) — *active* — CT901, the new 3 GB template; sudo needs a password, baked-in GitHub deploy key
 
 ## Containers — podman (cygnus) and docker (docker03)
 
