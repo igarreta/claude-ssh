@@ -38,10 +38,18 @@ else
     WINDOW="since -24 hours (first run bootstrap)"; SEL_TYPE="since"; SEL_VAL="-24 hours"
 fi
 
+# Host-specific noise suppression (SUPPRESS_PATTERN in host.conf), plus the extra
+# Monday-only pattern (MONDAY_SUPPRESS_PATTERN) for noise tied to the router's weekly
+# Monday-morning reboot. Combined here, then applied REMOTELY (see below).
+SUPPRESS_EFFECTIVE="${SUPPRESS_PATTERN:-}"
+if [[ -n "${MONDAY_SUPPRESS_PATTERN:-}" && "$(date +%a)" == "Mon" ]]; then
+    SUPPRESS_EFFECTIVE="${SUPPRESS_EFFECTIVE:+$SUPPRESS_EFFECTIVE|}$MONDAY_SUPPRESS_PATTERN"
+fi
+
 # Remote: failed units + aggregated priority-filtered journal, in one round-trip.
 # ssh re-splits argv on spaces, so pass everything as %q-quoted env vars instead.
-REMOTE_ENV="$(printf 'SEL_TYPE=%q SEL_VAL=%q PRIORITY_FLOOR=%q TOP=%q' \
-    "$SEL_TYPE" "$SEL_VAL" "$PRIORITY_FLOOR" "$TOP_SIGNATURES")"
+REMOTE_ENV="$(printf 'SEL_TYPE=%q SEL_VAL=%q PRIORITY_FLOOR=%q TOP=%q SUPPRESS=%q' \
+    "$SEL_TYPE" "$SEL_VAL" "$PRIORITY_FLOOR" "$TOP_SIGNATURES" "$SUPPRESS_EFFECTIVE")"
 RAW="$(ssh -i "$SSH_KEY" -p "$SSH_PORT" \
         -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new \
         "$SSH_TARGET" "$REMOTE_ENV bash -s" <<'REMOTE'
@@ -53,14 +61,35 @@ esac
 echo "@@FAILED@@"
 systemctl --failed --no-legend --plain 2>/dev/null || true
 echo "@@JOURNAL@@"
-# Strip leading "Mon DD HH:MM:SS host " and [pid], then collapse duplicates with counts.
-agg="$(journalctl "${sel[@]}" --priority="${PRIORITY_FLOOR}"..emerg --no-pager -q 2>/dev/null \
-        | sed -E 's/^[A-Z][a-z]{2} [ 0-9]{2} [0-9:]{8} [^ ]+ //; s/\[[0-9]+\]//g' \
-        | sort | uniq -c | sort -rn)"
+# Strip leading "Mon DD HH:MM:SS host " and [pid].
+raw="$(journalctl "${sel[@]}" --priority="${PRIORITY_FLOOR}"..emerg --no-pager -q 2>/dev/null \
+        | sed -E 's/^[A-Z][a-z]{2} [ 0-9]{2} [0-9:]{8} [^ ]+ //; s/\[[0-9]+\]//g')"
+raw_total=$(grep -c . <<<"$raw")
+# Suppress host noise HERE, before aggregation and before the TOP cap. Filtering after
+# the cap (as this used to) lets a high-volume noise source crowd every real message out
+# of it — contabo2 emits ~4.5k UFW BLOCK lines/day, each unique, so uniq can't collapse
+# them and they alone exceed TOP many times over.
+if [[ -n "$SUPPRESS" ]]; then
+    raw="$(grep -vE "$SUPPRESS" <<<"$raw" || true)"
+fi
+# Collapse duplicates with counts. Guard the empty case: a here-string always feeds one
+# newline, which would otherwise aggregate into a bogus "1 <blank>" signature.
+# Count with grep, NOT `[[ -n "${raw//[[:space:]]/}" ]]` — bash global substitution over a
+# multi-megabyte string takes minutes, which on an unsuppressed high-volume host looks
+# exactly like an ssh hang.
+kept=$(grep -c . <<<"$raw")
+if (( kept > 0 )); then
+    agg="$(sort <<<"$raw" | uniq -c | sort -rn)"
+else
+    agg=""
+fi
 total=$(awk '{s+=$1} END{print s+0}' <<<"$agg")
 distinct=$(grep -c . <<<"$agg")
-echo "@@STATS@@ total=${total} distinct=${distinct}"
-printf '%s\n' "$agg" | head -n "$TOP"
+echo "@@STATS@@ total=${total} distinct=${distinct} suppressed=$((raw_total - total))"
+# awk, not `head -n`: head exits early on a long list, the upstream printf takes SIGPIPE,
+# and `set -o pipefail` turns that into exit 141 for the whole remote shell — which the
+# caller's `set -e` then treats as an ssh failure. awk drains its input, so it can't.
+printf '%s\n' "$agg" | awk -v n="$TOP" 'NR<=n'
 REMOTE
 )"
 
@@ -68,16 +97,7 @@ FAILED_UNITS="$(awk '/@@FAILED@@/{f=1;next} /@@JOURNAL@@/{f=0} f' <<<"$RAW")"
 STATS="$(awk -F'@@STATS@@ ' '/@@STATS@@/{print $2}' <<<"$RAW")"
 JOURNAL="$(awk '/@@STATS@@/{j=1;next} j' <<<"$RAW")"
 
-# Host-specific noise suppression (set SUPPRESS_PATTERN in host.conf).
-if [[ -n "${SUPPRESS_PATTERN:-}" ]]; then
-    JOURNAL="$(grep -vE "$SUPPRESS_PATTERN" <<<"$JOURNAL" || true)"
-fi
-
-# Additional suppression applied only on Mondays (set MONDAY_SUPPRESS_PATTERN in
-# host.conf), for noise tied to the router's weekly Monday-morning reboot.
-if [[ -n "${MONDAY_SUPPRESS_PATTERN:-}" && "$(date +%a)" == "Mon" ]]; then
-    JOURNAL="$(grep -vE "$MONDAY_SUPPRESS_PATTERN" <<<"$JOURNAL" || true)"
-fi
+# (noise suppression happens remotely, before the TOP cap — see REMOTE block above)
 
 # Newest journal cursor (any priority) so the next run resumes exactly here.
 NEW_CURSOR="$(ssh_run 'journalctl -o export -n1 --no-pager 2>/dev/null | sed -n "s/^__CURSOR=//p"')"

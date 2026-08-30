@@ -166,7 +166,13 @@ not just the default `always` →
 
 ## Tooling and workstation
 
-- [2026-06-30_log-monitor.md](2026-06-30_log-monitor.md) — *active* — daily log review from comet
+**Current:** log-monitor covers 6 hosts and is healthy as of 2026-08-30. Two collection bugs
+found and fixed in quick succession: the `adm`/`systemd-journal` blind spot (08-26) and the
+`collect.sh` SIGPIPE it then exposed (08-30) →
+[2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md)
+
+- [2026-06-30_log-monitor.md](2026-06-30_log-monitor.md) — *active* — daily log review from comet; architecture, `SUPPRESS_PATTERN`, adding a host
+- [2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md) — *closed* — 4-day contabo2 blackout reported as "(ssh error)"; was `head`+`pipefail`+`set -e`. Suppression now runs remotely before the cap
 - [memory_comet_zed-tmux-claude.md](memory_comet_zed-tmux-claude.md) — *closed* — Zed + tmux + Claude workflow
 - [memory_feedback.md](memory_feedback.md) — *active* — **working preferences; read first**
 

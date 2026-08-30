@@ -20,7 +20,8 @@ Cron on comet runs `log-monitor/run.sh` daily at 08:00. Per host:
    `journalctl` (priority warning..emerg) + `systemctl --failed`. Incremental via a
    saved **journal cursor**; first run bootstraps at `-24h`. The journal is **aggregated
    remotely** — identical messages (timestamp/PID stripped) collapse to `count × signature`,
-   shrinking ~650 lines/day to a few dozen. Output: `state/<host>.digest`.
+   shrinking ~650 lines/day to a few dozen. `SUPPRESS_PATTERN` is applied **remotely too, before
+   aggregation and before the 200-signature cap** (see below). Output: `state/<host>.digest`.
 2. **Triage (Haiku)** — `prompts/triage.md`. Classifies the digest by severity
    (info/notice/warning/important/critical), emits parseable headers `SEVERITY_COUNTS`,
    `MAX_SEVERITY`, `ESCALATE`.
@@ -94,13 +95,26 @@ system messages post-fix on both hosts.
 - `gr-srv03` — connects as `root`, group membership is moot.
 - `contabo2` — had the same gap, fixed the same way (`sudo usermod -aG systemd-journal rsi`).
   Post-fix journal shows mostly `[UFW BLOCK]` port-scan noise from the public internet, which
-  is expected background noise for an internet-facing box — may be worth a
-  `SUPPRESS_PATTERN` if it turns out to dominate the daily digest, not done yet.
+  is expected background noise for an internet-facing box. It did dominate the digest —
+  `SUPPRESS_PATTERN="\[UFW BLOCK\]"` added the same day. Note the sequel: making the journal
+  visible on contabo2 is precisely what exposed the `collect.sh` SIGPIPE bug four days later,
+  see [2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md).
 
 ## Noise suppression (SUPPRESS_PATTERN)
 
-`collect.sh` supports a `SUPPRESS_PATTERN` variable in each host config: a `grep -vE`
-regex applied to the aggregated journal lines before they reach the LLM.
+`collect.sh` supports a `SUPPRESS_PATTERN` variable in each host config: a `grep -vE` regex
+that drops matching journal lines before they reach the LLM.
+
+**It runs on the remote host, before aggregation and before the 200-signature cap** — not
+locally on the returned digest. This matters: a high-volume noise source whose lines never
+collapse (each one unique) will otherwise fill all 200 slots and push every real message out,
+and it used to crash the run outright. See
+[2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md).
+The digest reports `suppressed=N` so the dropped volume stays visible.
+
+`contabo2.conf` suppresses `\[UFW BLOCK\]` (2026-08-26) — ~4,500 dropped port-scan packets/day
+from the open internet, each line unique. These are DROPPED inbound attempts, not successful
+ones; a real compromise would surface through `sshd`/auth entries, which are not suppressed.
 
 `gr-srv03.conf` suppresses:
 - `BACKUP_B|backup_b|2d0b0d7c` — rotating removable backup drives; absence/timeout is expected.

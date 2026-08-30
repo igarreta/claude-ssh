@@ -19,6 +19,10 @@ been active for a while already. Fixed both with `sudo usermod -aG systemd-journ
 had `adm`; `gr-srv03` connects as `root` (moot); `contabo2` had the same gap and was fixed the
 same way. All log-monitor hosts now actually see their system journal.
 
+**Sequel:** making contabo2's journal visible is what exposed a latent `collect.sh` crash four
+days later — see [[project_log-monitor_collect-sigpipe]]. Closing a blind spot can uncover the
+next one; check a newly-fixed host's next few reports actually arrive.
+
 **How to apply:** when adding any new log-monitor host, verify the SSH user's groups (`ssh
 <host> groups`) include `adm` or `systemd-journal` before trusting its reports — this doesn't
 self-heal or error visibly if missed. Full detail: [[docs/2026-06-30_log-monitor.md]].

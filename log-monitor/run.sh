@@ -59,8 +59,14 @@ process_host() {
     local stamp; stamp="$(date '+%Y-%m-%dT%H:%M:%S%z')"
 
     echo "[$(date '+%T')] collecting $label" >&2
-    if ! "$SCRIPT_DIR/collect.sh" "$conf" "${SINCE_ARGS[@]}" > "$digest_file"; then
-        pushover_send "log-monitor: FAILED to collect logs from ${label} (ssh error)." 1
+    # Report the real exit code: collect.sh fails for reasons other than ssh (it once
+    # died on an internal SIGPIPE for four days while ssh was perfectly healthy, and the
+    # hardcoded "(ssh error)" sent every diagnosis down the wrong path).
+    local rc=0
+    "$SCRIPT_DIR/collect.sh" "$conf" "${SINCE_ARGS[@]}" > "$digest_file" || rc=$?
+    if (( rc != 0 )); then
+        echo "[$(date '+%T')] collect.sh failed for $label (exit $rc)" >&2
+        pushover_send "log-monitor: FAILED to collect logs from ${label} (collect.sh exit ${rc})." 1
         return 1
     fi
 
