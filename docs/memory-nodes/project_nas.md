@@ -1,11 +1,11 @@
 ---
 name: project_nas
-description: "NAS purchase project — buy list and P1 (both drives) decided 2026-08-30; only boot-NVMe timing open, nothing ordered yet"
+description: "NAS purchase project — full buy list decided 2026-08-30 ($818 total), nothing ordered yet"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 674728fe-657f-43ee-985f-f339c95e4974
-  modified: 2026-08-30T22:21:22.228Z
+  modified: 2026-08-30T22:31:11.787Z
 ---
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
@@ -18,9 +18,9 @@ $383** (N150 variant rejected — $42 more for ~6% CPU/faster iGPU/AV1 accel, no
 for a Full-HD-only, no-transcoding-planned use case) + **6 TB recertified SATA enterprise** from
 **goHardDrive** (Ultrastar 7K6000 $179.95 / Exos 7E8 $189.95 — two different makers on purpose).
 **P1 decided** (both drives now, $753 — chosen over P2's $563 because the drives are secondhand
-and the user wants mirror redundancy from day one, not a degraded single-disk interval). Remaining
-open call: whether to add a ~$60 boot NVMe now or defer — not required, Proxmox can boot off the
-HDD mirror instead, but keeps Immich's DB/thumbnails off drives of unknown wear.
+and the user wants mirror redundancy from day one, not a degraded single-disk interval). **Boot
+NVMe decided**: Patriot P310 480 GB PCIe Gen3 x4, $65 (240 TB TBW, ample for PVE boot + Immich
+DB/thumbnails). **Total $818 — no open decisions remain, nothing ordered yet.**
 
 **Do not re-open these rejections**: base F2-425/F4-425 (N5095, 4 GB DDR4, no M.2 — the 08-19
 research had their specs wrong); UGREEN DH2300 (ARM, cannot run Proxmox); UGREEN DXP2800 ($369 now

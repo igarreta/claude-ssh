@@ -9,9 +9,9 @@
 
 > **Resume here** (updated 2026-08-30): research is **complete and purchase-ready**, CPU variant
 > decided (N95, not N150), **P1 decided** (both drives now — user is buying secondhand, wants the
-> mirror complete from day one rather than running degraded). Nothing bought yet. Only remaining
-> open call: whether to add a boot NVMe now (see "Still open" #5 below). The full buy list, with
-> links and live stock, is in "Purchase list" below.
+> mirror complete from day one rather than running degraded), **boot NVMe decided** (Patriot P310
+> 480 GB, $65). Nothing bought yet. No open calls remain. The full buy list, with links and live
+> stock, is in "Purchase list" below.
 
 ## Purchase list (prices verified 2026-08-20; CPU variant decided 2026-08-30 — re-check before ordering)
 
@@ -20,12 +20,20 @@
 | **TerraMaster F2-425 Plus** (**N95**, 8 GB DDR5→32, 3× M.2, 2× 5GbE, 2 bays) | Amazon | **$383** |
 | **HGST Ultrastar 7K6000** HUS726060ALE610 6 TB SATA, cert. refurb, 3 yr | [goHardDrive g01-1079](https://www.goHardDrive.com/HGST-Ultrastar-0F23001-6TB-7200RPM-Hard-Drive-p/g01-1079.htm) | **$179.95** |
 | **Seagate Exos 7E8** ST6000NM0115 6 TB SATA, enterprise, 5 yr | [goHardDrive g01-1326](https://www.goHardDrive.com/Seagate-ST6000NM0115-6TB-128MB-SATA-Enterprise-HDD-p/g01-1326.htm) | **$189.95** |
-| *(open — see "Still open" below)* 500 GB NVMe for PVE boot | — | ~$60 |
+| **Patriot P310** 480 GB, M.2 2280 PCIe Gen3 x4 NVMe, 240 TB TBW — PVE boot | Amazon/Walmart/B&H | **$65** |
 
-**P1 decided 2026-08-30 — mirror now: $753.** Both drives, ZFS mirror, 5.45 TiB usable, 57% full
-day one. Chosen over P2 (start small, $563, one drive + `zpool attach` later) because the drives
-are secondhand — user wants mirror redundancy from day one rather than running an unprotected
-single disk during the interval before the second drive is added.
+**Total: $818.**
+
+**P1 decided 2026-08-30 — mirror now: $753** (enclosure + both HDDs). Both drives, ZFS mirror,
+5.45 TiB usable, 57% full day one. Chosen over P2 (start small, $563, one drive + `zpool attach`
+later) because the drives are secondhand — user wants mirror redundancy from day one rather than
+running an unprotected single disk during the interval before the second drive is added.
+
+**Boot NVMe decided 2026-08-30: Patriot P310 480 GB, $65.** PCIe Gen3 x4, M.2 2280 — fits the
+F2-425 Plus's M.2 2280 slots (runs at the slot's PCIe 3.0 ×1, well above what boot + Immich DB/
+thumbnails need). 240 TB TBW is ample for this workload (OS + a lightweight Postgres DB + thumbnail
+cache — light, steady writes, not sustained heavy I/O). Not required for P1 (Proxmox could boot off
+the HDD mirror instead), but keeps Immich's DB/thumbnail I/O off the secondhand HDDs.
 
 Two *different* manufacturers is deliberate: it satisfies the different-lots rule (§7 of the
 research doc) at no cost. Both carry longer warranties than any manufacturer-direct store
@@ -149,12 +157,6 @@ gr-srv03, which it protects).
 3. **Verification items before purchase** — recertified enterprise 8 TB street price,
    third-party OS support/BIOS/HDMI on the chosen chassis, M.2 slot count, noise figures.
 4. **Does the BACKUP_A/B rotation move from gr-srv03 to the NAS**, or stay where it is?
-5. **Boot NVMe (~$60, ~500 GB) — to be decided later.** Not required for P1: Proxmox can boot off
-   the ZFS HDD mirror instead, and both bays go to the mirror either way (root doesn't need a bay).
-   Trade-off if skipped: Immich's PostgreSQL + thumbnail cache sit on the spinning mirror instead
-   of NVMe. Leaning toward buying it given the HDDs are secondhand (keeps boot/metadata I/O off
-   drives of unknown wear), but not decided — 3 M.2 slots are free regardless, so it can be added
-   any time with zero rework.
 
 ## Related
 
