@@ -99,6 +99,11 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 
 ## Home Assistant
 
+**Current:** rtl_433 battery sensors converted `sensor`→`binary_sensor` and the exterior
+Zigbee temp/humidity sensor was physically swapped, both 2026-08-30 →
+[2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md](2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md)
+
+- [2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md](2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md) — *closed* — 4 rtl_433 battery sensors → `binary_sensor`; exterior Zigbee sensor `0xa4c1386e91d0faf4` → `0xa4c1380a7834ffff`, same friendly_name, zero config changes needed
 - [2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md](2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md) — *closed* — zigbee2mqtt discovery entities never go `unavailable`; guard on `last_reported`, not `last_changed`
 
 ## docker03 decommission
@@ -176,6 +181,7 @@ found and fixed in quick succession: the `adm`/`systemd-journal` blind spot (08-
 
 - [2026-06-30_log-monitor.md](2026-06-30_log-monitor.md) — *active* — daily log review from comet; architecture, `SUPPRESS_PATTERN`, adding a host
 - [2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md) — *closed* — 4-day contabo2 blackout reported as "(ssh error)"; was `head`+`pipefail`+`set -e`. Suppression now runs remotely before the cap
+- [2026-08-30_comet_homeassistant-mcp-ssh-mcp-v2-password-flag.md](2026-08-30_comet_homeassistant-mcp-ssh-mcp-v2-password-flag.md) — *closed* — unpinned `npx -y ssh-mcp` auto-updated to v2, dropped `--password`; only the password-auth `homeassistant` connector broke
 - [memory_comet_zed-tmux-claude.md](memory_comet_zed-tmux-claude.md) — *closed* — Zed + tmux + Claude workflow
 - [memory_feedback.md](memory_feedback.md) — *active* — **working preferences; read first**
 

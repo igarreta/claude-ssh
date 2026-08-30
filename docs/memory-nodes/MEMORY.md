@@ -51,6 +51,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_contabo2_ipv6-accept-ra.md](project_contabo2_ipv6-accept-ra.md) — contabo2 eth0 stuck "configuring" is cosmetic; accept-ra:false applied but didn't clear it, IPv6 fully works
 - [project_comet_tailscale_logout.md](project_comet_tailscale_logout.md) — corrupted `tailscaled.state`; unprivileged `journalctl` fakes outages
 - [project_comet_zed_tmux_claude.md](project_comet_zed_tmux_claude.md) — the working Zed + tmux + Claude Code setup
+- [project_comet_ssh-mcp-v2-password-flag.md](project_comet_ssh-mcp-v2-password-flag.md) — unpinned `npx ssh-mcp` auto-updated to v2, dropped `--password`; broke the homeassistant connector
 - [project_raspberrypi2z_setup.md](project_raspberrypi2z_setup.md) — Pi Zero W for 433 MHz sensors; hardened SSH and sudo
 - [project_gr-srv03_vm100_stopped.md](project_gr-srv03_vm100_stopped.md) — VM 100 is stopped on purpose; ignore it in outage checks
 - [project_raspberrypi1_watchdog.md](project_raspberrypi1_watchdog.md) — BCM2835 hardware watchdog armed since 06-25; closes the Jun 2026 hard-freeze gap
@@ -62,3 +63,4 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_raspberrypi1_ttato_manual_heating.md](project_raspberrypi1_ttato_manual_heating.md) — Manual mode fired the boiler on phantom 0 °C readings
 - [project_raspberrypi1_ttato_granev.md](project_raspberrypi1_ttato_granev.md) — TTato never subscribed to HA's `granev/temp/*`; fixed 07-20
 - [project_homeassistant_stale_sensor_chain.md](project_homeassistant_stale_sensor_chain.md) — guard on `last_reported`, not `last_changed`; z2m entities never go `unavailable`
+- [project_homeassistant_battery-sensors-zigbee-swap.md](project_homeassistant_battery-sensors-zigbee-swap.md) — rtl_433 battery sensors → `binary_sensor`; exterior Zigbee sensor swapped, same friendly_name, zero config changes needed

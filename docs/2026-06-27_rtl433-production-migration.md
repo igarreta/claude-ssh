@@ -5,6 +5,12 @@
 **Supersedes:** —
 **Superseded-by:** —
 
+> **CORRECTED 2026-08-30**: the topic table below lists Oregon-THGR122N (exterior
+> Granaderos) as `id=161`. The live `configuration.yaml` state_topic actually uses
+> `id=87` — confirmed byte-for-byte while editing the battery sensors in
+> [2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md](2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md).
+> The other three rows (living/hab principal/hab chicos) were re-verified and are correct.
+
 ## Summary
 
 The rtl_433 service previously ran as a Docker container on docker03, publishing to
