@@ -159,9 +159,9 @@ not just the default `always` →
 
 ## NAS project
 
-**Current:** research complete, purchase-ready 2026-08-24. Buy list = TerraMaster F2-425 **Plus**
-+ 6 TB recert from goHardDrive. **Only open call: P1 (both drives, $752) vs P2 (one now, $562)** →
-[memory_nas-project.md](memory_nas-project.md)
+**Current:** research complete, purchase-ready. Buy list = TerraMaster F2-425 **Plus, N95** CPU
++ 6 TB recert from goHardDrive. **P1 decided** (both drives, $753). Only open call: whether to add
+a boot NVMe now → [memory_nas-project.md](memory_nas-project.md)
 
 - [memory_nas-project.md](memory_nas-project.md) — **open** — scope, sizing, buy list, rejected options
 - [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc.** Verify stock before ordering

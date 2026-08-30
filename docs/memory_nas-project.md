@@ -7,30 +7,40 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
-> **Resume here** (updated 2026-08-24): research is **complete and purchase-ready**. Nothing bought
-> yet — the only open call is **P1 vs P2** (buy both drives now, or one now and the second later).
-> The full buy list, with links and live stock, is in "Purchase list" below.
+> **Resume here** (updated 2026-08-30): research is **complete and purchase-ready**, CPU variant
+> decided (N95, not N150), **P1 decided** (both drives now — user is buying secondhand, wants the
+> mirror complete from day one rather than running degraded). Nothing bought yet. Only remaining
+> open call: whether to add a boot NVMe now (see "Still open" #5 below). The full buy list, with
+> links and live stock, is in "Purchase list" below.
 
-## Purchase list (prices verified 2026-08-20 — re-check before ordering)
+## Purchase list (prices verified 2026-08-20; CPU variant decided 2026-08-30 — re-check before ordering)
 
 | Item | Source | Price |
 |---|---|---|
-| **TerraMaster F2-425 Plus** (N150, 8 GB DDR5→32, 3× M.2, 2× 5GbE, 2 bays) | Amazon | **$382** |
+| **TerraMaster F2-425 Plus** (**N95**, 8 GB DDR5→32, 3× M.2, 2× 5GbE, 2 bays) | Amazon | **$383** |
 | **HGST Ultrastar 7K6000** HUS726060ALE610 6 TB SATA, cert. refurb, 3 yr | [goHardDrive g01-1079](https://www.goHardDrive.com/HGST-Ultrastar-0F23001-6TB-7200RPM-Hard-Drive-p/g01-1079.htm) | **$179.95** |
 | **Seagate Exos 7E8** ST6000NM0115 6 TB SATA, enterprise, 5 yr | [goHardDrive g01-1326](https://www.goHardDrive.com/Seagate-ST6000NM0115-6TB-128MB-SATA-Enterprise-HDD-p/g01-1326.htm) | **$189.95** |
-| *(optional, any time later)* 500 GB NVMe for PVE boot | — | ~$60 |
+| *(open — see "Still open" below)* 500 GB NVMe for PVE boot | — | ~$60 |
 
-- **P1 — mirror now: $752.** Both drives, ZFS mirror, 5.45 TiB usable, 57% full day one.
-- **P2 — start small: $562.** Enclosure + one drive; `zpool attach` the second later (online,
-  non-destructive). Don't point Time Machine at it until the mirror is complete — the NAS would be
-  the MacBook's only copy.
+**P1 decided 2026-08-30 — mirror now: $753.** Both drives, ZFS mirror, 5.45 TiB usable, 57% full
+day one. Chosen over P2 (start small, $563, one drive + `zpool attach` later) because the drives
+are secondhand — user wants mirror redundancy from day one rather than running an unprotected
+single disk during the interval before the second drive is added.
 
 Two *different* manufacturers is deliberate: it satisfies the different-lots rule (§7 of the
 research doc) at no cost. Both carry longer warranties than any manufacturer-direct store
 (Seagate direct = 6 months, WD direct = 1 year), though a US warranty is near-useless once the
 drives are in Argentina — test them inside the US return window if the trip allows.
 
+**CPU variant decided 2026-08-30: N95, not N150 (+$42).** Chassis, RAM, M.2 count and LAN are
+identical between the two — only the CPU/iGPU differ. N150 is ~6% faster CPU-wise and has a
+faster iGPU with AV1 hardware support; N95 lacks AV1 accel and its HEVC-to-HEVC transcode is the
+weakest link. None of that matters here: no transcoding use case is planned, and if one appears
+later it's Full-HD only (no 4K) — N95's iGPU comfortably does ≥3 concurrent real-time 1080p
+transcodes, including HEVC→H.264 and HDR10→SDR tone-mapping. **Not worth $42.**
+
 **Rejected, with reasons** (don't re-open these): base F2-425/F4-425 (N5095, 4 GB DDR4, **no M.2**);
+**F2-425 Plus N150 variant** (see above — CPU variant decided, $42 doesn't buy anything usable);
 UGREEN DH2300 (**ARM** — Proxmox/TrueNAS cannot run on it); UGREEN DXP2800 (fine machine, but $369
 now, not the $297 sale price — only $13 under the Plus, which has more); Seagate ST4000NM0023
 (**SAS**, incompatible); WD RE4 2 TB (**2010** design, worst $/TB tier); ServerPartDeals for 6 TB
@@ -139,6 +149,12 @@ gr-srv03, which it protects).
 3. **Verification items before purchase** — recertified enterprise 8 TB street price,
    third-party OS support/BIOS/HDMI on the chosen chassis, M.2 slot count, noise figures.
 4. **Does the BACKUP_A/B rotation move from gr-srv03 to the NAS**, or stay where it is?
+5. **Boot NVMe (~$60, ~500 GB) — to be decided later.** Not required for P1: Proxmox can boot off
+   the ZFS HDD mirror instead, and both bays go to the mirror either way (root doesn't need a bay).
+   Trade-off if skipped: Immich's PostgreSQL + thumbnail cache sit on the spinning mirror instead
+   of NVMe. Leaning toward buying it given the HDDs are secondhand (keeps boot/metadata I/O off
+   drives of unknown wear), but not decided — 3 M.2 slots are free regardless, so it can be added
+   any time with zero rework.
 
 ## Related
 

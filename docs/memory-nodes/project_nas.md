@@ -1,20 +1,26 @@
 ---
 name: project_nas
-description: "NAS purchase project — research complete and purchase-ready as of 2026-08-24; buy list decided, nothing ordered yet"
-metadata:
+description: "NAS purchase project — buy list and P1 (both drives) decided 2026-08-30; only boot-NVMe timing open, nothing ordered yet"
+metadata: 
   node_type: memory
   type: project
+  originSessionId: 674728fe-657f-43ee-985f-f339c95e4974
+  modified: 2026-08-30T22:21:22.228Z
 ---
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
 Machine and Proxmox Backup Server, plus Immich for family photo browsing (external-library mode,
 existing folder tree intact). Hardware brought from abroad; day-one need ~3.1 TB.
 
-**Status 2026-08-24: research complete, purchase-ready, nothing bought.** OS decided = Proxmox VE
-+ ZFS mirror, PBS on the NAS with a local datastore. Buy list: **TerraMaster F2-425 Plus $382** +
-**6 TB recertified SATA enterprise** from **goHardDrive** (Ultrastar 7K6000 $179.95 / Exos 7E8
-$189.95 — two different makers on purpose). **P1** = both drives now, $752; **P2** = one now and
-`zpool attach` the second later, $562. **The only open decision is P1 vs P2.**
+**Status 2026-08-30: research complete, purchase-ready, nothing bought.** OS decided = Proxmox VE
++ ZFS mirror, PBS on the NAS with a local datastore. Buy list: **TerraMaster F2-425 Plus, N95 CPU,
+$383** (N150 variant rejected — $42 more for ~6% CPU/faster iGPU/AV1 accel, none of which matters
+for a Full-HD-only, no-transcoding-planned use case) + **6 TB recertified SATA enterprise** from
+**goHardDrive** (Ultrastar 7K6000 $179.95 / Exos 7E8 $189.95 — two different makers on purpose).
+**P1 decided** (both drives now, $753 — chosen over P2's $563 because the drives are secondhand
+and the user wants mirror redundancy from day one, not a degraded single-disk interval). Remaining
+open call: whether to add a ~$60 boot NVMe now or defer — not required, Proxmox can boot off the
+HDD mirror instead, but keeps Immich's DB/thumbnails off drives of unknown wear.
 
 **Do not re-open these rejections**: base F2-425/F4-425 (N5095, 4 GB DDR4, no M.2 — the 08-19
 research had their specs wrong); UGREEN DH2300 (ARM, cannot run Proxmox); UGREEN DXP2800 ($369 now
