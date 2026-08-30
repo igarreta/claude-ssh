@@ -135,8 +135,16 @@ will not appear in a report, but its entire content is quoted above.
   is a **systemd-networkd misattribution of a container's `eth0`**, not a host IPv6 problem —
   present since 2026-02-26, merely invisible until now. Suppressed in `contabo2.conf`;
   full rationale in [2026-06-30_log-monitor.md](2026-06-30_log-monitor.md), "Noise suppression".
-- The `systemd-networkd-wait-online` timeouts (13 hits) are **unrelated and still open**:
-  `networkctl` reports eth0 as `routable (configuring)` with `Required For Online: yes` — the
-  link is operationally fine but its setup never completes, so wait-online times out on every
-  apt-daily run (4×/day) and would stall anything gating on `network-online.target` at boot.
-  Diagnosing it needs root: `sudo cat /run/systemd/network/10-netplan-eth0.network`.
+- The `systemd-networkd-wait-online` timeouts (13 hits) were investigated separately the same
+  day. `networkctl` showed eth0 stuck at `routable (configuring)`; the source netplan
+  (`/etc/netplan/50-cloud-init.yaml`) had no `accept-ra` override, defaulting to enabled, on a
+  network with no real router ever sending RAs — a plausible cause, since IPv6 routing is
+  entirely static. Fixed with a `/etc/netplan/90-disable-accept-ra.yaml` drop-in setting
+  `accept-ra: false` (kept separate from the cloud-init-owned file, which may be regenerated),
+  applied via `netplan try`. **This did not change the setup state** — eth0 still shows
+  `configuring` after the fix. Further checking (`ip -6 neigh show dev eth0`, `curl -6
+  https://ifconfig.co`) confirmed IPv6 is fully functional regardless: gateway `REACHABLE`,
+  outbound IPv6 HTTP succeeds. Conclusion: the stuck setup state is cosmetic networkd
+  bookkeeping, unrelated to RA (the RA fix stands on its own merit but wasn't the actual cause
+  of the setup-state or wait-online symptom). Suppressed in `contabo2.conf` alongside the
+  dockerd noise; root cause of the setup-state stall not identified, not pursued further.

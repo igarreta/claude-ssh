@@ -112,7 +112,7 @@ and it used to crash the run outright. See
 [2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md).
 The digest reports `suppressed=N` so the dropped volume stays visible.
 
-`contabo2.conf` suppresses two things:
+`contabo2.conf` suppresses three things:
 
 - `\[UFW BLOCK\]` (2026-08-26) — ~4,500 dropped port-scan packets/day from the open internet,
   each line unique. These are DROPPED inbound attempts, not successful ones; a real compromise
@@ -129,6 +129,14 @@ The digest reports `suppressed=N` so the dropped volume stays visible.
   the journal-group gap was fixed. The trade-off is deliberate: this pattern would also hide a
   genuine dockerd change to the *host's* eth0, but the log line cannot distinguish the two and
   that failure would show up as lost IPv6 connectivity anyway.
+- `systemd-networkd-wait-online: Timeout occurred` / `apt-helper: ... wait-online ... error code
+  (1)` (2026-08-30) — eth0's networkd **setup state** never advances from `configuring` to
+  `configured`, even after fixing `IPv6AcceptRA` (see below). Confirmed cosmetic, not a real
+  problem: `curl -6 https://ifconfig.co` succeeds end-to-end, the IPv6 gateway `fe80::1` shows
+  `REACHABLE` in the neighbor table, and networkd's own `Online state` already reads `online`.
+  Fires ~4x/day when `apt-daily(-upgrade)` calls the wait-online binary directly, bypassing the
+  eth0-scoped service override. The underlying setup-state cause was not found — not worth a
+  `systemd-networkd` restart on a network-only-reachable host to chase a cosmetic status field.
 
 `gr-srv03.conf` suppresses:
 - `BACKUP_B|backup_b|2d0b0d7c` — rotating removable backup drives; absence/timeout is expected.
