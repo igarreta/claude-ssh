@@ -48,6 +48,14 @@ now, not the $297 sale price — only $13 under the Plus, which has more); Seaga
 Offsite strategy is unchanged: BACKUP_A/B rotation continues, and a *full* backup must still fit
 on one 3–4 TB disk. That caps the backed-up subset, not the NAS capacity.
 
+> **Knock-on: gr-srv03's planned second USB HDD (decided 2026-08-30).** That drive — a
+> permanently-connected companion to the rotating backup disk — is **cancelled if the NAS is
+> bought**, since the NAS absorbs the capacity it was for. It is therefore only purchased if this
+> project does not go ahead, and **must not be ordered before the P1/P2 call is made**. The USB hub
+> rebuild does not depend on the outcome either way — see
+> [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) § The
+> constraint.
+
 ## Confirmed preferences (2026-08-19)
 
 | Decision | User's answer |

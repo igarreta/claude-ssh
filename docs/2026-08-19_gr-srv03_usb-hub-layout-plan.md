@@ -5,10 +5,11 @@
 **Supersedes:** —
 **Superseded-by:** —
 
-**Status detail:** PLANNED, nothing purchased or moved yet. Storage hub decided
-(Rosonway RSH-A10), extension cables and ferrites decided (Conable CAL2S-6-3PK +
-13 mm wire-wound clip-ons);
-**port 3 layout undecided — three options below.** Current setup is the
+**Status detail:** Storage hub **ordered 2026-08-29 (Rosonway RSH-A10), ETA ~2026-10-24**
+(~8 week lead time); nothing installed or moved yet. **Layout decided 2026-08-30 —
+[Option D](#decided-layout--option-d-2026-08-30), which needs no second hub**; Options A/B/C
+below are retained for the record and were not taken. Extension cables still to order
+(Conable CAL2S-6-3PK); ferrites deprioritised. Current setup is the
 post-incident one (hub removed, everything on direct ports) documented in
 [memory_gr-srv03_powered-hub-instability.md](memory_gr-srv03_powered-hub-instability.md).
 
@@ -26,16 +27,70 @@ gr-srv03 (GMKtec NucBox G5) has **only 3 external USB-A ports, all USB 3.2 Gen 1
 Bluetooth (`0bda:c821`) and the Zoran USB audio (`0573:1573`) are internal, not
 occupying external sockets.
 
-Planned additions: a **second HDD** (permanently connected, alongside the rotating
-backup drive) and the **RTL-433 SDR** (disconnected since 2026-08-17 when the old hub
-was pulled). That makes **5 devices for 3 ports** — a hub is mandatory.
+Planned additions: the **RTL-433 SDR** (disconnected since 2026-08-17 when the old hub
+was pulled) and — **contingent, see below** — a **second HDD** permanently connected
+alongside the rotating backup drive. Either way that is more devices than ports, so a hub
+is mandatory.
+
+> **The second HDD is cancelled if the NAS is bought (decided 2026-08-30).** The NAS
+> absorbs the capacity that drive was for, so it is only purchased if the NAS project does
+> not go ahead — see [memory_nas-project.md](memory_nas-project.md), which is
+> purchase-ready with only the P1-vs-P2 call open. **Do not buy the HDD before the NAS
+> decision.** Nothing in this layout depends on the outcome: the RSH-A10 has 10 ports and
+> ample headroom either way (see the load note under Option D), so the drive can be added
+> later with no re-planning.
 
 > **Do not trust `connect_type` / `peer` in sysfs on this board.** It reports
 > `usb1-port1` and `usb1-port2` as separate hotplug sockets with no USB3 peer, and
 > shows `usb1-port6`/`usb2-port2` as one socket with a different device on each.
 > Neither matches the physical 3-port reality. Count sockets at the chassis.
 
-## Option A — two hubs, 10 Gbps dongle hub (original plan)
+## Decided layout — Option D (2026-08-30)
+
+**Port 3 stays dedicated to the Zigbee dongle, direct on a host port. No second hub is
+bought.** Options A, B and C below were not taken; they are kept because their reasoning
+still explains why the storage/dongle split matters.
+
+| port | connected | carries |
+|---|---|---|
+| 1 | **RSH-A10** (12 V/3 A, PPPS) | BACKUP_A/B + **RTL-433** (test use) + second HDD *only if the NAS is not bought* |
+| 2 | Kingston XS1000 | direct, dedicated |
+| 3 | **Sonoff Zigbee dongle** | direct — **unchanged from today** |
+
+**Load note.** The 36 W brick was sized for two 2.5" HDDs spinning up together (~20 W).
+The actual day-one load is one HDD plus the RTL-433 (~300 mA at 5 V, ~1.5 W) — roughly
+half that. If the second HDD is later added the peak returns to ~22 W, still ~40% under
+budget. The hub is not the constraint under any outcome of the NAS decision.
+
+**Why.** Zigbee is the critical device, and this is the only layout that does not touch it
+at all. It keeps its own host port, no hub in its path, no shared 12 V brick — so the
+rebuild introduces exactly zero new failure modes into home automation. Options A/B put it
+behind a cheap unpowered hub; Option C put it behind the same brick as the backup drives,
+whose blast radius was that option's stated reason for rejection. Here the storage hub can
+fail completely and heating and lighting do not notice.
+
+**Why the RTL on the storage hub is acceptable now — it is test-only.** Production 433 MHz
+reception runs on raspberrypi2z and is unaffected by anything in this plan (see
+[2026-06-26_raspberrypi2z_rtl433-setup.md](2026-06-26_raspberrypi2z_rtl433-setup.md)). The
+gr-srv03 SDR has been disconnected since 2026-08-17 and comes back for experiments only, so
+the USB3/HDD RFI penalty costs bench sensitivity, not sensor coverage. That is the whole
+reason this layout appears under *Alternatives rejected* below in the 08-19 version and is
+the decision now: the assumption that made it worse than Option C — a sensitivity-critical
+SDR — is not true. Give it a shielded extension anyway and keep it off the drive cabling;
+if a test needs real sensitivity, move it to port 3 for the duration and unplug the Zigbee
+dongle, or run the test on raspberrypi2z.
+
+**Bonus:** the RTL lands on a PPPS port, so a wedged SDR can be power-cycled with `uhubctl`
+instead of by hand.
+
+**The accepted cost — Zigbee gets no PPPS.** Option C's main draw was letting the recovery
+watchdog cut VBUS on the dongle instead of escalating to a host reboot after a USB
+re-enumeration like 2026-07-15
+([memory_docker03_zigbee2mqtt.md](memory_docker03_zigbee2mqtt.md)). On a direct host port
+that escalation path stays a reboot. Deliberate: paying for it meant putting the critical
+device behind the storage hub's brick.
+
+## Option A — two hubs, 10 Gbps dongle hub (original plan, not taken)
 
 | port | connected | carries |
 |---|---|---|
@@ -72,7 +127,7 @@ good one — a bad extension cable was the kernel's first suspicion on 07-15.)
 device that would notice sharing a hub's single 5 Gbps uplink. The HDDs (~120 MB/s
 each, ~240 MB/s aggregate) lose nothing behind a hub.
 
-## Option B — two hubs, USB 2.0 dongle hub
+## Option B — two hubs, USB 2.0 dongle hub (not taken)
 
 Same layout as Option A, but port 3 gets the **$7 Sabrent HB-MCRM** (USB 2.0,
 bus-powered) instead of a 10 Gbps hub. Removes the SuperSpeed RFI source next to the
@@ -82,7 +137,7 @@ root-cause work exonerates it for a dongle-only load. Reasoning in the dongle-hu
 section of
 [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md).
 
-## Option C — no second hub (added 2026-08-19)
+## Option C — no second hub (added 2026-08-19, not taken)
 
 The RSH-A10 has **10 PPPS ports and only two drives to put on them**. Spending a
 second purchase on port 3 is optional.
@@ -128,15 +183,23 @@ cheap USB 2.0 PPPS hub remains in production, see the comparison doc.
 > **Decided 2026-08-19: Conable CAL2S-6-3PK — 3 x 6 ft USB 2.0 A-male to A-female,
 > $10 the pack.** Covers both dongles plus a spare. Not yet purchased.
 
-Two extensions are required regardless of which layout option is taken:
+Under **Option D** the split is:
 
-- **RTL-433** — away from the chassis and the storage cabling. Mandatory in all three
-  options.
-- **Zigbee dongle** — off the RSH-A10 and the chassis (Option C), or off the dongle
-  hub (Options A/B, where slim inline hubs have a port pitch too tight for two wide
-  dongles side by side).
+- **RTL-433** — required. It hangs off the RSH-A10 alongside the USB3 drive cabling, so
+  distance from that cabling is the only RFI mitigation left once the ferrites are dropped.
+- **Zigbee dongle** — optional but recommended. It stays on its own host port, so this is
+  the plain Sonoff advice (get the dongle away from the chassis), not a hub workaround.
 
-Check the Sonoff box first; the Dongle Plus V2 often ships with a short extension.
+The third cable in the pack is the spare. Under the untaken Options A/B/C both extensions
+were mandatory — see the option sections above.
+
+> **Allocation rule (added 2026-08-30): the Sonoff's own extension goes to Zigbee, the
+> CAL2S to the RTL-433.** Check the box first — the Dongle Plus V2 usually ships with one.
+> The CAL2S's shield quality is unpublished (see [the open risk](#the-open-risk-shield-quality)
+> below), and under Option D that unknown must not sit on the critical device. Putting it on
+> the test-only receiver costs nothing if it turns out to be poor. If the Sonoff box has no
+> cable, Zigbee still gets the better-measuring CAL2S of the three and stays first suspect
+> if it re-enumerates.
 
 ### Why USB 2.0, not USB 3.x
 
@@ -160,10 +223,16 @@ room. The plating difference is milliohms against 0.78 Ω of cable. The USB spec
 requires gold on the mating contacts, so the phrase in a listing usually describes
 compliance rather than an upgrade, and it says nothing about signal integrity or RF.
 
-### Ferrites — decided 2026-08-19
+### Ferrites — deprioritised 2026-08-30
 
-> **13 mm ID clip-on, wire-wound type, 10 pcs.** Bought alongside the cables so the
-> mitigation is on hand when the rebuild is verified, not a second shipping wait.
+> **NOT being bought.** The 08-19 decision below (13 mm ID clip-on, wire-wound, 10 pcs,
+> bought alongside the cables) is superseded by the Option D layout: the only RF victim on
+> the storage hub is the **test-only** RTL-433, and cheap clip-ons were never expected to do
+> more than take the edge off a marginal cable. If RTL coverage does prove unusable after
+> the rebuild, buy them then — the spec below is still the right one, and a known-good
+> shielded cable is the other remedy. Nothing in production depends on this receiver.
+
+The 08-19 reasoning, retained for that eventuality:
 
 13 mm is chosen specifically so **2–3 turns** of a 4.5 mm USB cable fit through the
 bore. A ferrite's common-mode impedance scales with the square of the turns, so three
@@ -190,8 +259,10 @@ Conable publishes no AWG, shielding, or ferrite spec for the CAL2S, and at $3.33
 it is probably foil-only. Shield coverage — and whether the connector shell is bonded
 to it — is the one property that actually matters next to the SDR, and it is unknown.
 This is deliberately accepted rather than insured against: verify step 4 below already
-watches for it, the ferrites above are the first remedy, and a known-good shielded
-cable is $8 if the cheap one proves to be the problem.
+watches for it, and a known-good shielded cable is $8 if the cheap one proves to be the
+problem. Under Option D the exposure is smaller than it looks — the SDR behind this cable
+is test-only — but the Zigbee dongle may also end up on one of these cables, and that one
+is critical, so a re-enumeration after the rebuild means swap the cable first.
 
 A bad extension cable was the kernel's first suspicion during the 2026-07-15 episode.
 The failure mode presents as intermittent re-enumeration or quietly missing sensors,
@@ -202,11 +273,13 @@ swap the cable early rather than late.
 
 - **Both dongles direct, drives on a hub** — does not fit. 3 ports minus the hub minus
   the XS1000 leaves one port for two dongles.
-- **Zigbee direct, RTL on the storage hub** — the inverse of Option C, and worse:
-  it puts the RF-sensitive one-way receiver next to the drives and denies PPPS to the
-  device that has actually needed a power-cycle. Viable fallback, but accepts a certain
-  RFI penalty on the SDR to avoid a risk that is now largely engineered out. If chosen,
-  mitigate with a shielded extension putting the dongle well away from the drives.
+- ~~**Zigbee direct, RTL on the storage hub**~~ — **this is Option D, chosen 2026-08-30.**
+  Rejected on 08-19 as "the inverse of Option C, and worse: it puts the RF-sensitive one-way
+  receiver next to the drives and denies PPPS to the device that has actually needed a
+  power-cycle." That rejection assumed the gr-srv03 SDR mattered for sensor coverage; it is
+  test-only, production 433 MHz being on raspberrypi2z. With the RFI penalty falling on a
+  bench device, keeping the critical Zigbee dongle off any hub wins. See
+  [Option D](#decided-layout--option-d-2026-08-30).
 - **Everything except the SSD on one big powered hub** — recreates the exact
   drive/dongle adjacency that caused the incident, and the RFI problem regardless of
   power quality.
@@ -219,7 +292,7 @@ swap the cable early rather than late.
 > survives a power outage) plus per-port power switching verified on every port.
 > Six candidates compared against these criteria in
 > [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md).
-> Not yet purchased.
+> **Ordered 2026-08-29, ETA ~2026-10-24.**
 
 **Storage hub**
 - Genuinely **self-powered** with its own **12 V / 4–5 A** brick, and no backfeed into
@@ -247,10 +320,10 @@ swap the cable early rather than late.
   and spin-up count is the dominant wear metric on a 2.5" HDD.
 - Chipset: VL817 / GL3510-class USB 3.2. **Not** Terminus-class.
 
-**Dongle hub**
-- USB2 is sufficient (Zigbee is full-speed, RTL needs 480 Mbps high-speed).
-- Powered preferred but not essential at ~400 mA total.
-- Still not the cheapest part available.
+**Dongle hub** — **not being bought** under Option D. Criteria retained in case a fourth
+USB device ever appears: USB2 is sufficient (Zigbee is full-speed, RTL needs 480 Mbps
+high-speed); powered preferred but not essential at ~400 mA total; still not the cheapest
+part available.
 
 ## No config changes needed
 
@@ -259,6 +332,50 @@ swap the cable early rather than late.
 - VM 102's Zigbee passthrough is ID-based (`usb2: host=10c4:ea60`) and follows the
   dongle to any port. Path-based entries were removed 2026-08-18 — do not reintroduce
   them, they are an auto-capture trap when hub topology changes.
+
+## To implement when the hub arrives (added 2026-08-30)
+
+Three items that are not "plug it in". The first is a hard dependency of the decision
+already made; the second must happen **before** the rebuild, not after.
+
+### 1. Assert port power on — REQUIRED, not optional
+
+```sh
+uhubctl -l <hub-location> -a on
+```
+
+Must run **at boot** and **at the top of the 00:30 remount path**, before any mount is
+attempted. Script lives in `/opt/proxmox-grsrv03/` (thematic subdir, symlink from
+`/usr/local/sbin` if a path entry is wanted — never place it there directly).
+
+**Why this is not a nice-to-have.** The comparison doc
+([2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md),
+§ *The outage question, retired*) **retired the power-on-default purchase criterion on the
+grounds that this assertion would exist.** Without it that reasoning is unbacked and the
+RSH-A10's MCU/mechanical behaviour after an outage becomes load-bearing again. The failure
+it prevents is quiet: an outage landing between the 15:00 unmount and the physical swap
+leaves a port switched off, and the resulting "drive missing" is indistinguishable from the
+normal offsite-rotation state — so it surfaces as *backups stopped* days later.
+
+Record the `uhubctl` port numbers in the comparison doc during install; the A10's ports are
+unnumbered and its LEDs are hard to see, so label them physically at the same time.
+
+### 2. Take a Zigbee LQI baseline BEFORE touching anything
+
+Under Option D the dongle does not move — but the RF environment around it does: a new hub,
+its brick, and more USB3 cabling appear in the same enclosure. The verify list below covers
+throughput and RTL reception; without a fresh coordinator baseline a post-rebuild LQI change
+cannot be told apart from the drift already being tracked in
+[2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md)
+(recheck due 2026-09-09, i.e. resolved well before the hub lands ~10-24).
+
+Capture fleet LQI the same way as the existing baselines in [data/](data/), on the day of
+the rebuild, and compare after. Same method, or the comparison is worthless.
+
+### 3. Cable allocation
+
+Sonoff's own extension → Zigbee; CAL2S → RTL-433. See the allocation rule under
+[Extension cables](#extension-cables-needed-under-every-option).
 
 ## Verify after install
 
@@ -269,10 +386,21 @@ swap the cable early rather than late.
    `journalctl -k --since '10 min ago' | grep -E 'cp210x|Spinning up|error -71'`.
 3. With both HDDs connected, confirm a simultaneous spin-up (both mount units started
    together) produces no undervoltage or enumeration errors.
-4. RTL reception: compare sensor coverage against the pre-move baseline; a quiet loss
-   of distant sensors is the signature of RFI from the storage side — or of the
-   CAL2S's unknown shield quality. Before re-planning the layout: fit ferrites to the
-   HDD cables first (source side), then to the SDR extension, 2–3 turns each; then try
-   a known-good shielded cable.
-5. If Option C is taken, confirm `uhubctl` can power-cycle the Zigbee port and that
-   zigbee2mqtt recovers from it, so the watchdog has a verified escalation step.
+4. RTL reception (test-only, so this gates experiments, not production): compare what the
+   SDR hears on the hub against a direct-port capture on the same day. A quiet loss of
+   distant sensors is the signature of RFI from the storage side, or of the CAL2S's unknown
+   shield quality. Remedies in order, cheapest first: route the extension away from the
+   drive cables and use a hub port far from the drives; try a known-good shielded cable;
+   only then buy ferrites (HDD cables first — the source — then the SDR extension, 2–3
+   turns each). If a specific test needs full sensitivity, run it on raspberrypi2z or
+   borrow port 3 for the duration.
+5. Zigbee: it never leaves its direct host port, so confirm it still enumerates and that
+   zigbee2mqtt is up — then **re-measure fleet LQI against the same-day baseline from
+   step 2 of the implementation list above**. A drop points at the new hub, its brick, or
+   the added cabling as a 2.4 GHz source; the remedy is separation (move the hub and its
+   cabling away from the dongle, lengthen the Zigbee extension), not a layout change.
+   There is no `uhubctl` escalation for the dongle under Option D — the recovery
+   watchdog's last resort stays a host reboot.
+6. `uhubctl` power-cycles the **RTL's** port cleanly (its one PPPS benefit under this
+   layout), and the boot/00:30 `-a on` assertion actually runs — reboot once and confirm
+   the ports come up powered and both mount units succeed.

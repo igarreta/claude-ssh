@@ -46,11 +46,14 @@ commit `b24d961`); Manual-mode phantom-zero bugs fixed 2026-08-01 →
 transients on the shared xHCI 5V rail). Coordinator RF degraded in its bare chassis port, then
 **recovered to ~220 LQI after the 08-25 wall-mounted final placement** — recheck 2026-09-09
 before closing and cancelling the shielded-cable purchase →
-[2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md)
+[2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md).
+The storage hub for the rebuild (Rosonway RSH-A10) was **ordered 2026-08-29, ETA ~2026-10-24**
+and the layout was decided 2026-08-30 (**Option D** — Zigbee keeps its own direct host port,
+test-only RTL-433 goes on the hub, no second hub) — nothing is installed until it lands.
 
 - [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md) — **open** — fleet LQI 200→134, recovered to ~220 after 08-25 final placement; recheck 2026-09-09. Baselines in [data/](data/)
-- [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) — **open** — port-3 layout undecided, nothing purchased
-- [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md) — **open** — storage hub decided (Rosonway RSH-A10), dongle hub open
+- [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) — **open** — RSH-A10 ordered 2026-08-29 (ETA ~10-24); layout decided 2026-08-30 (**Option D**: Zigbee stays direct on port 3, test-only RTL-433 on the hub); § *To implement when the hub arrives* carries the mandatory `uhubctl -a on` assertion and the pre-rebuild LQI baseline
+- [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md) — **open** — storage hub ordered 2026-08-29 (Rosonway RSH-A10); dongle hub closed, none needed
 - [memory_gr-srv03_powered-hub-instability.md](memory_gr-srv03_powered-hub-instability.md) — *closed* — root cause + current post-incident topology
 - [memory_gr-srv03_usb-hub-eval.md](memory_gr-srv03_usb-hub-eval.md) — **superseded** — speed baseline whose "move to a powered hub" conclusion is void
 - [memory_docker03_zigbee2mqtt.md](memory_docker03_zigbee2mqtt.md) — *closed* — 2026-07-15 outage, stable `by-id` mapping + 5-min watchdog

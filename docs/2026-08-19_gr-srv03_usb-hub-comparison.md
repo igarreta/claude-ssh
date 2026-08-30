@@ -9,7 +9,9 @@
 > [The outage question, retired](#the-outage-question-retired-2026-08-20).
 > The decision is unchanged, but it now rests on different grounds.
 
-**Status detail:** Storage hub DECIDED, not yet purchased. Dongle hub still open.
+**Status detail:** Storage hub **ordered 2026-08-29** (Rosonway RSH-A10), ETA ~2026-10-24.
+**Dongle hub closed 2026-08-30 — none will be bought**; the layout plan's Option D keeps
+the Zigbee dongle on its own host port and puts the test-only RTL-433 on the RSH-A10.
 Selects the hubs for
 [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md).
 
@@ -88,6 +90,12 @@ gr-srv03 anyway, so boot is exactly where the assertion runs — the failure mod
 and its remedy arrive together. With that in place **no hub's power-on default
 matters**, MCU or mechanical.
 
+> **This section is only valid once that assertion exists (flagged 2026-08-30).**
+> It is a hard dependency of the decision above, not a follow-up: until the script
+> is written, the RSH-A10's post-outage port behaviour is load-bearing again and
+> was never tested. Tracked as item 1 of *To implement when the hub arrives* in
+> [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md).
+
 **Retained as background.** RSHTECH support confirmed on 2026-08-20 that a port
 which was ON before power loss stays ON after power is restored. This is a
 support statement, not a power-cycle test, and it does not cover the case of a
@@ -133,6 +141,12 @@ backfeed into the host port, USB-A upstream, price.
 4. No backfeed into the host port with the hub's brick unplugged.
 
 ## Dongle hub (port 3) — three unpowered candidates
+
+> **Moot as of 2026-08-30 — no dongle hub is being bought.** Port 3 stays dedicated to the
+> Zigbee dongle, direct on the host port; the RTL-433 goes on the RSH-A10. This section is
+> kept only so the three candidates are not re-priced if a fourth USB device ever appears.
+> See Option D in
+> [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md).
 
 None of the six powered hubs above is a good fit for port 3: all are USB 3.x,
 and a SuperSpeed hub next to the RTL-433 is exactly the broadband RFI source the
