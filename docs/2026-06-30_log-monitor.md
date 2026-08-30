@@ -112,9 +112,23 @@ and it used to crash the run outright. See
 [2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md).
 The digest reports `suppressed=N` so the dropped volume stays visible.
 
-`contabo2.conf` suppresses `\[UFW BLOCK\]` (2026-08-26) — ~4,500 dropped port-scan packets/day
-from the open internet, each line unique. These are DROPPED inbound attempts, not successful
-ones; a real compromise would surface through `sshd`/auth entries, which are not suppressed.
+`contabo2.conf` suppresses two things:
+
+- `\[UFW BLOCK\]` (2026-08-26) — ~4,500 dropped port-scan packets/day from the open internet,
+  each line unique. These are DROPPED inbound attempts, not successful ones; a real compromise
+  would surface through `sshd`/auth entries, which are not suppressed.
+- `Foreign process 'dockerd.*disable_ipv6` (2026-08-30) — **a systemd-networkd misattribution,
+  not a real IPv6 problem.** systemd 257 warns when a foreign process writes a sysctl networkd
+  manages, but the path it receives is *namespace-relative*, so a container's own `eth0` is
+  indistinguishable from the host's. Every Docker network on contabo2 is `EnableIPv6=false`, so
+  dockerd disables IPv6 on each container's `eth0` at startup — the host's `eth0` is never
+  touched. Verified 2026-08-30: every running container reads `disable_ipv6=1` while the host
+  reads `0`, the host keeps its global `2a02:c207:2310:8559::1/64` with `valid_lft forever`, and
+  networkd logged **zero** eth0 address changes in four days. Fires ~every 2h from the
+  `notion_repeat` compose cron, and has done since **2026-02-26** — it only became visible when
+  the journal-group gap was fixed. The trade-off is deliberate: this pattern would also hide a
+  genuine dockerd change to the *host's* eth0, but the log line cannot distinguish the two and
+  that failure would show up as lost IPv6 connectivity anyway.
 
 `gr-srv03.conf` suppresses:
 - `BACKUP_B|backup_b|2d0b0d7c` — rotating removable backup drives; absence/timeout is expected.

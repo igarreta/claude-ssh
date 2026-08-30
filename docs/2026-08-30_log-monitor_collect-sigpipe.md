@@ -131,6 +131,12 @@ will not appear in a report, but its entire content is quoted above.
 - Rapid repeated test connections tripped **fail2ban on contabo2** (active there), causing
   transient connection hangs during this investigation. Not a production concern — log-monitor
   opens two connections per day.
-- The `dockerd` / `disable_ipv6` sysctl conflict (43 hits) and the
-  `systemd-networkd-wait-online` timeouts (13 hits) on contabo2 are now visible again and
-  unexamined. Neither is causing a known problem; left for a future look.
+- The `dockerd` / `disable_ipv6` sysctl conflict (43 hits) was investigated the same day and
+  is a **systemd-networkd misattribution of a container's `eth0`**, not a host IPv6 problem —
+  present since 2026-02-26, merely invisible until now. Suppressed in `contabo2.conf`;
+  full rationale in [2026-06-30_log-monitor.md](2026-06-30_log-monitor.md), "Noise suppression".
+- The `systemd-networkd-wait-online` timeouts (13 hits) are **unrelated and still open**:
+  `networkctl` reports eth0 as `routable (configuring)` with `Required For Online: yes` — the
+  link is operationally fine but its setup never completes, so wait-online times out on every
+  apt-daily run (4×/day) and would stall anything gating on `network-online.target` at boot.
+  Diagnosing it needs root: `sudo cat /run/systemd/network/10-netplan-eth0.network`.
