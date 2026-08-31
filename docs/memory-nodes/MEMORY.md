@@ -49,6 +49,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_log-monitor_journal-group-gap.md](project_log-monitor_journal-group-gap.md) — log-monitor was silently blind on docker03/mosquitto/contabo2 without adm/systemd-journal; all hosts now fixed and verified
 - [project_log-monitor_collect-sigpipe.md](project_log-monitor_collect-sigpipe.md) — the daily contabo2 "(ssh error)" was never ssh: an internal SIGPIPE in `collect.sh`, latent on every host
 - [project_contabo2_ipv6-accept-ra.md](project_contabo2_ipv6-accept-ra.md) — contabo2 eth0 stuck "configuring" is cosmetic; accept-ra:false applied but didn't clear it, IPv6 fully works
+- [project_contabo2_openclaw-heartbeat-cost.md](project_contabo2_openclaw-heartbeat-cost.md) — openclaw's 20-min heartbeat drove ~$1/day Haiku cost since 08-11; disabled via `config unset`
 - [project_comet_tailscale_logout.md](project_comet_tailscale_logout.md) — corrupted `tailscaled.state`; unprivileged `journalctl` fakes outages
 - [project_comet_zed_tmux_claude.md](project_comet_zed_tmux_claude.md) — the working Zed + tmux + Claude Code setup
 - [project_comet_ssh-mcp-v2-password-flag.md](project_comet_ssh-mcp-v2-password-flag.md) — unpinned `npx ssh-mcp` auto-updated to v2, dropped `--password`; broke the homeassistant connector

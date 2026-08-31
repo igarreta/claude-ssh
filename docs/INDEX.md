@@ -191,6 +191,10 @@ found and fixed in quick succession: the `adm`/`systemd-journal` blind spot (08-
 - [2025-12-13_living1_wifi-fix.md](2025-12-13_living1_wifi-fix.md) — *closed* — internal RTL8723AE blacklisted, USB RTL8188FTV used away from home
 - [2026-03-04_living1_hdmi-audio-fix.md](2026-03-04_living1_hdmi-audio-fix.md) — *closed*
 
+## openclaw (contabo2)
+
+- [2026-08-31_contabo2_openclaw-heartbeat-cost.md](2026-08-31_contabo2_openclaw-heartbeat-cost.md) — *closed* — 20-min heartbeat + Aug 11 anthropic.env wiring drove ~$1/day Haiku cost; disabled via `config unset`
+
 ## Other hosts
 
 - [2026-06-25_raspberrypi2z_setup-and-security.md](2026-06-25_raspberrypi2z_setup-and-security.md) — *active* — sudo needs a password; no SSH password auth
