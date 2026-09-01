@@ -133,12 +133,20 @@ Average of:
 
 Both alive → (21.0 + 20.19) / 2 = 20.595 ≈ 20.59°C.
 
-### `sensor.temperatura_hab_varones` — "Temperatura hab varones" — `unknown`
+### `sensor.temperatura_hab_varones` → `sensor.casa_hab_chicos_temp` — `unknown`
 
 **Simplified 2026-09-01**: was an average of `temperatura_hab_chicos_nexus` and the orphaned
-`zigbee_temp_chicos_temperature`; now passes through `temperatura_hab_chicos_nexus` alone.
-Currently `unknown` because that rtl_433 sensor is offline — will resolve once it's back, no
-other live source exists for that room.
+`zigbee_temp_chicos_temperature`; now passes through the single remaining source alone.
+
+**Source disabled 2026-09-02**: the rtl_433 Nexus device on channel 3/id 12 (`casa_hab_chicos_433_temp`/`_hum`/battery) turned out
+unreliable. Its `mqtt: sensor:`/`binary_sensor:` blocks in `configuration.yaml` were
+commented out (not deleted — kept for reuse if the same channel/id gets a replacement
+sensor), so those 3 entities now read `unavailable` and `casa_hab_chicos_temp` has no source
+→ `unknown`. rtl_433 itself is untouched and keeps publishing the raw MQTT topic; only HA
+stopped consuming it. To restore: uncomment the 3 blocks and reload YAML. To add a
+*different* sensor for this room: add its source to the `casa_hab_chicos_temp` template
+(currently a single-variable passthrough, same pattern as `casa_hab_principal_temp`'s
+2-source average if two sources end up existing).
 
 ## Renames applied 2026-09-01
 
