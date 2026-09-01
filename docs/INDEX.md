@@ -99,10 +99,11 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 
 ## Home Assistant
 
-**Current:** rtl_433 battery sensors converted `sensor`→`binary_sensor` and the exterior
-Zigbee temp/humidity sensor was physically swapped, both 2026-08-30 →
-[2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md](2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md)
+**Current:** full temperature-sensor inventory taken 2026-09-01, duplicates/orphans cleaned
+up same day, entity rename still open →
+[2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md)
 
+- [2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md) — *open* — all real + calculated temp sensors, sources for each template sensor; dead/duplicate entities removed, dashboards + templates repointed
 - [2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md](2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md) — *closed* — 4 rtl_433 battery sensors → `binary_sensor`; exterior Zigbee sensor `0xa4c1386e91d0faf4` → `0xa4c1380a7834ffff`, same friendly_name, zero config changes needed
 - [2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md](2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md) — *closed* — zigbee2mqtt discovery entities never go `unavailable`; guard on `last_reported`, not `last_changed`
 

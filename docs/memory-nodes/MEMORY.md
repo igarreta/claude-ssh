@@ -21,6 +21,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 ## Open — needs follow-up
 
 - [project_gr-srv03_ct901-template.md](project_gr-srv03_ct901-template.md) — CT901 is now the LXC clone template (not CT900, kept as rollback per user choice)
+- [project_homeassistant_temperature-sensor-naming.md](project_homeassistant_temperature-sensor-naming.md) — HA temp sensor duplicates/orphans cleaned up 2026-09-01, rename still open
 
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 final wall-mounted placement lifted it to ~220; recheck 2026-09-09
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
