@@ -21,7 +21,6 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 ## Open — needs follow-up
 
 - [project_gr-srv03_ct901-template.md](project_gr-srv03_ct901-template.md) — CT901 is now the LXC clone template (not CT900, kept as rollback per user choice)
-- [project_homeassistant_temperature-sensor-naming.md](project_homeassistant_temperature-sensor-naming.md) — HA temp sensor duplicates/orphans cleaned up 2026-09-01, rename still open
 
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 final wall-mounted placement lifted it to ~220; recheck 2026-09-09
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
@@ -66,3 +65,4 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_raspberrypi1_ttato_granev.md](project_raspberrypi1_ttato_granev.md) — TTato never subscribed to HA's `granev/temp/*`; fixed 07-20
 - [project_homeassistant_stale_sensor_chain.md](project_homeassistant_stale_sensor_chain.md) — guard on `last_reported`, not `last_changed`; z2m entities never go `unavailable`
 - [project_homeassistant_battery-sensors-zigbee-swap.md](project_homeassistant_battery-sensors-zigbee-swap.md) — rtl_433 battery sensors → `binary_sensor`; exterior Zigbee sensor swapped, same friendly_name, zero config changes needed
+- [project_homeassistant_temperature-sensor-naming.md](project_homeassistant_temperature-sensor-naming.md) — temp sensors renamed to `<house>_<room>_<qualifier>_<what>` 2026-09-01; also: editing HA `.storage/*` live doesn't stick, must stop Core first

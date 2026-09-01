@@ -1,6 +1,6 @@
 # Home Assistant temperature sensor inventory
 
-**Status:** open
+**Status:** closed
 **Host:** homeassistant
 **Supersedes:** —
 **Superseded-by:** —
@@ -140,13 +140,61 @@ Both alive → (21.0 + 20.19) / 2 = 20.595 ≈ 20.59°C.
 Currently `unknown` because that rtl_433 sensor is offline — will resolve once it's back, no
 other live source exists for that room.
 
-## Naming issues to resolve
+## Renames applied 2026-09-01
 
-- `zigbee_*` vs `wifi_*` vs plain location names mix brand/protocol into the id inconsistently.
-- `_nexus` / `_rs` / device-model fragments (Oregon, Nexus, RS) leak vendor/model into names
-  a human has to decode. ("RS" = a location marker inside the room, not a model — resolved.)
-- `sensor.0xa4c1380a7834ffff_temperature`/`_humidity` — still an inactive raw-address duplicate
-  of `zigbee_temperatura_exterior_*`; not in the entity registry, so nothing to delete, will
-  age out of the recorder on its own.
-- Remaining open decision: the actual **rename** of the live entity_ids/friendly_names below,
-  now that duplicates/orphans are cleared out.
+Convention: `<house>_<room>_<qualifier>_<what>` — house prefix (`casa` = Granaderos, `pin` =
+Pinamar) only where ambiguous, room next, a device qualifier (`433`/`zb`/`rs`) only where two
+sensors share a room, no qualifier on the "official" calculated per-room sensor. `esp32_pileta_*`
+kept as-is on request (names the microcontroller, not a location — not vendor leakage).
+
+Applied via a script editing `configuration.yaml`, `automations.yaml`, 4 dashboards
+(`dashboard_pruebas`, `pinamar_base`, `granaderos_base`, `luces_granaderos`) and
+`core.entity_registry` directly (entity_id + registry `name` override), run with HA Core
+**fully stopped** — a live-edit-then-restart attempt was tried first and silently reverted,
+because HA's in-memory registry copy autosaves over a raw file edit made while it's still
+running; only stop → edit → start persists reliably. See
+[[project_homeassistant_temperature-sensor-naming]] for that failure mode.
+
+| old entity_id | new entity_id | new friendly_name |
+|---|---|---|
+| `sensor.temperatura_exterior_granaderos` | `sensor.casa_ext_433_temp` | Temperatura exterior (433MHz) |
+| `sensor.humedad_exterior_granaderos` | `sensor.casa_ext_433_hum` | Humedad exterior (433MHz) |
+| `binary_sensor.temperatura_exterior_granaderos_bateria` | `binary_sensor.casa_ext_433_battery` | Bateria exterior (433MHz) |
+| `sensor.temperatura_living_nexus` | `sensor.casa_living_433_temp` | Temperatura living (433MHz) |
+| `sensor.humedad_living_nexus` | `sensor.casa_living_433_hum` | Humedad living (433MHz) |
+| `binary_sensor.temperatura_living_nexus_bateria` | `binary_sensor.casa_living_433_battery` | Bateria living (433MHz) |
+| `sensor.temperatura_hab_principal_nexus` | `sensor.casa_hab_principal_433_temp` | Temperatura hab. principal (433MHz) |
+| `sensor.humedad_hab_principal_nexus` | `sensor.casa_hab_principal_433_hum` | Humedad hab. principal (433MHz) |
+| `binary_sensor.temperatura_hab_principal_nexus_bateria` | `binary_sensor.casa_hab_principal_433_battery` | Bateria hab. principal (433MHz) |
+| `sensor.temperatura_hab_chicos_nexus` | `sensor.casa_hab_chicos_433_temp` | Temperatura hab. chicos (433MHz) |
+| `sensor.humedad_hab_chicos_nexus` | `sensor.casa_hab_chicos_433_hum` | Humedad hab. chicos (433MHz) |
+| `binary_sensor.temperatura_hab_chicos_bateria` | `binary_sensor.casa_hab_chicos_433_battery` | Bateria hab. chicos (433MHz) |
+| `sensor.zigbee_temperatura_exterior_temperature` (+hum/battery/voltage) | `sensor.casa_ext_zb_temp` (+`_hum`/`_battery`/`_voltage`) | Temperatura exterior (Zigbee) |
+| `sensor.zigbee_temp_living_temperature` (+hum/battery/voltage) | `sensor.casa_living_zb_temp` (+`_hum`/`_battery`/`_voltage`) | Temperatura living (Zigbee) |
+| `sensor.temperatura_hab_prpal_rs_temperature` (+humidity/battery_state) | `sensor.casa_hab_principal_rs_temp` (+`_hum`/`_battery`) | Temperatura hab. principal (RS) |
+| `sensor.wifi_temperature_humidity_sensor_temperature` (+humidity/battery_state) | `sensor.pin_ext_temp` (+`_hum`/`_battery`) | Temperatura exterior Pinamar |
+| `sensor.wifi_temperature_humidity_sensor_2_temperature` (+humidity/battery_state) | `sensor.pin_hab_principal_temp` (+`_hum`/`_battery`) | Temperatura hab. principal Pinamar |
+| `sensor.pinamar_pin_temp_comedor_temperature` (+humidity/battery_state) | `sensor.pin_comedor_temp` (+`_hum`/`_battery`) | Temperatura comedor Pinamar |
+| `sensor.enchufe_1_device_temperature` | `sensor.enchufe_1_temp` | Temperatura Enchufe 1 |
+| `sensor.enchufe_2_device_temperature` | `sensor.enchufe_2_temp` | Temperatura Enchufe 2 |
+| `sensor.temperatura_exterior_parque` | `sensor.casa_ext_temp` | Temperatura exterior |
+| `binary_sensor.temperatura_exterior_parque_sin_fuente` | `binary_sensor.casa_ext_temp_sin_fuente` | Temperatura exterior sin fuente |
+| `sensor.temperatura_hab_principal` | `sensor.casa_hab_principal_temp` | Temperatura hab. principal |
+| `sensor.temperatura_living` | `sensor.casa_living_temp` | Temperatura living |
+| `sensor.temperatura_hab_varones` | `sensor.casa_hab_chicos_temp` | Temperatura hab. chicos |
+
+Left unchanged: `sensor.esp32_pileta_temperatura_*` (kept full name on request),
+`sensor.nucbox_cpu_temp`/`_socket_temp` (pushed via raw REST API, no registry entry to rename
+— would need changing at the source script on gr-srv03), `input_number.quetren_temperatura`,
+`weather.forecast_home`/`_pinamar` (integration-provided).
+
+Additional dead-duplicate entities removed from the registry in the same pass (all had a live
+`binary_sensor` equivalent already, or were fully dead): `sensor.temperatura_exterior_granaderos_bateria`,
+`sensor.temperatura_hab_chicos_bateria`, `sensor.temperatura_hab_principal_bateria`,
+`sensor.temperatura_living_nexus_bateria` (old `sensor`-domain leftovers from the Aug 30
+`binary_sensor` migration), `sensor.temperatura_hab_principal_xiaomi_bateria` (Xiaomi sensor
+never installed, config was commented out).
+
+Post-restart, `casa_ext_zb_*`, `casa_living_zb_*`, and `pin_comedor_*` briefly read `unknown`
+while their devices caught up on their normal report/poll cycle — unrelated to the rename
+(same devices, same MQTT topics/Tuya polling, only the HA-side entity_id changed).

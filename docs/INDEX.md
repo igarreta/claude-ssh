@@ -99,11 +99,11 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 
 ## Home Assistant
 
-**Current:** full temperature-sensor inventory taken 2026-09-01, duplicates/orphans cleaned
-up same day, entity rename still open →
+**Current:** temperature sensors inventoried, cleaned up, and renamed to a consistent
+`<house>_<room>_<qualifier>_<what>` convention, all 2026-09-01 →
 [2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md)
 
-- [2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md) — *open* — all real + calculated temp sensors, sources for each template sensor; dead/duplicate entities removed, dashboards + templates repointed
+- [2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md) — *closed* — full old→new entity_id mapping; dead/duplicate entities removed, dashboards + templates repointed; documents the HA `.storage` live-edit-doesn't-stick gotcha
 - [2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md](2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md) — *closed* — 4 rtl_433 battery sensors → `binary_sensor`; exterior Zigbee sensor `0xa4c1386e91d0faf4` → `0xa4c1380a7834ffff`, same friendly_name, zero config changes needed
 - [2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md](2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md) — *closed* — zigbee2mqtt discovery entities never go `unavailable`; guard on `last_reported`, not `last_changed`
 
