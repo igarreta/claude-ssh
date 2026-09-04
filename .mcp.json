@@ -2,7 +2,7 @@
   "mcpServers": {
     "docker03": {
       "command": "npx",
-      "args": ["-y", "ssh-mcp", "--", "--host=docker03", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+      "args": ["-y", "ssh-mcp", "--", "--host=docker03", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet", "--group=dev"]
     },
     "gr-srv03": {
       "command": "npx",
@@ -22,11 +22,11 @@
     },
     "cygnus": {
       "command": "npx",
-      "args": ["-y", "ssh-mcp", "--", "--host=100.96.140.37", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+      "args": ["-y", "ssh-mcp", "--", "--host=100.96.140.37", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet", "--group=dev"]
     },
     "castor": {
       "command": "npx",
-      "args": ["-y", "ssh-mcp", "--", "--host=100.65.209.119", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+      "args": ["-y", "ssh-mcp", "--", "--host=100.65.209.119", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet", "--group=dev"]
     },
     "castor-pg": {
       "command": "/home/rsi/etc/castor-pg-mcp.sh",
@@ -50,7 +50,7 @@
     },
     "mosquitto": {
       "command": "npx",
-      "args": ["-y", "ssh-mcp", "--", "--host=100.69.153.63", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet"]
+      "args": ["-y", "ssh-mcp", "--", "--host=100.69.153.63", "--user=rsi", "--key=/home/rsi/.ssh/id_ed25519_comet", "--group=dev"]
     },
     "github": {
       "command": "/home/rsi/etc/github-mcp.sh",
