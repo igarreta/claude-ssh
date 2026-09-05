@@ -113,9 +113,12 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 CT900 as the clone source, CT900 kept as rollback, not deleted). CT206 `zigbee2mqtt` created
 2026-08-28; dongle moved and cutover done 2026-09-05 — CT206 now serves the live Zigbee
 network, docker03's copy kept only as rollback pending a soak period. CT207 `rtl433` created
-and proven working 2026-09-05 (test dongle since removed, CT207 stopped); everything else
-non-USB moves to cygnus; mosquitto/pool_heat/dynu/mqtt_log/apache2/portainer/orphaned
-projects are dropped, not migrated →
+and proven working 2026-09-05 (test dongle since removed, CT207 stopped). On cygnus: iperf3
+image pulled/tested and `proxmox_backup_checker` migrated 2026-09-05 (cron at 8:05, new `mp5`
+read-only whole-tree backup mount, email intentionally left unconfigured, Pushover confirmed
+working); `backup.sh` needed no migration (cygnus already runs its own). Remaining cygnus
+services (cloudflaretunnel, uptime-kuma, mqtt-explorer, fail2ban, beszel-agent) not yet moved;
+mosquitto/pool_heat/dynu/mqtt_log/apache2/portainer/orphaned projects are dropped, not migrated →
 [memory_docker03-decommission.md](memory_docker03-decommission.md)
 
 - [memory_docker03-decommission.md](memory_docker03-decommission.md) — **open** — full inventory + destination for every service, cron job, and mount

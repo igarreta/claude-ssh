@@ -69,15 +69,33 @@ no longer the clone source. Sizing based on mosquitto's real usage as the closes
 - **uptime-kuma**
 - **mqtt-explorer** — already TLS-configured for the new mosquitto broker
   ([memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md)), redeploy as-is.
-- **iperf3** — run ad hoc (`podman run`) on demand, not an always-on service.
-- cron: `backup.sh`, `proxmox_backup_checker` (needs its Python venv rebuilt on cygnus).
+- **iperf3** — run ad hoc (`podman run`) on demand, not an always-on service. **Done
+  2026-09-05**: `networkstatic/iperf3` (same image as docker03) pulled and smoke-tested on
+  cygnus via `sudo podman run --rm networkstatic/iperf3 --version`.
+- cron: `backup.sh` needs **no migration** — cygnus already runs its own identical copy of
+  this generic per-host script (confirmed 2026-09-05; it backs up each host's own `~/etc`/
+  `~/bak`, not docker03-specific data). `proxmox_backup_checker` **migrated 2026-09-05**: repo
+  cloned fresh (`git clone --recurse-submodules`) to `~/proxmox_backup_checker` on cygnus, venv
+  rebuilt, `var/config.yaml` copied verbatim (paths already match since cygnus's new `mp5`
+  mount, added 2026-09-05, covers the whole backup_usb1 tree at the same absolute path — see
+  the NFS/mount bullet below). Cron added
+  at 8:05, same slot as docker03. **Email left disabled** (`to_email: []` + a placeholder
+  `~/etc/smtp.env` — user wasn't sure real SMTP creds were worth wiring up); Pushover is the
+  channel that actually alerts and is confirmed working (shared-secrets `pushover.env`, already
+  present on cygnus). Uptime Kuma heartbeat in the script fails (logged, non-fatal) until
+  uptime-kuma itself moves to cygnus.
 - fail2ban — not currently installed on cygnus, needs adding.
 - beszel-agent — confirm cygnus doesn't already have one before adding (MCP couldn't check;
   `sudo podman` here hits the "privileged commands blocked" policy even though it's
   passwordless — check manually).
-- NFS `/mnt/backup` mount for `backup.sh` — check whether cygnus's existing backup-usb1 setup
+- Backup mounts: cygnus's existing `mp1`/`mp3`/`mp4` bind mounts
   ([2026-05-28_cygnus_backup-usb1-data-mount-and-quetren-grabaciones.md](2026-05-28_cygnus_backup-usb1-data-mount-and-quetren-grabaciones.md))
-  already covers this before creating a new mount.
+  are all scoped to cygnus's own subtree (`/mnt/backup_usb1/cygnus`, `/gickup`, `/data/cygnus`)
+  — not usable as-is for `proxmox_backup_checker`, which needs to read *other* hosts'
+  subtrees too. Added **`mp5: /mnt/backup_usb1,mp=/mnt/backup_usb1,ro=1`** (2026-09-05,
+  read-only, whole tree, applied live with no restart) instead of an NFS mount — gr-srv03
+  exposes backup_usb1 to LXCs via direct bind mount (`mp`), not NFS; NFS is only used for the
+  VM (docker03), which can't get LXC-style bind mounts.
 
 ### Deprecated — removed, not migrated
 
