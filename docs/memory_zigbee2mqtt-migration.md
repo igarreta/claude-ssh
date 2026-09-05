@@ -1,13 +1,17 @@
 # zigbee2mqtt migration: docker03 (container) → CT206 (native)
 
+**Cutover done 2026-09-05 — CT206 is live. Only phase 5 (docker03 cleanup) remains, held for
+a soak period.**
+
 **Status:** open
 **Host:** docker03, zigbee2mqtt (CT206), gr-srv03
 **Supersedes:** —
 **Superseded-by:** —
 
-**Status detail:** planned 2026-08-28. Phase 1 (prepare CT206) complete 2026-08-28, including
-the Tailscale join; phases 2–5 (state copy, dongle move, cutover, cleanup) deliberately
-deferred to another day. docker03 still serves Zigbee untouched in the meantime.
+**Status detail:** planned 2026-08-28. Phase 1 (prepare CT206) complete 2026-08-28. Phases
+2–4 (state copy, dongle move, cutover) executed and verified 2026-09-05 — CT206 is now
+serving the Zigbee network live. Phase 5 (docker03 cleanup) deliberately held for a soak
+period; docker03's `data/` is untouched and the container can still be started as rollback.
 
 ## Why
 
@@ -119,12 +123,40 @@ installed size 347 MB; 1.2 GB free.
 `pct exec` from gr-srv03 and the auth URL handed to the user. Deliberately no
 `--accept-routes` — that flag previously broke connectivity on this fleet.
 
-Once phase 4 starts the service the frontend is at `http://100.86.144.9:8080`, or
-`http://zigbee2mqtt:8080` via MagicDNS. Plain HTTP: z2m's built-in frontend has no TLS, and
-this is Tailscale-only, not public. An HTTPS name would mean a Caddy vhost on cygnus —
-considered and not done, since it would make z2m's UI depend on cygnus being up.
+Once phase 4 starts the service the frontend is at `http://100.86.144.9:8080` /
+`http://zigbee2mqtt:8080` via MagicDNS — but the user's browser refuses plain HTTP
+([[feedback_https_urls_only]]), so a Caddy vhost on cygnus was considered and rejected
+(would make z2m's UI depend on cygnus being up). **2026-09-05: solved with `tailscale
+serve --bg 8080` run on CT206 itself** — no dependency on cygnus, cert is Tailscale-issued
+and self-contained. Frontend is now **`https://zigbee2mqtt.tail366c79.ts.net/`**. First
+request after enabling `serve` returned a TLS internal-error alert until `tailscale cert
+zigbee2mqtt.tail366c79.ts.net` was run once to force issuance — after that, `serve`'s own
+auto-renewal takes over and the one-off cert files it wrote were deleted.
 
-## Phases 2–5 — not yet executed
+## Phases 2–4 — executed 2026-09-05
+
+Ran as planned below, with one deliberate deviation: **old logs were not pre-seeded** — the
+tarball (`ca.crt` + `log/`) was 6.8 MB, over the MCP sftp-download 1 MB limit, and docker03
+has no SSH trust to CT206 (only comet does) to move it directly. Old logs are history only,
+not needed for operation, so this was skipped rather than set up new cross-host key trust
+for a one-off. `ca.crt` alone (1.8 KB) was moved via comet as a relay (docker03 → local
+scratchpad → CT206), which stayed under the limit.
+
+Actual downtime: `docker stop` on docker03 at 18:35:57 to `systemctl enable --now
+zigbee2mqtt` active on CT206 at ~18:37:40 — about 2 minutes.
+
+Verified post-cutover: journal shows `panID:33768`, `extendedPanID:[252,74,158,115,94,80,
+130,191]`, `channel:11` — unchanged from docker03. "Currently 10 devices are joined" (the
+11th, `0xa4c1388cfc6d7f27`, stays correctly blocklisted). `bridge/state` → `online`. Both a
+plain `systemctl restart` and a full `pct reboot 206` recovered the service unattended, with
+the same PAN ID/device count reappearing each time — the udev symlink `/dev/zigbee` also
+survives the container reboot. Not verified by this session (needs eyes-on / physical access,
+left to the user): Home Assistant entity states, TTato feed, and the `luz exterior garage`
+actuator round-trip. LQI recheck against the ~220 baseline is already scheduled for
+2026-09-09 independent of this migration — the dongle did not move physically (host-passthrough
+→ direct host use on the same port), so no separate RF re-check is expected to be needed.
+
+## Phase detail (2–4 executed as below, 5 still pending)
 
 **Phase 2, copy state.** Pre-seed logs and `ca.crt` with no downtime; then `docker stop
 zigbee2mqtt` and take the authoritative copy of `configuration.yaml`, `database.db`,
