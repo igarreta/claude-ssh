@@ -36,6 +36,7 @@ Unprivileged LXC: postgres UID 102 → host UID 100102, GID 107 → 100107. Host
 
 - `listen_addresses = 'localhost,10.0.100.11,100.65.209.119'` set via `ALTER SYSTEM` (postgresql.auto.conf). Bound on: localhost, vmbr1 `10.0.100.11`, Tailscale `100.65.209.119`. Requires full restart (`systemctl restart postgresql@17-main`) to apply — reload is not enough.
 - Note: prior to this restart PostgreSQL was only bound to localhost (Tailscale IP in config but not bound, likely Tailscale up after postgres at boot). Restart re-bound it; the `castor-pg` MCP connector depends on the Tailscale binding.
+- This Tailscale-bind race recurred 2026-09-05 and was fixed properly: `/usr/local/bin/wait-for-tailscale.sh` polls for the `tailscale0` IPv4 address as an `ExecStartPre` in `/etc/systemd/system/postgresql@17-main.service.d/network-wait.conf` (fail-open after 30s). See `docs/2026-09-05_castor_postgresql-tailscale-bind-race.md`.
 - **cygnus → castor** over vmbr1: `pg_hba.conf` rule `host all ingestion_api 10.0.100.10/32 scram-sha-256`. `ingestion_api` role given a password (TCP can't use peer). Verified port reachable from cygnus (10.0.100.10); psql not installed on cygnus so app-level auth test pending.
 - vmbr1-only chosen over Tailscale for cygnus link (more secure, no Tailscale dependency at boot).
 

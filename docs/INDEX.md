@@ -156,6 +156,11 @@ not just the default `always` →
 
 ## Database — castor
 
+**Current:** Tailscale-bind race (postgres starting before `tailscale0` gets its IP)
+fixed permanently 2026-09-05 with a polling `ExecStartPre` →
+[2026-09-05_castor_postgresql-tailscale-bind-race.md](2026-09-05_castor_postgresql-tailscale-bind-race.md)
+
+- [2026-09-05_castor_postgresql-tailscale-bind-race.md](2026-09-05_castor_postgresql-tailscale-bind-race.md) — *closed* — recurring bind race (also seen 2026-05-31), fixed with `wait-for-tailscale.sh`
 - [memory_castor.md](memory_castor.md) — *active* — must keep `10.0.100.11` in `listen_addresses`
 - [2026-05-29_castor_postgresql-setup.md](2026-05-29_castor_postgresql-setup.md) — *active*
 

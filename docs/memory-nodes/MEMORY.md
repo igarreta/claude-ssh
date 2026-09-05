@@ -41,6 +41,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 ## Services and hosts
 
 - [project_castor_postgres.md](project_castor_postgres.md) — PostgreSQL 17 on LXC 205; must keep `10.0.100.11` in `listen_addresses`
+- [project_castor_tailscale-bind-race.md](project_castor_tailscale-bind-race.md) — castor postgres loses its Tailscale listener if it starts before tailscale0 has an IP; fixed 2026-09-05
 - [project_cygnus_podman_restart_policy.md](project_cygnus_podman_restart_policy.md) — containers survive reboots only if the restart filter matches `unless-stopped`
 - [project_docker03_zigbee2mqtt.md](project_docker03_zigbee2mqtt.md) — 07-15 outage from USB re-enumeration; stable `by-id` mapping + watchdog
 - [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — migration done, all clients cut over; `uptimekuma`/`mqttexplorer` need explicit `$SYS/#` ACL line, `#` doesn't cover it
