@@ -112,14 +112,16 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 **Current:** planning complete 2026-08-27; template rebuild done 2026-08-28 (CT901 replaces
 CT900 as the clone source, CT900 kept as rollback, not deleted). CT206 `zigbee2mqtt` created
 2026-08-28; dongle moved and cutover done 2026-09-05 — CT206 now serves the live Zigbee
-network, docker03's copy kept only as rollback pending a soak period. rtl_433's LXC not yet
-created; everything else non-USB moves to cygnus; mosquitto/pool_heat/dynu/mqtt_log/
-apache2/portainer/orphaned projects are dropped, not migrated →
+network, docker03's copy kept only as rollback pending a soak period. CT207 `rtl433` created
+and proven working 2026-09-05 (test dongle since removed, CT207 stopped); everything else
+non-USB moves to cygnus; mosquitto/pool_heat/dynu/mqtt_log/apache2/portainer/orphaned
+projects are dropped, not migrated →
 [memory_docker03-decommission.md](memory_docker03-decommission.md)
 
 - [memory_docker03-decommission.md](memory_docker03-decommission.md) — **open** — full inventory + destination for every service, cron job, and mount
 - [2026-08-28_gr-srv03_ct901-new-template.md](2026-08-28_gr-srv03_ct901-new-template.md) — *active* — CT901, the new 3 GB template; sudo needs a password, baked-in GitHub deploy key
 - [memory_zigbee2mqtt-migration.md](memory_zigbee2mqtt-migration.md) — **open** — cutover to CT206 done 2026-09-05, no re-pairing needed; only docker03 cleanup (phase 5) remains, held for a soak period
+- [memory_rtl433-lxc-ct207.md](memory_rtl433-lxc-ct207.md) — **open** — CT207 built and tested 2026-09-05; DVB-driver blacklist + whole-tree `/dev/bus/usb` bind mount pattern; permanent setup (config, service, physical dongle move) still pending
 
 ## Containers — podman (cygnus) and docker (docker03)
 

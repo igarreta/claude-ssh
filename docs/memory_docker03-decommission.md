@@ -51,6 +51,11 @@ no longer the clone source. Sizing based on mosquitto's real usage as the closes
 - **rtl_433** (backup/test role only — raspberrypi2z remains production, see
   [memory_rtl-test.md](memory_rtl-test.md)) → separate own LXC, own USB dongle. Not critical, but kept
   off both z2m's LXC and cygnus so a flaky non-critical USB device can't destabilize either.
+  **CT207 created and proven working 2026-09-05** (rtl-433 installed, host USB/udev/DVB-driver
+  passthrough done, live sensor reception verified) — see
+  [memory_rtl433-lxc-ct207.md](memory_rtl433-lxc-ct207.md). Dongle was only temporary for the
+  test and has been removed again; CT207 is stopped. Still pending: physical dongle move from
+  docker03, `rtl_433.conf` + systemd service, fail2ban/beszel-agent.
 - Both new LXCs get: fail2ban, a beszel-agent (reporting to the existing hub on contabo2 —
   lightweight, gives disk-space/host alerting per-host, not shared).
 
