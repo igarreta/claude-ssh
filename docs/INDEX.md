@@ -121,9 +121,14 @@ network, docker03's copy kept only as rollback pending a soak period. CT207 `rtl
 and proven working 2026-09-05 (test dongle since removed, CT207 stopped). On cygnus: iperf3
 image pulled/tested and `proxmox_backup_checker` migrated 2026-09-05 (cron at 8:05, new `mp5`
 read-only whole-tree backup mount, email intentionally left unconfigured, Pushover confirmed
-working); `backup.sh` needed no migration (cygnus already runs its own). Remaining cygnus
-services (cloudflaretunnel, uptime-kuma, mqtt-explorer, fail2ban, beszel-agent) not yet moved;
-mosquitto/pool_heat/dynu/mqtt_log/apache2/portainer/orphaned projects are dropped, not migrated →
+working); `backup.sh` needed no migration (cygnus already runs its own); uptime-kuma and
+mqtt-explorer migrated, cloudflaretunnel went to its own dedicated CT103 instead (not
+cygnus) — all three confirmed live, docker03's copies stopped. beszel-agent: CT206 now has
+it (native systemd, 2026-09-06), cygnus's copy switched from native systemd to a podman
+container the same day, CT207's is deliberately deferred until production →
+[2026-09-06_beszel-fleet-disk-alerting.md](2026-09-06_beszel-fleet-disk-alerting.md). Only
+fail2ban (still needed on cygnus) and mosquitto/pool_heat/dynu/mqtt_log/apache2/portainer/
+orphaned projects (dropped, not migrated) remain outstanding →
 [memory_docker03-decommission.md](memory_docker03-decommission.md)
 
 - [memory_docker03-decommission.md](memory_docker03-decommission.md) — **open** — full inventory + destination for every service, cron job, and mount

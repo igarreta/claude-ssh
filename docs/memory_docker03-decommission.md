@@ -60,7 +60,11 @@ no longer the clone source. Sizing based on mosquitto's real usage as the closes
   stopped between tests. Still pending: `rtl_433.conf` + systemd service (only worth writing
   once the dongle is left permanently attached).
 - Both new LXCs get a beszel-agent (reporting to the existing hub on contabo2 —
-  lightweight, gives disk-space/host alerting per-host, not shared).
+  lightweight, gives disk-space/host alerting per-host, not shared). **CT206 done
+  2026-09-06** (native systemd install, registered via manual Add System after the
+  TOKEN auto-registration path 401'd — see
+  [2026-09-06_beszel-fleet-disk-alerting.md](2026-09-06_beszel-fleet-disk-alerting.md)).
+  CT207 deliberately deferred until it's made production, per the user.
 
 ### cloudflaretunnel — goes to CT103, not cygnus
 
@@ -122,10 +126,15 @@ now hits `http://100.100.91.26:2000/ready` directly and is confirmed passing.
   Kuma heartbeat in the script still fails (logged, non-fatal) until uptime-kuma itself moves
   to cygnus.
 - fail2ban — not currently installed on cygnus, needs adding.
-- beszel-agent — **confirmed already installed and running natively** on cygnus (2026-09-05,
-  `systemctl status beszel-agent`, binary at `/opt/beszel-agent`, not a podman container —
-  that's why `podman ps` doesn't show it). It correctly alerted on the 2026-09-05 disk-full
-  incident (see [2026-09-05_cygnus_disk-full-podman-storage.md](2026-09-05_cygnus_disk-full-podman-storage.md)). No migration needed.
+- beszel-agent — installed natively on cygnus 2026-09-05, then **switched to a podman
+  container 2026-09-06** to match every other cygnus service and be visible in `podman ps`
+  (image `henrygd/beszel-agent`, `network_mode: host`, compose at
+  `/home/rsi/beszel-agent/compose.yaml` on cygnus). Required copying the persisted
+  `/var/lib/beszel-agent/fingerprint` identity file into the container volume so the hub
+  kept recognizing it as the same system — a fresh volume would have registered as a new,
+  unrecognized fingerprint. It correctly alerted on the 2026-09-05 disk-full incident (no
+  separate incident doc was ever written for that — noted as a gap, not backfilled). See
+  [2026-09-06_beszel-fleet-disk-alerting.md](2026-09-06_beszel-fleet-disk-alerting.md).
 - Backup mounts: cygnus's existing `mp1`/`mp3`/`mp4` bind mounts
   ([2026-05-28_cygnus_backup-usb1-data-mount-and-quetren-grabaciones.md](2026-05-28_cygnus_backup-usb1-data-mount-and-quetren-grabaciones.md))
   are all scoped to cygnus's own subtree (`/mnt/backup_usb1/cygnus`, `/gickup`, `/data/cygnus`)

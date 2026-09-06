@@ -33,6 +33,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
 - [project_docker03_rtl-test.md](project_docker03_rtl-test.md) — garage-remote 433 MHz capture, unfinished
+- [project_raspberrypi1_sudo-hardening.md](project_raspberrypi1_sudo-hardening.md) — passwordless sudo removal requested 09-06, blocked from MCP, user needs to run it
 
 ## Backups and storage
 
@@ -64,6 +65,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_gr-srv03_vm100_stopped.md](project_gr-srv03_vm100_stopped.md) — VM 100 is stopped on purpose; ignore it in outage checks
 - [project_raspberrypi1_watchdog.md](project_raspberrypi1_watchdog.md) — BCM2835 hardware watchdog armed since 06-25; closes the Jun 2026 hard-freeze gap
 - [project_cygnus_caddy_tls.md](project_cygnus_caddy_tls.md) — Tailscale cert via root cron; the 08-04 ARI renewal failure self-resolved 08-10
+- [project_beszel-disk-alerting.md](project_beszel-disk-alerting.md) — fleet disk-space alerting reuses existing beszel-agent instead of a new tool; check it before proposing new monitoring
 
 ## Heating and home automation
 

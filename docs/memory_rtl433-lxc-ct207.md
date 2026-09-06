@@ -115,7 +115,9 @@ config — treat these as "do if/when actually needed for a test," not open deco
 - `/etc/rtl_433/rtl_433.conf` + systemd unit mirroring raspberrypi2z's pattern, MQTT topic
   prefix distinct from `rtl_433/raspberrypi2z`, only worth writing once a dongle is left
   attached for more than a one-off test.
-- beszel-agent still needs adding (fail2ban dropped, see above).
+- beszel-agent (fail2ban dropped, see above) — **deliberately deferred 2026-09-06** until
+  CT207 is made production, per the user; CT206 already has it, see
+  [2026-09-06_beszel-fleet-disk-alerting.md](2026-09-06_beszel-fleet-disk-alerting.md).
 - Not confirmed whether the dongle used in testing is the same physical unit that was on
   docker03, or a second one — worth checking if it ever matters (e.g. warranty, RTL2832 chip
   variant differences).
