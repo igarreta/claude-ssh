@@ -61,13 +61,61 @@ from its host USB port. Both reverted: dongle removed, BACKUP_B reconnected at
 attached. All host-side changes (blacklist, udev rule, LXC passthrough config) are permanent
 and need no rework next time the dongle is connected.
 
+## Second test — dongle physically moved from docker03 (2026-09-05, later session)
+
+Dongle moved from docker03 to gr-srv03 and re-tested. Confirmed working. **CT207's role is
+now settled as permanent test/backup only** — the user does not plan to move raspberrypi2z's
+production rtl_433 service here, because gr-srv03 is the wrong physical location for antenna
+reception of the sensors raspberrypi2z currently captures. This LXC exists to let rtl_433
+issues be diagnosed/tested without touching the production Pi, not to replace it.
+
+**fail2ban dropped from the plan** — CT207 (like CT206) is reachable only via Tailscale, no
+public exposure, so fail2ban adds nothing. beszel-agent still applies.
+
+**dmesg from this test session, saved in case the service is ever moved here for real** (the
+DVB driver grabbed the dongle again despite the blacklist — needs to be understood before any
+production dependency is placed on this passthrough):
+
+```
+usb 1-1: New USB device found, idVendor=0bda, idProduct=2838, bcdDevice= 1.00
+usb 1-1: Product: RTL2838UHIDIR
+usb 1-1: dvb_usb_v2: found a 'Realtek RTL2832U reference design' in warm state
+usb 1-1: dvb_usb_v2: will pass the complete MPEG2 transport stream to the software demuxer
+dvbdev: DVB: registering new adapter (Realtek RTL2832U reference design)
+dvbdev: dvb_create_media_entity: media entity 'dvb-demux' registered.
+rtl2832 11-0010: Realtek RTL2832 successfully attached
+usb 1-1: DVB: registering adapter 0 frontend 0 (Realtek RTL2832 (DVB-T))...
+dvbdev: dvb_create_media_entity: media entity 'Realtek RTL2832 (DVB-T)' registered.
+rtl2832_sdr rtl2832_sdr.1.auto: Registered as swradio0
+rtl2832_sdr rtl2832_sdr.1.auto: Realtek RTL2832 SDR attached
+rc rc0: Realtek RTL2832U reference design as /devices/pci0000:00/0000:00:14.0/usb1/1-1/rc/rc0
+rc rc0: lirc_dev: driver dvb_usb_rtl28xxu registered at minor = 0, raw IR receiver, no transmitter
+input: Realtek RTL2832U reference design as .../rc/rc0/input10
+usb 1-1: dvb_usb_v2: schedule remote query interval to 200 msecs
+usb 1-1: dvb_usb_v2: 'Realtek RTL2832U reference design' successfully initialized and connected
+usbcore: registered new interface driver dvb_usb_rtl28xxu
+[~636s later]
+dvb_usb_v2: 'Realtek RTL2832U reference design:1-1' successfully deinitialized and disconnected
+usbcore: deregistering interface driver dvb_usb_rtl28xxu
+```
+
+`lsmod` afterward showed `dvb_usb_rtl28xxu` **not** loaded and `rtl2832`/`rtl2832_sdr` present
+— consistent with the documented manual unbind-then-blacklist procedure being followed again
+during this session, not the blacklist alone preventing the initial grab. **Open question,
+relevant only if this service is ever made permanent:** whether
+`/etc/modprobe.d/blacklist-rtl-sdr.conf` actually prevents the hotplug auto-load at all (it
+didn't here) and the workflow always requires a manual unbind after each replug, or whether
+something else (initramfs not rebuilt after the blacklist was added?) is undermining it.
+
 ## Next steps
 
-- When making this permanent: physically move the RTL2838 dongle from docker03 to gr-srv03,
-  write `/etc/rtl_433/rtl_433.conf` + systemd unit mirroring raspberrypi2z's pattern, pick an
-  MQTT topic prefix that doesn't collide with raspberrypi2z's production
-  `rtl_433/raspberrypi2z`.
-- fail2ban + beszel-agent still need adding, per the decommission doc's "new dedicated LXCs"
-  section.
-- Not confirmed whether the dongle used in this test session is the same physical unit
-  currently on docker03, or a second one — worth checking before the real cutover.
+Since CT207 stays test/backup-only, there's no forcing function to finish the permanent
+config — treat these as "do if/when actually needed for a test," not open decommission work:
+
+- `/etc/rtl_433/rtl_433.conf` + systemd unit mirroring raspberrypi2z's pattern, MQTT topic
+  prefix distinct from `rtl_433/raspberrypi2z`, only worth writing once a dongle is left
+  attached for more than a one-off test.
+- beszel-agent still needs adding (fail2ban dropped, see above).
+- Not confirmed whether the dongle used in testing is the same physical unit that was on
+  docker03, or a second one — worth checking if it ever matters (e.g. warranty, RTL2832 chip
+  variant differences).

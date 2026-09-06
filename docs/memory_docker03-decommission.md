@@ -48,27 +48,61 @@ no longer the clone source. Sizing based on mosquitto's real usage as the closes
   was host-level, not container-level). Runs bare Node.js, no podman — mirrors mosquitto's
   native-install reasoning (one less moving part for a critical service).
   `zigbee2mqtt-watchdog.sh` cron job moves here with it.
-- **rtl_433** (backup/test role only — raspberrypi2z remains production, see
-  [memory_rtl-test.md](memory_rtl-test.md)) → separate own LXC, own USB dongle. Not critical, but kept
-  off both z2m's LXC and cygnus so a flaky non-critical USB device can't destabilize either.
+- **rtl_433** — **permanently test/backup role, not a migration target for raspberrypi2z**
+  (confirmed 2026-09-05: gr-srv03 is the wrong physical location for antenna reception of the
+  sensors raspberrypi2z currently captures — this isn't a "not yet migrated" gap, it's a
+  standing decision). → separate own LXC, own USB dongle, kept off both z2m's LXC and cygnus
+  so a flaky non-critical USB device can't destabilize either.
   **CT207 created and proven working 2026-09-05** (rtl-433 installed, host USB/udev/DVB-driver
   passthrough done, live sensor reception verified) — see
-  [memory_rtl433-lxc-ct207.md](memory_rtl433-lxc-ct207.md). Dongle was only temporary for the
-  test and has been removed again; CT207 is stopped. Still pending: physical dongle move from
-  docker03, `rtl_433.conf` + systemd service, fail2ban/beszel-agent.
-- Both new LXCs get: fail2ban, a beszel-agent (reporting to the existing hub on contabo2 —
+  [memory_rtl433-lxc-ct207.md](memory_rtl433-lxc-ct207.md). Dongle physically moved from
+  docker03 and re-tested 2026-09-05 (second session); currently disconnected again and CT207
+  stopped between tests. Still pending: `rtl_433.conf` + systemd service (only worth writing
+  once the dongle is left permanently attached).
+- Both new LXCs get a beszel-agent (reporting to the existing hub on contabo2 —
   lightweight, gives disk-space/host alerting per-host, not shared).
+
+### cloudflaretunnel — goes to CT103, not cygnus
+
+**Correction 2026-09-05**: earlier plan below assumed cygnus; actual destination is **CT103**
+(dedicated LXC, `100.100.91.26` Tailscale / `192.168.1.14` LAN), running `cloudflared` bare
+via systemd (`/etc/systemd/system/cloudflared.service`, `tunnel run --token ...`), not
+podman — already live and healthy as of 2026-09-05 20:28 UTC. Serves `proxmox03-ct.granev.casa`,
+one of three ways to reach gr-srv03's Proxmox UI (alongside Tailscale direct and local LAN IP)
+— cygnus plays no role in Proxmox access. docker03's old `cloudflaretunnel` container was left
+untouched (reverted after an initial edit-by-mistake) and is still running as of this writing;
+stop it once CT103 is confirmed as the sole active connector for a while.
+
+Added `--metrics 100.100.91.26:2000` to CT103's `cloudflared` command (systemd unit edited
+in place with `sed`, token untouched) so uptime-kuma has a real health signal: cloudflared's
+own `/ready` endpoint, bound to CT103's Tailscale IP only. **Why this matters**: hitting the
+public `proxmox03-ct.granev.casa` hostname is *not* a valid health check — Cloudflare Access
+returns its login-redirect at the edge regardless of whether the tunnel connector is up, so it
+can't detect an actual outage. uptime-kuma's monitor #2 (renamed `cloudflare tunnel (CT103)`)
+now hits `http://100.100.91.26:2000/ready` directly and is confirmed passing.
 
 ### cygnus (existing LXC, podman) — everything non-USB
 
-- **cloudflaretunnel** — redeploy with the same tunnel token. Serves
-  `proxmox03-ct.granev.casa`, the backup path to gr-srv03's Proxmox UI when the primary
-  `proxmox03.granev.casa` route (direct to gr-srv03) has issues. The ingress rule itself
-  lives in the Cloudflare dashboard, not locally — confirm it still resolves correctly once
-  the tunnel connector runs from cygnus instead of docker03.
-- **uptime-kuma**
-- **mqtt-explorer** — already TLS-configured for the new mosquitto broker
-  ([memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md)), redeploy as-is.
+- **uptime-kuma** — **migrated 2026-09-05**: `kuma.db` (sqlite, ~326 MB uncompressed) tarred
+  from docker03's named volume via a helper `alpine` container (avoids host-side root
+  permission issues on the volume), relayed through comet's local disk (`scp`, MCP's own
+  sftp tools reject anything over 1 MB), extracted into `~/uptime-kuma/data` on cygnus.
+  Compose at `~/uptime-kuma/compose.yaml`, `restart: unless-stopped`. All 13 monitors came
+  across intact. Two needed IP-address fixups after the move (cygnus's Tailscale IP,
+  `100.96.140.37`, differs from docker03's): **PostgreSQL castor** — fixed by adding a
+  `pg_hba.conf` line for the new IP (`~/etc/postgresql/17/main/pg_hba.conf` on castor,
+  reloaded). **cloudflare** (was a `docker` monitor type against `/var/run/docker.sock`) —
+  handled by enabling `podman.socket` on cygnus (`sudo systemctl enable --now podman.socket`,
+  needs a password, user ran it) and initially remapping it to `/run/podman/podman.sock`, then
+  **superseded by the CT103 fix above** once it turned out cloudflaretunnel isn't moving to
+  cygnus at all — the monitor is now a plain HTTP check against CT103's `/ready`, the podman
+  socket remap is currently unused by this monitor but left enabled (harmless, may be useful
+  for a future docker-type monitor against cygnus's own containers).
+- **mqtt-explorer** — **migrated 2026-09-05**: `config/settings.json` (already
+  TLS-configured for the new mosquitto broker, see
+  [memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md)) copied verbatim via
+  `scp` through comet, real broker credentials intact. Compose at
+  `~/mqtt-explorer/compose.yaml`, `restart: unless-stopped`. Verified serving on `:4000`.
 - **iperf3** — run ad hoc (`podman run`) on demand, not an always-on service. **Done
   2026-09-05**: `networkstatic/iperf3` (same image as docker03) pulled and smoke-tested on
   cygnus via `sudo podman run --rm networkstatic/iperf3 --version`.
@@ -125,3 +159,6 @@ the disk space is needed back. Exact duration not yet decided.
    mount can just be extended.
 2. Naming/IP assignment for the two new LXCs.
 3. Cooldown duration for docker03 before final deletion.
+4. Stop docker03's `cloudflaretunnel` and `uptime-kuma`/`mqtt-explorer` containers once their
+   CT103/cygnus replacements have run for a while — all three are currently still running on
+   docker03 in parallel with their replacements.

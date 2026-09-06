@@ -17,6 +17,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [feedback_mcp_ssh_no_true_parallelism.md](feedback_mcp_ssh_no_true_parallelism.md) — "parallel" MCP run-command calls execute sequentially; background both in one command to test races
 - [feedback_dont-trust-vendor-fix-on-prod.md](feedback_dont-trust-vendor-fix-on-prod.md) — verify a tool's own suggested fix against this host's actual config before running it on a live service
 - [feedback_mcp_privileged_policy_denied.md](feedback_mcp_privileged_policy_denied.md) — MCP `privileged-command` is policy-denied on all "prod" host-group connectors, not just docker03
+- [feedback_fail2ban_tailscale_only.md](feedback_fail2ban_tailscale_only.md) — don't add fail2ban to new hosts reachable only via Tailscale, no public exposure
 
 ## Open — needs follow-up
 
@@ -26,6 +27,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_zigbee2mqtt_migration.md](project_zigbee2mqtt_migration.md) — cutover to CT206 done 09-05; docker03 kept as rollback until soak period, HA/TTato/actuator checks still needed
 - [project_gr-srv03_rtl433-ct207.md](project_gr-srv03_rtl433-ct207.md) — CT207 built/tested 09-05, test dongle removed, container stopped; permanent config still pending
 - [project_cygnus_backup-checker-iperf3-migration.md](project_cygnus_backup-checker-iperf3-migration.md) — proxmox_backup_checker + iperf3 moved to cygnus 09-05; backup.sh needed no migration
+- [project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration.md](project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration.md) — uptime-kuma/mqtt-explorer moved to cygnus 09-05; cloudflaretunnel's real home is CT103, not cygnus
 - [project_nas.md](project_nas.md) — purchase-ready 2026-08-24; only P1-vs-P2 still open
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
