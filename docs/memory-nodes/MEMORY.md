@@ -66,6 +66,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 ## Heating and home automation
 
+- [project_homeassistant_disk-cleanup.md](project_homeassistant_disk-cleanup.md) — disk cleanup 09-05 freed ~1.7GB; MCP shell only sees ~2.5G of the 22G `df` total, rest is invisible
 - [project_raspberrypi1_ttato_mqtt_drop.md](project_raspberrypi1_ttato_mqtt_drop.md) — command subscription dropped on reconnect; fixed with `on_connect` resubscribe
 - [project_raspberrypi1_ttato_manual_heating.md](project_raspberrypi1_ttato_manual_heating.md) — Manual mode fired the boiler on phantom 0 °C readings
 - [project_raspberrypi1_ttato_granev.md](project_raspberrypi1_ttato_granev.md) — TTato never subscribed to HA's `granev/temp/*`; fixed 07-20

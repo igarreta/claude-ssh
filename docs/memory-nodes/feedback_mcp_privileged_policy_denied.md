@@ -14,8 +14,9 @@ POLICY_DENIED: Role "admin" on host group "prod" cannot run "privileged" command
 class to this role in the policy's roleBindings.
 ```
 
-Confirmed on docker03 ([[feedback_docker03_sudo]]) and mosquitto
-([[project_mosquitto_ssh-socket-failed]]). This is a connector-side policy, separate
+Confirmed on docker03 ([[feedback_docker03_sudo]]), mosquitto
+([[project_mosquitto_ssh-socket-failed]]), and homeassistant
+([[project_homeassistant_disk-cleanup]]). This is a connector-side policy, separate
 from whether the host's own sudoers requires a password — it blocks even a would-be
 passwordless sudo.
 

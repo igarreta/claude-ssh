@@ -100,9 +100,11 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 ## Home Assistant
 
 **Current:** temperature sensors inventoried, cleaned up, and renamed to a consistent
-`<house>_<room>_<qualifier>_<what>` convention, all 2026-09-01 →
+`<house>_<room>_<qualifier>_<what>` convention, all 2026-09-01; disk cleanup 2026-09-05
+freed ~1.7GB (stale 1GB log + 8 old full backups) →
 [2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md)
 
+- [2026-09-05_homeassistant_disk-cleanup.md](2026-09-05_homeassistant_disk-cleanup.md) — *closed* — stale log + old backups removed, 74%→69% disk usage; notes the MCP shell's restricted view (`du` only sees ~2.5G of the 22G `df` total)
 - [2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md) — *closed* — full old→new entity_id mapping; dead/duplicate entities removed, dashboards + templates repointed; documents the HA `.storage` live-edit-doesn't-stick gotcha; hab-chicos Nexus (channel 3/id 12) commented out as unreliable
 - [2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md](2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md) — *closed* — 4 rtl_433 battery sensors → `binary_sensor`; exterior Zigbee sensor `0xa4c1386e91d0faf4` → `0xa4c1380a7834ffff`, same friendly_name, zero config changes needed
 - [2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md](2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md) — *closed* — zigbee2mqtt discovery entities never go `unavailable`; guard on `last_reported`, not `last_changed`
