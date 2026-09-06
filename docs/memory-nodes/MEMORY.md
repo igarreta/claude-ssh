@@ -23,7 +23,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 - [project_gr-srv03_ct901-template.md](project_gr-srv03_ct901-template.md) — CT901 is now the LXC clone template (not CT900, kept as rollback per user choice)
 
-- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI 200→134 after 08-17 dongle move; 08-25 final wall-mounted placement lifted it to ~220; recheck 2026-09-09
+- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI recovered to ~220 by 08-26, RELAPSED to ~120-127 after 09-05 CT206 migration, port confirmed unchanged; 09-09 recheck must address relapse
 - [project_zigbee2mqtt_migration.md](project_zigbee2mqtt_migration.md) — cutover to CT206 done 09-05; docker03 kept as rollback until soak period, HA/TTato/actuator checks still needed
 - [project_gr-srv03_rtl433-ct207.md](project_gr-srv03_rtl433-ct207.md) — CT207 built/tested 09-05, test dongle removed, container stopped; permanent config still pending
 - [project_cygnus_backup-checker-iperf3-migration.md](project_cygnus_backup-checker-iperf3-migration.md) — proxmox_backup_checker + iperf3 moved to cygnus 09-05; backup.sh needed no migration

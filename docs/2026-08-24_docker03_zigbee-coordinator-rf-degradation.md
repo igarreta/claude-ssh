@@ -1,14 +1,17 @@
 # Zigbee: comando perdido en `luces medianera z` — degradación RF del coordinador (2026-08-24)
 
 **Status:** open
-**Host:** docker03, gr-srv03
+**Host:** docker03, gr-srv03, CT206
 **Supersedes:** —
 **Superseded-by:** —
 
 **Status detail (es):** causa raíz identificada con alta confianza. Ubicación final del
 dongle fijada el 08-25 (atornillada a la pared, puerto USB dedicado); LQI recuperado y
-estable desde entonces. **Decisión sobre el cable apantallado en espera de la revisión del
-2026-09-09** (dos semanas) — sin apuro, la compra ya estaba a ~2 meses.
+estable desde el 08-26 hasta el 09-04. **Recaída detectada el 2026-09-05/06** (§7): LQI de
+flota volvió a caer a ~120-127, coincidiendo con la migración de zigbee2mqtt a CT206 —
+puerto físico del dongle confirmado sin cambios (`usb 1-3`, sigue en bus separado de los
+discos). **La revisión del 2026-09-09 ya no es un simple cierre** — hay que decidir con
+esta recaída sobre la mesa, no solo con los datos de agosto.
 
 Investigación disparada por un `switch.turn_on` de Home Assistant que nunca llegó al
 relé, el 2026-08-22 18:46:11 (hora local, UTC-3).
@@ -347,6 +350,134 @@ no depende de que nadie mueva nada.
 **Próxima revisión: 2026-09-09** (dos semanas). Si el LQI se mantiene ~200+ sin señales de
 la degradación gradual de cuatro días vista en agosto, cerrar este documento y cancelar la
 compra del cable apantallado (sección 4, ítem 1).
+
+> **Actualización 2026-09-06:** no se sostuvo. Ver sección 7 — el LQI volvió a caer por
+> debajo del piso de agosto justo después de la migración a CT206 del 09-05. La revisión
+> del 09-09 debe evaluar esta recaída, no solo confirmar la mejora del 08-26.
+
+---
+
+## 7. Recaída 2026-09-05/06: LQI cae tras la migración a CT206
+
+Detectado a partir de una alerta puntual de Pushover (automatización de la sección 3):
+`zh:ember: Delivery of BROADCAST failed for '65532'` (broadcast a "todos los routers"),
+3 veces entre `15:29:22` y `15:29:23` del 09-06, sin repetirse desde entonces. Coincidió
+con reintentos hacia `luz exterior garage`, que en ese momento reportaba LQI 52-56 —
+muy por debajo de su propio promedio del día (111.8, ver tabla). El evento puntual en sí
+es de bajo impacto (adaptador ember, no fatal, sin recurrencia), pero motivó revisar el
+LQI de fondo, y ahí apareció algo más serio.
+
+### LQI de flota: de ~220 (08-26) a ~120-127 (09-05/06)
+
+Promedio de `linkquality` por dispositivo, extraído de los `MQTT publish` de zigbee2mqtt
+en CT206 (mismo método que la sección 2/6):
+
+| Dispositivo | 09-05 (día de migración) | 09-06 (parcial) |
+|---|---|---|
+| Enchufe_1 | 118.4 (n=407) | 126.8 (n=1196) |
+| Enchufe_2 | 118.1 (n=402) | 126.8 (n=1193) |
+| luces medianera z | 118.9 (n=183) | 126.8 (n=531) |
+| luz exterior garage | 126.7 (n=222) | 111.8 (n=601) |
+| zigbee_temp_living | 123.8 (n=49) | 127.2 (n=152) |
+| zigbee_temperatura_exterior | 127.1 (n=30) | 125.2 (n=92) |
+| Porton levadizo | 248.7 (n=11) | 255.0 (n=26) |
+| bomba agua z | 232.0 (n=3) | — (sin reportes) |
+
+Otra vez **uniforme entre 1 y 2 saltos** (Enchufe_1/2 son de 1 salto, `luces medianera z`
+de 2) — la misma firma que en la sección 2 apunta al coordinador, no a un enlace
+individual. `Porton levadizo` es la excepción, pero con `n` muy bajo (reporta poco) y ya
+era el dispositivo con LQI más alto en la tabla de agosto — no alcanza para tratarlo como
+dato fiable en ninguna dirección. `bomba agua z` no generó ningún reporte en todo el 09-06,
+pendiente de revisar por separado (podría ser simplemente que no se accionó).
+
+**~120-127 está por debajo del piso de la degradación original (134, 08-22)** y muy lejos
+del ~220 confirmado el 08-26.
+
+Errores de ruta (`ROUTE_ERROR_*` + `ZIGBEE_DELIVERY_FAILED`), por día:
+
+| Día | Errores de ruta |
+|---|---|
+| 09-05 (parcial, desde el cutover) | 236 |
+| 09-06 (parcial) | 551 |
+
+Ya casi iguala el peor día de agosto (825, 08-22) sin que haya terminado el día — la
+tendencia es empeorando, no estabilizando.
+
+### El puerto físico del dongle no cambió
+
+Confirmado en gr-srv03 (host):
+
+```
+$ udevadm info -q path -n /dev/zigbee
+/devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0/ttyUSB0/tty/ttyUSB0
+$ lsusb -t
+Bus 001 (dongle, usb 1-3) — separado de Bus 002 (discos BACKUP, SuperSpeed)
+```
+
+Mismo puerto (`usb 1-3`) y mismo bus separado de los discos que la ubicación final
+fijada el 08-25 (sección 5). **Esto descarta que la migración haya reintroducido el
+mecanismo de proximidad a USB3** que causó la degradación original — el dongle no se
+movió físicamente.
+
+### Descartada también la hipótesis del dongle rtl-433
+
+El usuario recordó haber conectado brevemente el dongle rtl-433 (RTL2832U, `usb 1-1`)
+esa misma tarde — candidato obvio por ser exactamente el mecanismo de la degradación
+original (otro USB en el mismo chasis). El log del kernel de gr-srv03 fecha esa conexión
+con precisión: enumeró `19:20:00`, se retiró `19:30:36` (10m36s). Promedio de
+`linkquality` en ventanas alrededor de ese evento, mismo método que arriba:
+
+| Ventana | Enchufe_1 | Enchufe_2 | luces medianera z |
+|---|---|---|---|
+| 18:36–19:20 (cutover → antes del rtl-433) | 122.7 | 122.6 | 123.2 |
+| 19:20–19:30 (rtl-433 conectado) | 90.7 | 85.8 | 88.0 |
+| 19:30–19:50 (rtl-433 retirado, disco BACKUP aún desconectado) | 118.9 | 116.2 | 113.1 |
+| 19:50–21:00 (todo normalizado) | 121.7 | 122.0 | 120.3 |
+
+**El LQI ya estaba en ~122-123 en la primera ventana, antes de que el rtl-433 tocara un
+puerto USB.** El rtl-433 sí produjo un mínimo local más bajo (~86-91) mientras estuvo
+conectado, y el disco BACKUP desconectado (19:19:55–19:50:22) sostuvo un piso algo más
+bajo (~113-119) — ambos consistentes con el mecanismo de ruido USB3/proximidad ya
+conocido de la sección 2, sumando ruido puntual. Pero ninguno de los dos explica el
+**nivel base de ~122 que ya estaba instalado apenas 44 minutos después del cutover a
+CT206**, antes de que existiera ningún evento USB físico nuevo. El rtl-433 y el disco
+son ruido adicional sobre una recaída que ya había ocurrido, no su causa.
+
+### Versión, config y power management del USB: descartados (2026-09-06, VM 102 levantada)
+
+El usuario levantó VM 102 (docker03) para comparar contra el estado pre-cutover, sin
+arrancar el contenedor de zigbee2mqtt (para no arriesgar un segundo coordinador contra
+el mismo PAN):
+
+- **Misma versión exacta en ambos lados:** `zigbee2mqtt 2.12.0` / `zigbee-herdsman
+  10.4.0`, adaptador `ember`, en docker03 y en CT206.
+- **Mismo `configuration.yaml`** — bloque `advanced:` idéntico (`channel: 11`,
+  `adapter_delay: 0`, `cache_state: true`, sin `transmit_power` explícito en ninguno de
+  los dos).
+- **USB power management del host, descartado:** `/sys/bus/usb/devices/1-3/power/control`
+  = `on` (autosuspend deshabilitado), velocidad negociada `12` (Full Speed, normal para
+  cp210x), `bMaxPower=100mA`. Nada indica ahorro de energía interrumpiendo el enlace.
+
+Esto descarta la hipótesis de versión/config como causa. Lo único que queda distinto
+entre docker03 y CT206 es el mecanismo de acceso al dispositivo en sí (passthrough USB
+de VM vs. bind mount directo del host a un LXC no privilegiado) — sin un mecanismo
+concreto identificado todavía por el que eso afecte el LQI reportado por el propio chip
+NCP, que en teoría es puramente de radio y no debería depender de qué proceso del host
+lee el `/dev/ttyUSB0`.
+
+### Candidatos que quedan abiertos
+
+- **Hipótesis de WiFi externo**, sección 4 ítem 2, sigue sin probarse (AP en ch 3 nunca
+  se movió) — es la única acción concreta y gratuita que queda pendiente de probar.
+- El mecanismo de acceso LXC vs. VM en sí, sin explicación identificada (ver arriba).
+- Sin más candidatos de bajo costo para probar antes del 09-09; si el LQI no mejora,
+  puede hacer falta un A/B real (volver a pasar el dongle a la VM temporalmente) para
+  aislar si el entorno de ejecución es la causa.
+
+**Para la revisión del 2026-09-09:** con esta recaída, **no cerrar el documento ni
+cancelar la compra del cable apantallado** solo por el buen dato del 08-26 — hace falta
+explicar esta caída primero. Sugerido: mover el AP WiFi de canal (pendiente ítem 2,
+gratis, descarta una hipótesis) antes del 09-09, y ver si el LQI reacciona.
 
 ---
 
