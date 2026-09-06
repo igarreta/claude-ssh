@@ -75,16 +75,19 @@ daily restart in place →
 
 **Current:** health monitor phases 1–3 deployed 2026-08-15, **tests being finished as of
 2026-08-24**; ceres empty-snapshot cause never reproduced across 3 probe readings incl. the
-08-25→08-26 BACKUP_A rotation — probe **closed and removed 2026-08-26** →
-[2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md)
+08-25→08-26 BACKUP_A rotation — probe **closed and removed 2026-08-26**. **WDMyCloud NAS
+dead 2026-09-06** — its two backup crons on ceres are disabled until a replacement NAS is
+in place (may take >2 months); existing local + S3 Glacier repos left untouched →
+[2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md)
 
+- [2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md) — **open** — WD MyCloud dead/irrecoverable; found+fixed a live risk where the missing mount would let backup cron rotate out real snapshots; crons disabled, configs wiped, repos preserved
 - [2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md) — *active* — design + deployed implementation; finishing tests
 - [2026-08-14_ceres-empty-snapshots-probe.md](2026-08-14_ceres-empty-snapshots-probe.md) — *closed* — 7 months of empty snapshots; `pct reboot 203` fixed it, cause never proven after 3 probe readings, probe removed 2026-08-26
 - [memory_backup_schedule.md](memory_backup_schedule.md) — *active* — **read before adding any job**: disk-wake window 02:25–03:30
 - [Backup_Drives_Mounting_Configuration.md](Backup_Drives_Mounting_Configuration.md) — *active* — fstab + udev/systemd mount units for BACKUP_USB1 / A / B
 - [2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md](2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md) — *closed* — NFS over WAN → rclone/SFTP
 - [2026-06-27_raspberrypi2z_backup.md](2026-06-27_raspberrypi2z_backup.md) — *active* — monthly SD image → NFS → restic
-- [memory_ceres_wdmycloud_glacier.md](memory_ceres_wdmycloud_glacier.md) — *active* — WDMyCloud → S3 Glacier
+- [memory_ceres_wdmycloud_glacier.md](memory_ceres_wdmycloud_glacier.md) — **open** — WDMyCloud → S3 Glacier mechanics; paused, see 2026-09-06_ceres_wdmycloud-nas-dead.md
 - [2026-05-28_cygnus_backup-usb1-data-mount-and-quetren-grabaciones.md](2026-05-28_cygnus_backup-usb1-data-mount-and-quetren-grabaciones.md) — *closed*
 
 ## MQTT

@@ -31,6 +31,10 @@ Market context: HDD, DRAM and NAND are all in shortage, so aggregator prices are
 directions and **stock must be verified, not just price**. Original <USD 600 budget is only reachable
 via P2.
 
+**Urgency update 2026-09-06**: the WD MyCloud this NAS was meant to replace is now dead/irrecoverable
+(see [[project_ceres_wdmycloud-nas-dead]]) — its backups are safe (crons disabled, repos untouched)
+but this purchase is no longer just a nice-to-have upgrade.
+
 **How to apply**: multi-step project — read the write-ups before proposing hardware or prices.
 Scope, sizing arithmetic and the buy list are in [[docs/memory_nas-project.md]] (claude-ssh repo);
 market/hardware/OS research in [[docs/2026-08-19_nas-hardware-research.md]]; disk prices, drive

@@ -7,10 +7,13 @@ metadata:
 
 # ceres WDMyCloud → AWS Glacier backup (backup-greven-wdmycloud)
 
-**Status:** active
+**Status:** open
+**Status detail:** WDMyCloud NAS died 2026-09-06 (irrecoverable); this monthly S3 cron
+is disabled until a replacement NAS is in place — the exclusion/retention details below
+still apply once it resumes.
 **Host:** ceres
 **Supersedes:** —
-**Superseded-by:** —
+**Superseded-by:** 2026-09-06_ceres_wdmycloud-nas-dead.md (cron/status only)
 
 Repo: `s3:s3.amazonaws.com/backup-greven-wdmycloud` (restic, S3 Glacier Deep Archive),
 script `~/backup_greven/scripts/backup-wdmycloud-s3.sh` on ceres, runs monthly (~1st week, see [[project_backup_schedule]]).
