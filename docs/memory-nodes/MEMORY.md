@@ -26,6 +26,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI recovered to ~220 by 08-26, RELAPSED to ~120-127 after 09-05 CT206 migration, port confirmed unchanged; 09-09 recheck must address relapse
 - [project_zigbee2mqtt_migration.md](project_zigbee2mqtt_migration.md) — cutover to CT206 done 09-05; docker03 kept as rollback until soak period, HA/TTato/actuator checks still needed
 - [project_gr-srv03_rtl433-ct207.md](project_gr-srv03_rtl433-ct207.md) — CT207 built/tested 09-05, test dongle removed, container stopped; permanent config still pending
+- [project_gr-srv03_ct103-migration-plan.md](project_gr-srv03_ct103-migration-plan.md) — CT103 last non-Turnkey Debian 12 LXC; clone-CT901 migration plan sketched, <30 min job, not started
 - [project_cygnus_backup-checker-iperf3-migration.md](project_cygnus_backup-checker-iperf3-migration.md) — proxmox_backup_checker + iperf3 moved to cygnus 09-05; backup.sh needed no migration
 - [project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration.md](project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration.md) — uptime-kuma/mqtt-explorer moved to cygnus 09-05; cloudflaretunnel's real home is CT103, not cygnus
 - [project_nas.md](project_nas.md) — purchase-ready since 08-30 ($818, nothing ordered); now urgent — WDMyCloud it was meant to replace died 09-06

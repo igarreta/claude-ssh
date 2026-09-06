@@ -132,6 +132,7 @@ orphaned projects (dropped, not migrated) remain outstanding →
 [memory_docker03-decommission.md](memory_docker03-decommission.md)
 
 - [memory_docker03-decommission.md](memory_docker03-decommission.md) — **open** — full inventory + destination for every service, cron job, and mount
+- [2026-09-06_gr-srv03_ct103-cloudflare-migration-plan.md](2026-09-06_gr-srv03_ct103-cloudflare-migration-plan.md) — **open** — CT103 is the last non-Turnkey LXC on Debian 12; clone-CT901/reinstall-cloudflared plan sketched, not started, <30 min job
 - [2026-08-28_gr-srv03_ct901-new-template.md](2026-08-28_gr-srv03_ct901-new-template.md) — *active* — CT901, the new 3 GB template; sudo needs a password, baked-in GitHub deploy key
 - [memory_zigbee2mqtt-migration.md](memory_zigbee2mqtt-migration.md) — **open** — cutover to CT206 done 2026-09-05, no re-pairing needed; only docker03 cleanup (phase 5) remains, held for a soak period
 - [memory_rtl433-lxc-ct207.md](memory_rtl433-lxc-ct207.md) — **open** — CT207 built and tested 2026-09-05; DVB-driver blacklist + whole-tree `/dev/bus/usb` bind mount pattern; permanent setup (config, service, physical dongle move) still pending
