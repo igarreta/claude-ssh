@@ -1,11 +1,11 @@
 ---
 name: project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration
-description: "uptime-kuma + mqtt-explorer moved from docker03 to cygnus 2026-09-05 with secrets intact; cloudflaretunnel's real destination is dedicated LXC CT103, not cygnus"
+description: "uptime-kuma + mqtt-explorer moved from docker03 to cygnus 2026-09-05, docker03 originals stopped; cloudflaretunnel's real destination is dedicated LXC CT103, not cygnus"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 1356fcf0-1541-43c9-828b-537c6dc6ecd9
-  modified: 2026-09-06T01:33:43.582Z
+  modified: 2026-09-06T01:40:11.646Z
 ---
 
 uptime-kuma and mqtt-explorer now run on cygnus (podman, `~/uptime-kuma/`, `~/mqtt-explorer/`),
@@ -29,9 +29,11 @@ tunnel connector is actually up). Fixed by adding `--metrics 100.100.91.26:2000`
 `http://100.100.91.26:2000/ready` — cloudflared's own purpose-built health endpoint. Confirmed
 passing.
 
-**How to apply:** full command sequence, the castor `pg_hba.conf` fix needed for the
-"PostgreSQL castor" monitor (cygnus's Tailscale IP wasn't allowlisted), and the still-open
-cleanup item (stop docker03's originals once replacements have soaked) are in
+docker03's originals **stopped 2026-09-05** (not removed) once cygnus/CT103 were confirmed
+healthy replacements.
+
+**How to apply:** full command sequence and the castor `pg_hba.conf` fix needed for the
+"PostgreSQL castor" monitor (cygnus's Tailscale IP wasn't allowlisted) are in
 `docs/memory_docker03-decommission.md`. MCP's sftp tools reject anything over 1 MB — large
 transfers between two remote hosts were relayed through comet's own `scp` (both hosts already
 trust `~/.ssh/id_ed25519_comet` directly, no new key needed).

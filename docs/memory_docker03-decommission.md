@@ -69,9 +69,8 @@ no longer the clone source. Sizing based on mosquitto's real usage as the closes
 via systemd (`/etc/systemd/system/cloudflared.service`, `tunnel run --token ...`), not
 podman — already live and healthy as of 2026-09-05 20:28 UTC. Serves `proxmox03-ct.granev.casa`,
 one of three ways to reach gr-srv03's Proxmox UI (alongside Tailscale direct and local LAN IP)
-— cygnus plays no role in Proxmox access. docker03's old `cloudflaretunnel` container was left
-untouched (reverted after an initial edit-by-mistake) and is still running as of this writing;
-stop it once CT103 is confirmed as the sole active connector for a while.
+— cygnus plays no role in Proxmox access. docker03's old `cloudflaretunnel` container
+**stopped 2026-09-05** — CT103 is now the sole active connector.
 
 Added `--metrics 100.100.91.26:2000` to CT103's `cloudflared` command (systemd unit edited
 in place with `sed`, token untouched) so uptime-kuma has a real health signal: cloudflared's
@@ -159,6 +158,10 @@ the disk space is needed back. Exact duration not yet decided.
    mount can just be extended.
 2. Naming/IP assignment for the two new LXCs.
 3. Cooldown duration for docker03 before final deletion.
-4. Stop docker03's `cloudflaretunnel` and `uptime-kuma`/`mqtt-explorer` containers once their
-   CT103/cygnus replacements have run for a while — all three are currently still running on
-   docker03 in parallel with their replacements.
+
+`cloudflaretunnel`, `uptime-kuma`, and `mqtt-explorer` on docker03 were **stopped 2026-09-05**
+(not removed) now that CT103/cygnus are confirmed as their live replacements — remaining
+docker03 items still running: `zigbee2mqtt` (kept as explicit rollback, see
+[memory_zigbee2mqtt-migration.md](memory_zigbee2mqtt-migration.md)), `backup.sh`/`proxmox_backup_checker` crons (superseded by
+cygnus's own copies but not yet disabled on docker03 itself), and whatever host services were
+never explicitly stopped (see the 2026-08-27 inventory above).
