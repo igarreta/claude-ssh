@@ -79,15 +79,20 @@ no longer the clone source. Sizing based on mosquitto's real usage as the closes
   rebuilt, `var/config.yaml` copied verbatim (paths already match since cygnus's new `mp5`
   mount, added 2026-09-05, covers the whole backup_usb1 tree at the same absolute path — see
   the NFS/mount bullet below). Cron added
-  at 8:05, same slot as docker03. **Email left disabled** (`to_email: []` + a placeholder
-  `~/etc/smtp.env` — user wasn't sure real SMTP creds were worth wiring up); Pushover is the
-  channel that actually alerts and is confirmed working (shared-secrets `pushover.env`, already
-  present on cygnus). Uptime Kuma heartbeat in the script fails (logged, non-fatal) until
-  uptime-kuma itself moves to cygnus.
+  at 8:05, same slot as docker03. **Email enabled 2026-09-05**: real SMTP creds copied from
+  docker03's `~/etc/smtp.env` (gmail relay) over the placeholder `disabled.invalid` one, and
+  a test run confirmed `Email sent successfully to 1 recipients`. `var/config.yaml` still has
+  `to_email: []` — the script falls back to `smtp.env`'s `TO_EMAIL` when the config list is
+  empty. Before the fix, the placeholder host caused a DNS-lookup `ERROR` on every run despite
+  all backups passing, which log-monitor escalated to Pushover as a false "crash" alert.
+  Pushover itself (shared-secrets `pushover.env`) is confirmed working independently. Uptime
+  Kuma heartbeat in the script still fails (logged, non-fatal) until uptime-kuma itself moves
+  to cygnus.
 - fail2ban — not currently installed on cygnus, needs adding.
-- beszel-agent — confirm cygnus doesn't already have one before adding (MCP couldn't check;
-  `sudo podman` here hits the "privileged commands blocked" policy even though it's
-  passwordless — check manually).
+- beszel-agent — **confirmed already installed and running natively** on cygnus (2026-09-05,
+  `systemctl status beszel-agent`, binary at `/opt/beszel-agent`, not a podman container —
+  that's why `podman ps` doesn't show it). It correctly alerted on the 2026-09-05 disk-full
+  incident (see [2026-09-05_cygnus_disk-full-podman-storage.md](2026-09-05_cygnus_disk-full-podman-storage.md)). No migration needed.
 - Backup mounts: cygnus's existing `mp1`/`mp3`/`mp4` bind mounts
   ([2026-05-28_cygnus_backup-usb1-data-mount-and-quetren-grabaciones.md](2026-05-28_cygnus_backup-usb1-data-mount-and-quetren-grabaciones.md))
   are all scoped to cygnus's own subtree (`/mnt/backup_usb1/cygnus`, `/gickup`, `/data/cygnus`)
