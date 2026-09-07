@@ -1,8 +1,11 @@
 ---
 name: project_homeassistant_temperature-sensor-naming
 description: HA temperature sensors renamed to a consistent convention 2026-09-01; also documents the .storage live-edit gotcha for future HA config work
-metadata:
+metadata: 
+  node_type: memory
   type: project
+  originSessionId: f356e205-1e98-42ec-9916-e203366a601d
+  modified: 2026-09-07T13:57:49.183Z
 ---
 
 Temperature entity naming in Home Assistant was confusing (mixed brand/protocol/location:
@@ -23,3 +26,9 @@ core start`. Both `stop`/`start` get blocked by the auto-mode classifier when ru
 Claude over SSH, and `sudo` commands over SSH get blocked too (see
 [[feedback_sudo_commands_no_ssh_wrap]]) — the user has to run all three steps themselves in
 their own session.
+
+**Companion app gotcha (2026-09-07):** after this rename, renamed sensors showed in the HA
+iPhone app but not in the iOS widget's entity picker. Fix was simply force-quitting the
+Companion app and reopening it — the widget picker holds a stale local snapshot of the entity
+list that doesn't refresh live. No server-side change needed. Worth trying first (before
+remove/re-add widget) on any future entity rename.
