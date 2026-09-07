@@ -50,6 +50,10 @@ before closing and cancelling the shielded-cable purchase →
 The storage hub for the rebuild (Rosonway RSH-A10) was **ordered 2026-08-29, ETA ~2026-10-24**
 and the layout was decided 2026-08-30 (**Option D** — Zigbee keeps its own direct host port,
 test-only RTL-433 goes on the hub, no second hub) — nothing is installed until it lands.
+**Premise changed 2026-09-07: BACKUP_A/B rotation moves to the NAS, vacating a USB port, so
+3 devices fit 3 ports and the hub is no longer needed** — it also removes the host's only
+hot-plugged device, the documented root cause of the Zigbee drops. Re-evaluate Option D when the
+NAS is commissioned, not when the hub arrives.
 
 - [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md) — **open** — fleet LQI 200→134, recovered to ~220 after 08-25 final placement; recheck 2026-09-09. Baselines in [data/](data/)
 - [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) — **open** — RSH-A10 ordered 2026-08-29 (ETA ~10-24); layout decided 2026-08-30 (**Option D**: Zigbee stays direct on port 3, test-only RTL-433 on the hub); § *To implement when the hub arrives* carries the mandatory `uhubctl -a on` assertion and the pre-rebuild LQI baseline
@@ -202,7 +206,10 @@ feature it uses is supported, verified against podman-compose's source. **No def
 remain on the stack** →
 [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **The F4-425 Plus now ships
 with 8 GB, not 16 GB** (checked 2026-09-07) — the cheap RAM path is gone and 8 GB is the binding
-constraint.
+constraint. **2026-09-07 also settled: 2 bays (box size), one SODIMM slot so a RAM upgrade
+replaces rather than adds, and BACKUP_A/B rotation moves to the NAS — which frees gr-srv03's third
+USB port and makes the ordered RSH-A10 hub unnecessary.** Re-verify CPU variant and price before
+ordering: every current listing is N150 at ~$425, not the recorded N95 at $383.
 
 - [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) — **open** — base OS, guests, share protocols, disk topology, RAM budget; corrects the 16 GB F4-425 Plus claim in both research docs; **restore source verified 2026-09-07** (BACKUP_B restic repo sound and complete — S3 Glacier is *not* the restore source)
 - [memory_nas-project.md](memory_nas-project.md) — **open** — scope, sizing, buy list, rejected options

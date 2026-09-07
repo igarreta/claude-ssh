@@ -8,7 +8,19 @@
 **Status detail:** Storage hub **ordered 2026-08-29 (Rosonway RSH-A10), ETA ~2026-10-24**
 (~8 week lead time); nothing installed or moved yet. **Layout decided 2026-08-30 —
 [Option D](#decided-layout--option-d-2026-08-30), which needs no second hub**; Options A/B/C
-below are retained for the record and were not taken. Extension cables still to order
+below are retained for the record and were not taken.
+
+> **PREMISE CHANGED 2026-09-07 — do not execute Option D on autopilot.** The NAS project decided
+> that the **BACKUP_A/B rotation moves to the NAS**
+> ([memory_nas-project.md](memory_nas-project.md) § *Knock-on: BACKUP_A/B rotation moves to the
+> NAS*). That vacates USB port 2, leaving **3 devices for 3 ports** — Zigbee, `backup_usb1`, and
+> the RTL-433 SDR — so *"more devices than ports, so a hub is mandatory"* below **no longer
+> holds**, and the RSH-A10 is not needed for this layout. It also removes the **only
+> hot-plugged device** on the host, which was the documented root cause of the Zigbee drops.
+>
+> Sequencing: the hub arrives ~2026-10-24, the NAS is not yet ordered and comes from abroad, so
+> the hub lands first and the drives leave later. Re-evaluate this plan when the NAS is
+> commissioned rather than when the hub arrives. Extension cables still to order
 (Conable CAL2S-6-3PK); ferrites deprioritised. Current setup is the
 post-incident one (hub removed, everything on direct ports) documented in
 [memory_gr-srv03_powered-hub-instability.md](memory_gr-srv03_powered-hub-instability.md).

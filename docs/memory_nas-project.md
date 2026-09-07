@@ -83,6 +83,33 @@ on one 3–4 TB disk. That caps the backed-up subset, not the NAS capacity.
 > [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) § The
 > constraint.
 
+> **Knock-on: BACKUP_A/B rotation moves to the NAS (decided 2026-09-07).** This is the bigger of
+> the two knock-ons, because it removes a *root cause* from gr-srv03 rather than just a device.
+>
+> **1. It frees the port that made a USB hub mandatory.** gr-srv03 has 3 external USB-A ports, all
+> occupied: Zigbee, the BACKUP_A/B rotating slot, and `backup_usb1`. The only planned addition is
+> the RTL-433 SDR, and "more devices than ports" is the entire justification for the hub. Move the
+> rotating drive to the NAS and it is **3 devices for 3 ports** — the **Rosonway RSH-A10, ordered
+> 2026-08-29 with ETA ~2026-10-24, is no longer needed.** It arrives before the NAS does, so this
+> is a plan change rather than a cancellable order; a spare powered hub is not useless, but Option
+> D should not be executed on autopilot.
+>
+> **2. It removes the documented cause of the Zigbee drops.** The 7/7 episodes were BACKUP_A/_B
+> **hot-plug transients** on the shared xHCI 5 V rail
+> ([memory_gr-srv03_powered-hub-instability.md](memory_gr-srv03_powered-hub-instability.md)). The
+> rotating drive is the only device that is ever hot-plugged — `backup_usb1` stays permanently
+> connected. Moving it means gr-srv03 sees **no hot-plug events at all**. This is also relevant to
+> the unresolved 09-05/06 LQI relapse, whose recheck is due 2026-09-09.
+>
+> **3. The backup architecture has to change.** ceres currently **bind-mounts** whichever drive is
+> connected (`env-wdmycloud-local.sh` auto-detects A vs B). With the drives on the NAS that is
+> impossible: either the restic jobs move to the NAS, or ceres writes over the network. The
+> **02:25–03:30 disk-wake window** ([memory_backup_schedule.md](memory_backup_schedule.md)) moves
+> to the NAS with them. `backup_usb1` stays on gr-srv03, repurposed as plain local disk.
+>
+> **None of this is designed yet** — it is a consequence to work through before the NAS is
+> commissioned, not a solved problem.
+
 ## Confirmed preferences (2026-08-19)
 
 | Decision | User's answer |
@@ -170,14 +197,27 @@ the 2026-09-07 RAM finding. Kept for the reasoning; do not act on them as open q
 
 **Still open:**
 
-3. **Verification items before purchase** — mostly done (recert prices verified 08-20; TerraMaster
-   permits third-party OS with HDMI console; 3× M.2 on the Plus). **Still unverified: the SODIMM
-   slot count on the F2-425 Plus** (if it is a single slot, a 16 GB upgrade *replaces* the 8 GB
-   rather than joining it), and noise figures for the 7200 rpm recert drives.
-4. **Does the BACKUP_A/B rotation move from gr-srv03 to the NAS**, or stay where it is?
-5. **2-bay vs 4-bay.** The $110 F2-425 Plus → F4-425 Plus step now buys **two extra bays and
-   nothing else** — it is no longer a RAM argument. Not urgent (the mirror is 57% full on day
-   one), but it is the last moment it can be decided cheaply.
+3. ~~**SODIMM slot count**~~ — **resolved 2026-09-07: ONE slot.** A RAM upgrade **replaces** the
+   bundled 8 GB, it does not join it. Two independent hands-on sources agree: ITPro's review,
+   which opened the unit — *"The base 8GB of memory comes on a single SO-DIMM stick, which you'll
+   need to lose if you want to upgrade, as there's only one slot"* — and CNX Software's teardown,
+   which photographs one 8 GB DDR5 module and no empty slot. The "two slots" claim on
+   nasdrives.co.uk is an **inference from the 32 GB maximum and is unsound** — 32 GB DDR5 SODIMMs
+   exist as single modules. Consequence: 8 → 16 GB costs a ~$209 16 GB stick *and* wastes the
+   bundled 8 GB; 32 GB needs a single 32 GB module. Still unverified: **noise figures** for the
+   7200 rpm recert drives.
+
+   > **Flagged while checking this — re-verify CPU variant and price before ordering.** Every
+   > current listing and review found on 2026-09-07 is the **N150**, and TerraMaster's own store
+   > shows **$424.99** (marked down from $499.99); ITPro reviewed at £399. The buy list records
+   > **N95 at $383**, and $383 + the $42 N150 premium = $425, which matches the current N150
+   > price exactly. It is possible the N95 variant is not separately sold and the 08-30
+   > CPU-variant decision is moot. **Confirm what is actually purchasable before ordering.**
+
+4. ~~**Does the BACKUP_A/B rotation move to the NAS?**~~ — **decided 2026-09-07: yes, it moves.**
+   See "Knock-on" below; this has consequences beyond the NAS.
+5. ~~**2-bay vs 4-bay**~~ — **decided 2026-09-07: 2 bays**, on physical size. The F2-425 Plus
+   stands; the F4-425 Plus is not pursued.
 6. ~~**Verify the local restic repo**~~ — **done 2026-09-07, the restore source is sound.**
    BACKUP_B's `restic-wdmycloud` holds 14 snapshots (2025-12-24 → 2026-09-05) at a consistent
    1.450–1.462 TiB with no empties; the latest (`866e7c76`, 2026-09-05) is 117,635 files /

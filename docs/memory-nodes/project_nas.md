@@ -51,6 +51,15 @@ plain `depends_on`, not `condition: service_healthy`; and `extends` works — `c
 hides it). Traps in [[project_podman_compose_gotchas]]. **No deferred questions remain on the
 software stack.**
 
+**Settled 2026-09-07**: **2 bays** (box size — F4-425 Plus not pursued); **one SODIMM slot**, so a
+RAM upgrade *replaces* the bundled 8 GB rather than adding to it (two hands-on sources; the
+"two slots" claim online is an unsound inference from the 32 GB max); and **BACKUP_A/B rotation
+moves to the NAS** — which frees gr-srv03's third USB port, makes the already-ordered RSH-A10 hub
+unnecessary, removes the host's only hot-plugged device (the documented Zigbee-drop root cause,
+see [[project_gr-srv03_powered-hub-instability]]), and forces ceres's bind-mount backup
+architecture to change. **Before ordering, re-verify CPU variant and price** — every current
+listing is N150 at ~$425, not the recorded N95 at $383.
+
 **RAM correction 2026-09-07 — don't quote the old figure**: the research docs say the F4-425 Plus
 ships with 16 GB and is the cheap way to escape 8 GB. **It now ships with 8 GB.** No model in this
 range exceeds 8 GB, so RAM is a ~$209 aftermarket SODIMM or nothing — and the all-LXC budget is

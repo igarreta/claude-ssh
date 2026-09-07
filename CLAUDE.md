@@ -184,8 +184,8 @@ Scripts and config for raspberrypi2z are stored in `raspberrypi2z/` in this repo
 All scripts for gr-srv03 must be stored in `/opt/proxmox-grsrv03/` (git repo: `igarreta/proxmox-grsrv03`), organized in thematic subdirectories (e.g. `host-backup/`, `monitoring/`). Never place scripts in `/usr/local/bin` or `/usr/local/sbin` directly — symlink from there if needed.
 
 gr-srv03 runs in a GMTec NucBox G5 with  an N97 Intel processor and 12 GB of RAM
-On 2026-01-14 is running pve-manager/9.1.2/9d436f37a0ac4172
-Kernel is pinned to Linux 6.17.2-2-pve. I had hardware compatibility issues in the past, that can be found in the documentation
+On 2026-09-07 is running pve-manager/9.2.11/f6997e698c7933ea
+Kernel was upgraded and is now pinned to Linux 7.0.14-15-pve (`/etc/kernel/proxmox-boot-pin`, verified 2026-09-07). I had hardware compatibility issues in the past, that can be found in the documentation — the pin is deliberate, do not let it drift
 Documentation can be found in /opt/proxmox-grsrv03/docs/
 
 I has connected:
