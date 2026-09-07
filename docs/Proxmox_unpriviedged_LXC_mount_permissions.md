@@ -23,8 +23,10 @@
 > **It is ignored on privileged containers** — PVE logs `ignoring 'idmap' option unsupported by
 > privileged container` (`PVE/LXC.pm:2450-2453`). So this is a reason to *stay* unprivileged, not
 > a reason to escalate. Two caveats it does **not** solve: unprivileged containers still cannot
-> write `security.*` xattrs (so Samba's `vfs_acl_xattr` / Windows ACLs are unavailable), and a
-> shared group plus consistent umask are still needed when several guests write one tree.
+> write `security.*` xattrs — verified on ceres 2026-09-07, `user.*` succeeds and
+> `security.NTACL` returns `EPERM`, so Samba's `vfs_acl_xattr` is unavailable (POSIX ACLs and
+> `vfs_fruit`, which uses `user.*`, are fine) — and a shared group plus consistent umask are
+> still needed when several guests write one tree.
 >
 > Everything below describes the original 2025 incident and the `chmod 777` workaround that was
 > used at the time. It still works; it is no longer the right first answer. First use of the new

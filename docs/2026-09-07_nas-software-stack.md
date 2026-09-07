@@ -194,10 +194,30 @@ longer a trade to make.
 4. **The restore arrives with foreign UIDs.** The 1.6 TB comes back from a restic repo that
    captured WDMyCloud/TurnKey ownership — a remap step that is easy to discover only after
    copying 1.6 TB.
-5. **Windows ACLs are out.** Unprivileged containers cannot write `security.*` xattrs, so Samba's
-   `vfs_acl_xattr` (the Explorer "Security" tab) will not work. POSIX ACLs, create masks, and
-   Time Machine are unaffected — `vfs_fruit` uses `user.*` xattrs. This is the one real
-   capability given up, and it is unlikely to matter for a family share.
+5. **Windows ACLs: use POSIX ACL mapping, not `vfs_acl_xattr`.** Verified empirically on ceres
+   (an unprivileged LXC) 2026-09-07: `user.*` xattrs write fine, `security.NTACL` fails with
+   `EPERM`. So `vfs_acl_xattr` cannot work. `vfs_fruit` is unaffected — it uses `user.*` — so
+   Time Machine is fine.
+
+   What falling back to POSIX ACL mapping actually costs: **no deny entries** (POSIX ACLs have no
+   "deny", so "everyone except Juan" must be restructured as group membership); **rwx instead of
+   Windows' ~14 granular rights** (e.g. "create but not delete" is not expressible, beyond what a
+   sticky bit gives at directory level); **no per-ACE inheritance flags** (POSIX default ACLs are
+   one cruder, all-or-nothing directory mechanism); and **a lossy Explorer Security tab** — it
+   opens and accepts edits, then maps them down to POSIX, so values may not round-trip. It
+   approximates silently rather than erroring.
+
+   **`vfs_acl_tdb` is not the answer here.** It is a second Samba backend storing full NT security
+   descriptors in a TDB rather than an xattr, so it *does* work unprivileged — but it is keyed by
+   **device and inode**. The 1.6 TB arrives via a restic restore, which creates new inodes, so
+   every ACL would be orphaned on arrival; it also keeps permissions outside the filesystem, where
+   they do not survive a copy, a `zfs send`, or a backup. It trades a capability problem for a
+   durability one.
+
+   **Net effect for this share**: the access pattern is "family reads most things, some
+   directories are private, Time Machine is one user" — fully expressible with POSIX ACLs plus
+   share-level `valid users` / `write list` / `read list`. Nothing needed is lost. This would only
+   bite on a corporate-style share with per-department deny rules.
 
 Note: `chown` *does* work inside an unprivileged container within its mapped range. "chown is
 broken" is the usual reason people reach for privileged and it is not accurate here.
