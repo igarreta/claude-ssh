@@ -1,9 +1,34 @@
 # Troubleshooting LXC Mount Permissions
 
 **Status:** active
-**Host:** gr-srv03
+**Host:** gr-srv03, (fleet)
 **Supersedes:** —
 **Superseded-by:** —
+
+> **UPDATE 2026-09-07 — there is now a first-class fix; prefer it over the `chmod 777` below.**
+> Proxmox exposes a **per-mount-point `idmap=` option** (verified on gr-srv03: pve-manager
+> 9.2.11, pve-container 6.1.14, kernel 7.0.14-15-pve, ZFS 2.4.4). The keyword `passthrough`
+> identity-maps all UIDs/GIDs, so on-disk IDs match container IDs and the whole `nobody:nogroup`
+> problem disappears:
+>
+> ```
+> pct set <ctid> -mp0 /host/path,mp=/container/path,idmap=passthrough
+> ```
+>
+> It also takes explicit `type:container:disk:range-size` entries (e.g. `u:1000:1000:1`) when only
+> some IDs should be mapped; unmapped IDs fall back to the container's `lxc.idmap`. Implemented via
+> kernel idmapped mounts — `passthrough` reuses the container's own user namespace
+> (`/usr/share/perl5/PVE/LXC.pm:2454`); schema at `/usr/share/perl5/PVE/LXC/Config.pm:373`.
+>
+> **It is ignored on privileged containers** — PVE logs `ignoring 'idmap' option unsupported by
+> privileged container` (`PVE/LXC.pm:2450-2453`). So this is a reason to *stay* unprivileged, not
+> a reason to escalate. Two caveats it does **not** solve: unprivileged containers still cannot
+> write `security.*` xattrs (so Samba's `vfs_acl_xattr` / Windows ACLs are unavailable), and a
+> shared group plus consistent umask are still needed when several guests write one tree.
+>
+> Everything below describes the original 2025 incident and the `chmod 777` workaround that was
+> used at the time. It still works; it is no longer the right first answer. First use of the new
+> option in a design: [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md).
 
 ## Problem Summary
 
@@ -123,9 +148,14 @@ Do **not** use `chmod 777` for:
 
 For future similar scenarios, consider these alternatives:
 
+0. **`idmap=passthrough` on the mount point** — **the current best answer**, see the 2026-09-07
+   update at the top of this file. Solves the problem outright with no `chmod 777`, no
+   `lxc.idmap` arithmetic, and no loss of isolation.
+
 1. **Explicit UID Mapping in LXC Config** - Map container UIDs to specific host UIDs
    - More complex but more secure
    - Requires editing LXC container configuration
+   - Largely obsoleted by option 0, which does this per-mount instead of per-container
 
 2. **ACLs (Access Control Lists)** - Use POSIX ACLs for fine-grained permissions
    - More flexible than standard permissions
@@ -134,6 +164,7 @@ For future similar scenarios, consider these alternatives:
 3. **Container with Different Privileges** - Use a privileged container (not recommended)
    - Security risk
    - Should only be considered for development/testing
+   - Note it also **forfeits option 0**, which privileged containers cannot use
 
 ---
 
@@ -188,7 +219,8 @@ It's important to understand what happens after the fix:
 |--------|---------|
 | **Problem** | Permission denied on LXC bind mount from unprivileged container |
 | **Root Cause** | UID/GID mapping in unprivileged containers prevented access to root-owned directory |
-| **Solution** | `chmod 777 /mnt/backup_a` on host |
+| **Solution (2025, still in place)** | `chmod 777 /mnt/backup_a` on host |
+| **Solution (2026-09-07 onward)** | `idmap=passthrough` on the mount point — see the update at the top |
 | **Why It Works** | World-writable permissions allow mapped UIDs to access the mount |
 | **Security Impact** | Acceptable for dedicated backup drive; not recommended for shared/sensitive directories |
 | **Verification** | Write operations now succeed; restic and backup operations fully functional |

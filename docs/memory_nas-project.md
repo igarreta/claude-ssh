@@ -14,9 +14,11 @@
 >
 > **Software stack designed 2026-09-07** — Proxmox VE + ZFS mirror, everything as LXCs (no VMs),
 > SMB + PBS + SFTP + HTTPS, host owns the disks and bind-mounts them into the guests →
-> [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). Two questions were
-> explicitly deferred there (Samba privileged vs unprivileged LXC; Immich under docker vs podman),
-> and the RAM budget is now the binding constraint — see "Open decisions" below.
+> [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **Samba decided
+> 2026-09-07: unprivileged LXC with `idmap=passthrough`** — PVE 9.2's per-mount `idmap` option
+> removes the historical UID pain and is ignored on privileged containers, so unprivileged is now
+> both safer *and* simpler. **Immich's container runtime (docker vs podman) is still deferred.**
+> The RAM budget is the binding constraint — see "Open decisions" below.
 
 ## Purchase list (prices verified 2026-08-20; CPU variant decided 2026-08-30 — re-check before ordering)
 

@@ -59,9 +59,13 @@ is not a tuning nicety; it is the difference between a working box and one that 
 
 | Guest | Type | RAM | Role |
 |---|---|---|---|
-| `smb` | LXC, Debian 13 | 0.5 GB | Samba — live shares + Time Machine |
+| `smb` | LXC, **unprivileged**, Debian 13 | 0.5 GB | Samba — live shares + Time Machine |
 | `pbs` | LXC, unprivileged | 1–1.5 GB | Proxmox Backup Server, datastore on `/tank/pbs` |
-| `immich` | LXC, `nesting=1`, containers inside | 3–4 GB | Immich stack, external-library mode |
+| `immich` | LXC, unprivileged, `nesting=1`, containers inside | 3–4 GB | Immich stack, external-library mode |
+
+All three are unprivileged, and **every bind mount carries `idmap=passthrough`** so on-disk UIDs
+match container UIDs with no `lxc.idmap` alignment between guests — see the Samba section below
+for why this is both the safer and the simpler option.
 
 `/dev/dri` is passed into the Immich LXC for N95 QuickSync (thumbnails, video transcode) — a
 device entry plus group membership, which is trivial in an LXC and VFIO in a VM.
@@ -129,31 +133,76 @@ on 2026-09-07: **it now ships with 8 GB.** That escape hatch is closed. Conseque
   It is a pure growth-path argument, no longer a RAM argument. The mirror is 57% full on day
   one, so this is not urgent — but it is the last moment it can be decided cheaply.
 
-## Open — Samba permissions: unprivileged + idmap vs privileged LXC
+## Decided 2026-09-07 — Samba runs in an *unprivileged* LXC with `idmap=passthrough`
 
-**Deferred to a later discussion (2026-09-07).** The user has been burned by Samba-in-LXC
-permissions before and leans toward a **privileged LXC** as the lesser evil; running Samba
-directly on the PVE host was raised and is deprioritised, not eliminated.
+The user's prior Samba-in-LXC headaches were real, and the initial lean was toward a **privileged**
+container as the lesser evil. **Checking the actual PVE version reversed that**, because the
+feature that removes the pain is unprivileged-only.
 
-The trade: a privileged LXC makes the whole problem disappear, at the cost that a container
-escape is host root — on the box holding the only copy of the family photos.
+### What was verified (on gr-srv03, 2026-09-07)
 
-Landmines that apply to the unprivileged path, roughly in the order they bite:
+gr-srv03 runs **pve-manager 9.2.11**, kernel **7.0.14-15-pve**, **pve-container 6.1.14**,
+lxc-pve 7.0.0, **ZFS 2.4.4** — the same generation the NAS will run. Kernel idmapped mounts need
+≥5.12 and ZFS support landed in OpenZFS 2.2, so both are comfortably met.
 
-1. **idmap is opaque.** `lxc.idmap` in the container conf must match `/etc/subuid`/`/etc/subgid`
-   on the host. A wrong range means the container refuses to start, with an unhelpful error.
-   Background: [Proxmox_unpriviedged_LXC_mount_permissions.md](Proxmox_unpriviedged_LXC_mount_permissions.md).
-2. **Three writers, one tree.** Samba writes, Immich reads, host-side restic/rsync touches the
-   same files — three UID contexts. Needs a shared group and a consistent umask, chosen up front.
-3. **`force user`/`force group` works but flattens ownership.** Acceptable for a family share,
-   wrong for multi-user Time Machine.
-4. **`vfs_fruit` is order-sensitive** in the `vfs objects` line and fails silently — a
-   misconfiguration corrupts Time Machine backups rather than erroring. Changing
-   `fruit:metadata` mode later invalidates existing metadata.
-5. **The restore arrives with foreign UIDs.** The 1.6 TB comes back from a restic repo that
-   captured WDMyCloud/TurnKey ownership. There is a UID remap step on restore that is easy to
-   discover only after copying 1.6 TB.
+`pve-container` exposes a **per-mount-point `idmap=` option**
+(`/usr/share/perl5/PVE/LXC/Config.pm:373`), taking either explicit
+`type:container:disk:range-size` entries or the keyword **`passthrough`**, which *"identity-maps
+all UIDs and GIDs, meaning IDs inside the container will match the IDs on the disk."*
 
+```
+pct set <ctid> -mp0 /tank/shares,mp=/srv/shares,idmap=passthrough
+```
+
+It is implemented via kernel idmapped mounts; `passthrough` reuses the container's own user
+namespace rather than creating a new one (`/usr/share/perl5/PVE/LXC.pm:2454`).
+
+**The decisive detail**: `idmap` is **explicitly ignored on privileged containers** — PVE logs
+`ignoring 'idmap' option unsupported by privileged container` (`PVE/LXC.pm:2450-2453`). The
+option exists *precisely* to make unprivileged containers workable with shared storage. Choosing
+privileged would forfeit the one feature that makes this painless.
+
+### Why unprivileged, stated plainly
+
+The choice only changes the blast radius of **remote code execution in `smbd`** — a large C
+codebase parsing untrusted network input as root on port 445. Not a compromised family PC
+(credentials work either way), not file content. That threat is concrete for this config:
+**`vfs_fruit`, required for Time Machine, was the source of CVE-2021-44142** (heap OOB write,
+CVSS 9.9, exploitable by a client with write access to a share), and Samba has a steady history
+of similar issues.
+
+This box matters more than the others because **the primary copy and the online backups live
+together** — `tank/shares` (the only live copy once WDMyCloud is gone), `tank/pbs`, and
+`tank/backups`. Host root there takes all three at once. BACKUP_A/B and S3 Glacier survive, but
+every online copy dies in the same event.
+
+With `idmap=passthrough` the historical cost of unprivileged is one mount option, so there is no
+longer a trade to make.
+
+### What still needs care
+
+`idmap=passthrough` solves ownership mapping. It does not solve Samba semantics:
+
+1. **Three writers, one tree.** Samba writes, Immich reads, host-side restic/rsync touches the
+   same files. Passthrough means all three now see *the same real UIDs*, which is the point — but
+   a shared group and a consistent umask still have to be chosen up front.
+2. **`force user`/`force group` flattens ownership.** Acceptable for a family share, wrong for
+   multi-user Time Machine.
+3. **`vfs_fruit` is order-sensitive** in the `vfs objects` line and fails silently — a
+   misconfiguration corrupts Time Machine backups rather than erroring. Changing `fruit:metadata`
+   mode later invalidates existing metadata.
+4. **The restore arrives with foreign UIDs.** The 1.6 TB comes back from a restic repo that
+   captured WDMyCloud/TurnKey ownership — a remap step that is easy to discover only after
+   copying 1.6 TB.
+5. **Windows ACLs are out.** Unprivileged containers cannot write `security.*` xattrs, so Samba's
+   `vfs_acl_xattr` (the Explorer "Security" tab) will not work. POSIX ACLs, create masks, and
+   Time Machine are unaffected — `vfs_fruit` uses `user.*` xattrs. This is the one real
+   capability given up, and it is unlikely to matter for a family share.
+
+Note: `chown` *does* work inside an unprivileged container within its mapped range. "chown is
+broken" is the usual reason people reach for privileged and it is not accurate here.
+
+Background: [Proxmox_unpriviedged_LXC_mount_permissions.md](Proxmox_unpriviedged_LXC_mount_permissions.md).
 Prior art in the fleet: samba03 is a TurnKey fileserver appliance whose quirks are already known.
 
 ## Open — Immich container runtime

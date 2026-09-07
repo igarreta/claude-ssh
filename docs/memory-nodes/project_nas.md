@@ -37,10 +37,14 @@ but this purchase is no longer just a nice-to-have upgrade.
 
 **Software stack decided 2026-09-07**: Proxmox VE + ZFS mirror, **everything as LXCs, no VMs** —
 forced by shared data (Samba writes what Immich reads, only LXCs bind-mount) as much as by RAM.
-The host owns the disks; guests get bind mounts, never block devices. Two questions were
-*explicitly deferred* by the user, so don't re-derive them: **Samba privileged vs unprivileged
-LXC** (user leans privileged, having been burned by idmap before) and **Immich under docker vs
-podman** (user prefers podman; Immich upstream ships compose only).
+The host owns the disks; guests get bind mounts, never block devices.
+
+**Samba decided 2026-09-07: unprivileged LXC with `idmap=passthrough`.** The user leaned
+*privileged* after past idmap headaches; checking the actual PVE version reversed it, because the
+per-mount `idmap` option that removes the pain is ignored on privileged containers — so
+unprivileged is now both safer and simpler. See [[project_proxmox_lxc_idmap_passthrough]]. Still
+*explicitly deferred*, so don't re-derive it: **Immich under docker vs podman** (user prefers
+podman; Immich upstream ships compose only).
 
 **RAM correction 2026-09-07 — don't quote the old figure**: the research docs say the F4-425 Plus
 ships with 16 GB and is the cheap way to escape 8 GB. **It now ships with 8 GB.** No model in this

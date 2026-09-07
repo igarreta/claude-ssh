@@ -45,6 +45,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_contabo2_nfs-backup-rclone-fix.md](project_contabo2_nfs-backup-rclone-fix.md) — NFS over WAN hung; migrated to rclone/SFTP
 - [project_ceres_wdmycloud_glacier.md](project_ceres_wdmycloud_glacier.md) — WDMyCloud → S3 Glacier; pruning the old snapshot isn't worth it
 - [project_gr-srv03_stale-mount-investigation.md](project_gr-srv03_stale-mount-investigation.md) — LXC bind mounts can't survive a host remount; reboot is the fix
+- [project_proxmox_lxc_idmap_passthrough.md](project_proxmox_lxc_idmap_passthrough.md) — PVE 9.2 `idmap=passthrough` fixes unprivileged bind-mount ownership; retires `chmod 777`, unusable on privileged
 
 ## Services and hosts
 
