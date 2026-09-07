@@ -1,6 +1,6 @@
 ---
 name: project_nas
-description: "NAS purchase project — full buy list decided 2026-08-30 ($818 total), nothing ordered yet"
+description: "NAS project — buy list decided 2026-08-30 ($818, nothing ordered); software stack decided 2026-09-07 (PVE + all-LXC); 8 GB RAM is the binding constraint"
 metadata: 
   node_type: memory
   type: project
@@ -35,7 +35,21 @@ via P2.
 (see [[project_ceres_wdmycloud-nas-dead]]) — its backups are safe (crons disabled, repos untouched)
 but this purchase is no longer just a nice-to-have upgrade.
 
+**Software stack decided 2026-09-07**: Proxmox VE + ZFS mirror, **everything as LXCs, no VMs** —
+forced by shared data (Samba writes what Immich reads, only LXCs bind-mount) as much as by RAM.
+The host owns the disks; guests get bind mounts, never block devices. Two questions were
+*explicitly deferred* by the user, so don't re-derive them: **Samba privileged vs unprivileged
+LXC** (user leans privileged, having been burned by idmap before) and **Immich under docker vs
+podman** (user prefers podman; Immich upstream ships compose only).
+
+**RAM correction 2026-09-07 — don't quote the old figure**: the research docs say the F4-425 Plus
+ships with 16 GB and is the cheap way to escape 8 GB. **It now ships with 8 GB.** No model in this
+range exceeds 8 GB, so RAM is a ~$209 aftermarket SODIMM or nothing — and the all-LXC budget is
+*already* 7.5–9 GB. This is the project's binding constraint, not price.
+
 **How to apply**: multi-step project — read the write-ups before proposing hardware or prices.
+Stack, guests, share protocols and the RAM budget are in
+[[docs/2026-09-07_nas-software-stack.md]].
 Scope, sizing arithmetic and the buy list are in [[docs/memory_nas-project.md]] (claude-ssh repo);
 market/hardware/OS research in [[docs/2026-08-19_nas-hardware-research.md]]; disk prices, drive
 selection criteria, RAID layout comparison, enclosure alternatives and recert sourcing in

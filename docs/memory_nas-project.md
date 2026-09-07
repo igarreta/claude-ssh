@@ -7,11 +7,16 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
-> **Resume here** (updated 2026-08-30): research is **complete and purchase-ready**, CPU variant
-> decided (N95, not N150), **P1 decided** (both drives now — user is buying secondhand, wants the
-> mirror complete from day one rather than running degraded), **boot NVMe decided** (Patriot P310
-> 480 GB, $65). Nothing bought yet. No open calls remain. The full buy list, with links and live
-> stock, is in "Purchase list" below.
+> **Resume here** (updated 2026-09-07): hardware research is **complete and purchase-ready**, CPU
+> variant decided (N95, not N150), **P1 decided** (both drives now — user is buying secondhand,
+> wants the mirror complete from day one rather than running degraded), **boot NVMe decided**
+> (Patriot P310 480 GB, $65). Nothing bought yet. The full buy list is in "Purchase list" below.
+>
+> **Software stack designed 2026-09-07** — Proxmox VE + ZFS mirror, everything as LXCs (no VMs),
+> SMB + PBS + SFTP + HTTPS, host owns the disks and bind-mounts them into the guests →
+> [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). Two questions were
+> explicitly deferred there (Samba privileged vs unprivileged LXC; Immich under docker vs podman),
+> and the RAM budget is now the binding constraint — see "Open decisions" below.
 
 ## Purchase list (prices verified 2026-08-20; CPU variant decided 2026-08-30 — re-check before ordering)
 
@@ -144,22 +149,43 @@ ZFS mirror**; recommended **PBS placement is on the NAS with a local datastore**
 PBS datastores are discouraged, and it puts the backup server on different hardware from
 gr-srv03, which it protects).
 
+**Resolved since**: items 1–2 below were closed by the 2026-08-30 buy decision (P1, $818) and by
+the 2026-09-07 RAM finding. Kept for the reasoning; do not act on them as open questions.
+
+1. ~~**The budget collision**~~ — closed 2026-08-30. Re-costed builds were **A** F2-425 + NVMe +
+   2×6 TB new = $775–835; **B** same with 2×8 TB recertified = ~$615; **C** F4-425 + 2×6 TB =
+   $885–945; **D** F4-425 Plus + 2×6 TB = $1013–1073. Resolved by accepting ~$818 (recert 6 TB,
+   not 8 TB) rather than by reaching the original <$600 budget.
+2. ~~**8 GB vs 16 GB**~~ — closed by elimination 2026-09-07. The plan was to buy RAM
+   pre-installed via the F4-425 Plus, since a bare 16 GB DDR5 SODIMM costs ~$209. **That model
+   now ships with 8 GB** (user checked Amazon 2026-09-07), and no TerraMaster in this range
+   exceeds it. So: live with 8 GB, or pay ~$209 aftermarket later. Losing Immich's face/smart
+   search is the real cost of 8 GB — see
+   [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) for the full RAM budget,
+   which is *already* at 7.5–9 GB with everything as LXCs.
+
 **Still open:**
 
-1. **The budget collision** — HDD, DRAM *and* NAND are all in shortage. Re-costed builds:
-   **A** F2-425 + NVMe + 2×6 TB new = **$775–835**; **B** same with 2×8 TB recertified enterprise
-   = **~$615**; **C** F4-425 + 2×6 TB = $885–945; **D** F4-425 Plus (16 GB built in) + 2×6 TB =
-   $1013–1073. **Only build B approaches <USD 600**, and only if recert 8 TB drives are ~$150.
-   **This is the blocking decision.**
-2. **2-bay vs 4-bay, and 8 GB vs 16 GB** — a 16 GB DDR5 SODIMM costs ~$209 on its own, so RAM
-   must either be lived with at 8 GB (ARC capped at 2 GB, Immich ML at concurrency 1) or bought
-   pre-installed via the F4-425 Plus. Losing Immich's face/smart search is the real cost of 8 GB.
-3. **Verification items before purchase** — recertified enterprise 8 TB street price,
-   third-party OS support/BIOS/HDMI on the chosen chassis, M.2 slot count, noise figures.
+3. **Verification items before purchase** — mostly done (recert prices verified 08-20; TerraMaster
+   permits third-party OS with HDMI console; 3× M.2 on the Plus). **Still unverified: the SODIMM
+   slot count on the F2-425 Plus** (if it is a single slot, a 16 GB upgrade *replaces* the 8 GB
+   rather than joining it), and noise figures for the 7200 rpm recert drives.
 4. **Does the BACKUP_A/B rotation move from gr-srv03 to the NAS**, or stay where it is?
+5. **2-bay vs 4-bay.** The $110 F2-425 Plus → F4-425 Plus step now buys **two extra bays and
+   nothing else** — it is no longer a RAM argument. Not urgent (the mirror is 57% full on day
+   one), but it is the last moment it can be decided cheaply.
+6. ~~**Verify the local restic repo**~~ — **done 2026-09-07, the restore source is sound.**
+   BACKUP_B's `restic-wdmycloud` holds 14 snapshots (2025-12-24 → 2026-09-05) at a consistent
+   1.450–1.462 TiB with no empties; the latest (`866e7c76`, 2026-09-05) is 117,635 files /
+   1.462 TiB, matching the documented 1.6 TB, and `restic check` passes structurally. It is the
+   **complete** copy — S3 Glacier excludes ~330 GB across four dirs, so the local repo is the
+   restore source. Full detail and remaining caveats (BACKUP_A unverified, offsite) in
+   [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md).
 
 ## Related
 
+[[docs/2026-09-07_nas-software-stack.md]] — what runs on the box: base OS, guests, sharing
+protocols, disk topology, the RAM budget, and the two deferred questions.
 [[docs/2026-08-20_nas-disk-prices-and-raid-options.md]] — 2/3/4/6/8 TB street prices, what to look
 for in a drive, and the 1-disk vs 2-disk mirror vs 4-disk RAIDZ comparison costed for this project.
 [[docs/2026-08-19_nas-hardware-research.md]] — market context, hardware/OS/PBS comparison and the

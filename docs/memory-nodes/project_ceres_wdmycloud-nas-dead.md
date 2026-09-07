@@ -25,6 +25,15 @@ and S3 Glacier repo are all left in place untouched — only the OS-level mount 
 (gr-srv03 `/etc/fstab`, ceres's LXC `mp3`, `disk-space-monitor.sh`,
 `provision-lxc.sh --wdmycloud`) were wiped, since the source is gone for good.
 
+**Restore source verified 2026-09-07**: BACKUP_B's `/mnt/backup_b/restic-wdmycloud` is sound —
+14 snapshots (2025-12-24 → 2026-09-05) at a consistent 1.450–1.462 TiB, no empties, `restic check`
+clean, latest = 117,635 files / 1.462 TiB matching the documented 1.6 TB. **It is the *complete*
+copy and therefore the restore source — S3 Glacier is not**, since Glacier excludes ~330 GB
+(`Peliculas`, `Copia disco iMac Mantchoff`, `Archivos`, `Shared Music`) and costs 12–48 h plus
+retrieval fees. **BACKUP_A's independent repo is offsite and unverified** — check it at the next
+rotation, it is the second copy of data with no live source. Detail in
+[[docs/2026-09-07_nas-software-stack.md]].
+
 Full writeup: [docs/2026-09-06_ceres_wdmycloud-nas-dead.md](../2026-09-06_ceres_wdmycloud-nas-dead.md).
 Related: [[project_ceres_wdmycloud_glacier]] (the S3 Glacier job's exclusion/retention
 details, now paused).

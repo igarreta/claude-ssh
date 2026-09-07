@@ -12,6 +12,14 @@ Prices are **US street, USD, August 2026**, for import (see [[docs/memory_nas-pr
 > both directions. The enclosure prices are stable; the HDD prices and especially *stock* are not.
 > Re-check §10.2 before ordering.
 
+> **CORRECTED 2026-09-07**: §8 and §11 below list the **F4-425 Plus as having 16 GB DDR5**, and
+> §8 concludes it is cheaper than a chassis plus a $209 SODIMM. The user checked Amazon on
+> **2026-09-07: it now ships with 8 GB.** No TerraMaster model in this range ships with more than
+> 8 GB, so the "buy the RAM pre-installed" path is closed and the F2-425 Plus → F4-425 Plus step
+> now buys bays only. See
+> [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) § *The RAM budget is the
+> binding constraint*.
+
 ## 1. Health warning on the price data
 
 Aggregators disagree by ~2× at the same capacity. Live retail scrapes (Best Buy / B&H, refreshed

@@ -12,6 +12,13 @@
 > [[docs/2026-08-20_nas-disk-prices-and-raid-options.md]] §8 for the corrected specs and re-costed
 > builds.
 
+> **CORRECTED 2026-09-07**: §9 below states the RAM "must come pre-installed (see the F4-425 Plus)"
+> and lists that model with **16 GB DDR5**. The user checked Amazon on **2026-09-07: it now ships
+> with 8 GB.** That escape hatch is closed — no model in this range exceeds 8 GB, and build D's
+> "RAM-comfortable" premise no longer holds. See
+> [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) § *The RAM budget is the
+> binding constraint*.
+
 **Date**: 2026-08-19. **Status**: research for decision. Nothing purchased.
 Preferences and scope: [[docs/memory_nas-project.md]].
 

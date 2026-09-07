@@ -194,11 +194,17 @@ fixed permanently 2026-09-05 with a polling `ExecStartPre` →
 
 **Current:** full buy list decided, $818 total, nothing ordered. TerraMaster F2-425 **Plus, N95**
 CPU + 2× 6 TB recert (goHardDrive) + Patriot P310 480 GB boot NVMe →
-[memory_nas-project.md](memory_nas-project.md)
+[memory_nas-project.md](memory_nas-project.md). **Software stack designed 2026-09-07** — PVE +
+ZFS mirror, all LXCs, host owns the disks and bind-mounts them; Samba priv-vs-unpriv and the
+Immich runtime deliberately deferred →
+[2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **The F4-425 Plus now ships
+with 8 GB, not 16 GB** (checked 2026-09-07) — the cheap RAM path is gone and 8 GB is the binding
+constraint.
 
+- [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) — **open** — base OS, guests, share protocols, disk topology, RAM budget; corrects the 16 GB F4-425 Plus claim in both research docs; **restore source verified 2026-09-07** (BACKUP_B restic repo sound and complete — S3 Glacier is *not* the restore source)
 - [memory_nas-project.md](memory_nas-project.md) — **open** — scope, sizing, buy list, rejected options
-- [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc.** Verify stock before ordering
-- [2026-08-19_nas-hardware-research.md](2026-08-19_nas-hardware-research.md) — *active* — market context and OS choice. **§5 and §9 enclosure specs are wrong** — see above
+- [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc**; itself **corrected 2026-09-07** on the F4-425 Plus RAM. Verify stock before ordering
+- [2026-08-19_nas-hardware-research.md](2026-08-19_nas-hardware-research.md) — *active* — market context and OS choice. **§5 and §9 enclosure specs are wrong** — see above; §9's "buy RAM pre-installed" advice is void
 
 ## Tooling and workstation
 
