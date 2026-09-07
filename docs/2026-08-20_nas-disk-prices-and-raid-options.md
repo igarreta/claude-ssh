@@ -12,13 +12,19 @@ Prices are **US street, USD, August 2026**, for import (see [[docs/memory_nas-pr
 > both directions. The enclosure prices are stable; the HDD prices and especially *stock* are not.
 > Re-check §10.2 before ordering.
 
-> **CORRECTED 2026-09-07**: §8 and §11 below list the **F4-425 Plus as having 16 GB DDR5**, and
-> §8 concludes it is cheaper than a chassis plus a $209 SODIMM. The user checked Amazon on
-> **2026-09-07: it now ships with 8 GB.** No TerraMaster model in this range ships with more than
-> 8 GB, so the "buy the RAM pre-installed" path is closed and the F2-425 Plus → F4-425 Plus step
-> now buys bays only. See
+> **CORRECTED 2026-09-07**: §8 concludes the F4-425 Plus is cheaper than a chassis plus a $209
+> SODIMM. **That conclusion is void**, but not for the reason first recorded here. Vendor
+> datasheets (now in [`download/`](../download/)) show **every model in this range has ONE SODIMM
+> slot** — a RAM upgrade *replaces* the pre-installed module, so no model offers an additive path
+> and 32 GB always means one 32 GB stick. The F4-425 Plus datasheet does still list 16 GB, but it
+> documents the **N150** variant, which TerraMaster lists as **N/A**; the purchasable F4-425 Plus
+> is the **N95 at $510**, memory undocumented. An earlier note claiming it "now ships with 8 GB"
+> came from an Amazon listing and is **unconfirmed**.
+>
+> **Prices also moved** (terra-master.com, 2026-09-07): F2-425 Plus **N95 $399** / N150 $425;
+> F4-425 Plus **N95 $510** / N150 N/A. See
 > [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) § *The RAM budget is the
-> binding constraint*.
+> binding constraint* and [memory_nas-project.md](memory_nas-project.md) § *Purchase list*.
 
 ## 1. Health warning on the price data
 

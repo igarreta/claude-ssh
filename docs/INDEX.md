@@ -196,9 +196,11 @@ fixed permanently 2026-09-05 with a polling `ExecStartPre` →
 
 ## NAS project
 
-**Current:** full buy list decided, $818 total, nothing ordered. TerraMaster F2-425 **Plus, N95**
-CPU + 2× 6 TB recert (goHardDrive) + Patriot P310 480 GB boot NVMe →
-[memory_nas-project.md](memory_nas-project.md). **Software stack designed 2026-09-07** — PVE +
+**Current:** full buy list decided, **$833.90** total (chassis re-priced $383→$399 from
+terra-master.com 2026-09-07), nothing ordered. TerraMaster F2-425 **Plus, N95** CPU + 2× 6 TB
+recert (goHardDrive) + Patriot P310 480 GB boot NVMe →
+[memory_nas-project.md](memory_nas-project.md). **Vendor datasheets now in `download/`** —
+authoritative, and the only source to trust after three aggregator spec errors on this chassis. **Software stack designed 2026-09-07** — PVE +
 ZFS mirror, all LXCs, host owns the disks and bind-mounts them. **Samba decided 2026-09-07:
 unprivileged LXC with `idmap=passthrough`** (PVE 9.2's per-mount `idmap`, which privileged
 containers cannot use at all); **Immich decided 2026-09-07: podman, no Docker** — every compose
@@ -206,10 +208,11 @@ feature it uses is supported, verified against podman-compose's source. **No def
 remain on the stack** →
 [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **The F4-425 Plus now ships
 with 8 GB, not 16 GB** (checked 2026-09-07) — the cheap RAM path is gone and 8 GB is the binding
-constraint. **2026-09-07 also settled: 2 bays (box size), one SODIMM slot so a RAM upgrade
-replaces rather than adds, and BACKUP_A/B rotation moves to the NAS — which frees gr-srv03's third
-USB port and makes the ordered RSH-A10 hub unnecessary.** Re-verify CPU variant and price before
-ordering: every current listing is N150 at ~$425, not the recorded N95 at $383.
+constraint — and vendor datasheets show **every model here has ONE SODIMM slot**, so buying up for
+RAM was never a strategy and an upgrade always *replaces* the module. **2026-09-07 also settled:
+2 bays (box size), and BACKUP_A/B rotation moves to the NAS — which frees gr-srv03's third USB
+port and makes the ordered RSH-A10 hub unnecessary.** Only unverified purchase item left: noise
+from the 7200 rpm recert drives (the 20.0 dB(A) datasheet figure is standby-only).
 
 - [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) — **open** — base OS, guests, share protocols, disk topology, RAM budget; corrects the 16 GB F4-425 Plus claim in both research docs; **restore source verified 2026-09-07** (BACKUP_B restic repo sound and complete — S3 Glacier is *not* the restore source)
 - [memory_nas-project.md](memory_nas-project.md) — **open** — scope, sizing, buy list, rejected options

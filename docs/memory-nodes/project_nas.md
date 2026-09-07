@@ -51,14 +51,19 @@ plain `depends_on`, not `condition: service_healthy`; and `extends` works — `c
 hides it). Traps in [[project_podman_compose_gotchas]]. **No deferred questions remain on the
 software stack.**
 
-**Settled 2026-09-07**: **2 bays** (box size — F4-425 Plus not pursued); **one SODIMM slot**, so a
-RAM upgrade *replaces* the bundled 8 GB rather than adding to it (two hands-on sources; the
-"two slots" claim online is an unsound inference from the 32 GB max); and **BACKUP_A/B rotation
-moves to the NAS** — which frees gr-srv03's third USB port, makes the already-ordered RSH-A10 hub
-unnecessary, removes the host's only hot-plugged device (the documented Zigbee-drop root cause,
-see [[project_gr-srv03_powered-hub-instability]]), and forces ceres's bind-mount backup
-architecture to change. **Before ordering, re-verify CPU variant and price** — every current
-listing is N150 at ~$425, not the recorded N95 at $383.
+**Settled 2026-09-07**: **2 bays** (box size — F4-425 Plus not pursued); **one SODIMM slot** on
+every model in the range, vendor-confirmed, so a RAM upgrade *replaces* the module and buying up
+for RAM was never a strategy; **price corrected $383 → $399** (total $833.90); and **BACKUP_A/B
+rotation moves to the NAS** — which frees gr-srv03's third USB port, makes the already-ordered
+RSH-A10 hub unnecessary, removes the host's only hot-plugged device (the documented Zigbee-drop
+root cause, see [[project_gr-srv03_powered-hub-instability]]), and forces ceres's bind-mount
+backup architecture to change.
+
+**Sourcing rule learned the hard way**: three separate aggregator/retailer spec errors on this
+chassis (N5095-vs-N150, the F4's RAM, the "two SODIMM slots" claim inferred from a 32 GB max).
+**Trust only the vendor datasheet or a teardown** — the datasheets are committed to `download/`
+in the repo, and they document the **N150** variants only, not the N95 machines actually being
+bought.
 
 **RAM correction 2026-09-07 — don't quote the old figure**: the research docs say the F4-425 Plus
 ships with 16 GB and is the cheap way to escape 8 GB. **It now ships with 8 GB.** No model in this

@@ -26,12 +26,45 @@
 
 | Item | Source | Price |
 |---|---|---|
-| **TerraMaster F2-425 Plus** (**N95**, 8 GB DDR5→32, 3× M.2, 2× 5GbE, 2 bays) | Amazon | **$383** |
+| **TerraMaster F2-425 Plus** (**N95**, 8 GB DDR5 in **1 slot** →32, 3× M.2 PCIe 3.0 x1, 2× 5GbE, 2 bays) | terra-master.com | **$399** |
 | **HGST Ultrastar 7K6000** HUS726060ALE610 6 TB SATA, cert. refurb, 3 yr | [goHardDrive g01-1079](https://www.goHardDrive.com/HGST-Ultrastar-0F23001-6TB-7200RPM-Hard-Drive-p/g01-1079.htm) | **$179.95** |
 | **Seagate Exos 7E8** ST6000NM0115 6 TB SATA, enterprise, 5 yr | [goHardDrive g01-1326](https://www.goHardDrive.com/Seagate-ST6000NM0115-6TB-128MB-SATA-Enterprise-HDD-p/g01-1326.htm) | **$189.95** |
 | **Patriot P310** 480 GB, M.2 2280 PCIe Gen3 x4 NVMe, 240 TB TBW — PVE boot | Amazon/Walmart/B&H | **$65** |
 
-**Total: $818.**
+**Total: $833.90** (was $818 — the chassis was recorded at $383 from an Amazon listing; TerraMaster's
+own store is **$399** for the N95).
+
+### Vendor pricing, terra-master.com 2026-09-07
+
+| Model | N95 | N150 |
+|---|---|---|
+| F2-425 Plus | **$399** ← chosen | $425 |
+| F4-425 Plus | $510 | **N/A** |
+
+**The N150 premium is now $26, not the $42 the 2026-08-30 CPU decision was argued against.** That
+decision assumed "no transcoding use case is planned"; the software stack has since confirmed
+Immich *will* transcode video (708 GB of Shared Videos). The original reasoning still holds — the
+N95 comfortably does ≥3 concurrent 1080p transcodes and nothing here is 4K — but the number it was
+weighed against has changed, so it is worth a second's thought before ordering rather than being
+treated as settled.
+
+**Note the datasheets in [`download/`](../download/) document the N150 variants only.** The N95
+machines actually being bought are not covered by them; everything below that is chassis-level
+(slots, ports, size, noise, power) is shared, but CPU-specific rows are not.
+
+### Vendor specs, F2-425 Plus datasheet (2026-09-07)
+
+| Spec | Value | Why it matters |
+|---|---|---|
+| Total Memory Slot Number | **1 (DDR5 SODIMM)** | upgrade **replaces** the 8 GB; 32 GB = one 32 GB stick |
+| Pre-installed | 8 GB DDR5 non-ECC (1x 8 GB) | |
+| M.2 2280 NVMe | 3, **PCIe 3.0 x1** | Patriot P310 (Gen3 x4) runs at x1 — fine for boot + Immich DB |
+| USB3.2 host ports | **3 × Type-A + 1 × Type-C** | ample for the BACKUP_A/B rotation moving here |
+| Disk slots / max raw | 2 / 60 TB (30 TB × 2) | |
+| Noise | **20.0 dB(A)** (2 drives **standby**, 17.3 dB ambient, 1 m) | standby only — says nothing about 7200 rpm recert drives seeking |
+| Size / net weight | 150×122×219 mm / **2.2 kg** | with 2× 3.5" drives ≈ **3.5 kg**, not the ~2.5 kg previously assumed for the trip |
+| Power | 48 W PSU; 31 W read/write, 12 W hibernation | |
+| Warranty | 2 years | |
 
 **P1 decided 2026-08-30 — mirror now: $753** (enclosure + both HDDs). Both drives, ZFS mirror,
 5.45 TiB usable, 57% full day one. Chosen over P2 (start small, $563, one drive + `zpool attach`
@@ -198,21 +231,21 @@ the 2026-09-07 RAM finding. Kept for the reasoning; do not act on them as open q
 **Still open:**
 
 3. ~~**SODIMM slot count**~~ — **resolved 2026-09-07: ONE slot.** A RAM upgrade **replaces** the
-   bundled 8 GB, it does not join it. Two independent hands-on sources agree: ITPro's review,
-   which opened the unit — *"The base 8GB of memory comes on a single SO-DIMM stick, which you'll
-   need to lose if you want to upgrade, as there's only one slot"* — and CNX Software's teardown,
-   which photographs one 8 GB DDR5 module and no empty slot. The "two slots" claim on
-   nasdrives.co.uk is an **inference from the 32 GB maximum and is unsound** — 32 GB DDR5 SODIMMs
-   exist as single modules. Consequence: 8 → 16 GB costs a ~$209 16 GB stick *and* wastes the
-   bundled 8 GB; 32 GB needs a single 32 GB module. Still unverified: **noise figures** for the
-   7200 rpm recert drives.
+   bundled 8 GB, it does not join it; 32 GB means a single 32 GB module.
 
-   > **Flagged while checking this — re-verify CPU variant and price before ordering.** Every
-   > current listing and review found on 2026-09-07 is the **N150**, and TerraMaster's own store
-   > shows **$424.99** (marked down from $499.99); ITPro reviewed at £399. The buy list records
-   > **N95 at $383**, and $383 + the $42 N150 premium = $425, which matches the current N150
-   > price exactly. It is possible the N95 variant is not separately sold and the 08-30
-   > CPU-variant decision is moot. **Confirm what is actually purchasable before ordering.**
+   Settled by the **vendor datasheets** in [`download/`](../download/) —
+   `Total Memory Slot Number: 1 (DDR5 SODIMM)` on **both** the F2-425 Plus and F4-425 Plus. It is
+   a chassis-level spec, so it holds for the N95 variants the datasheets do not cover.
+   Independently corroborated by ITPro, who opened the unit (*"there's only one slot"*) and CNX
+   Software's teardown (one module, no empty socket). The "two slots" claim on nasdrives.co.uk
+   **infers it from the 32 GB maximum and is unsound** — 32 GB DDR5 SODIMMs exist as single
+   modules. That is the third aggregator spec error on this chassis; **trust only the vendor
+   datasheet or a teardown.**
+
+   Also resolved here: **the N95 variant does exist** ($399), so the same-day worry that only the
+   N150 was sold was wrong — only the recorded price was stale. **Noise partly answered**:
+   20.0 dB(A), but measured with drives in **standby**, so the 7200 rpm recert-drive question
+   stands and is now the only unverified purchase item.
 
 4. ~~**Does the BACKUP_A/B rotation move to the NAS?**~~ — **decided 2026-09-07: yes, it moves.**
    See "Knock-on" below; this has consequences beyond the NAS.
