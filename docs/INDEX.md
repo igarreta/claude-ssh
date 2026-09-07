@@ -78,8 +78,13 @@ daily restart in place →
 08-25→08-26 BACKUP_A rotation — probe **closed and removed 2026-08-26**. **WDMyCloud NAS
 dead 2026-09-06** — its two backup crons on ceres are disabled until a replacement NAS is
 in place (may take >2 months); existing local + S3 Glacier repos left untouched →
-[2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md)
+[2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md). **raspberrypi1's
+`backup.sh` (shared `igarreta/bin` repo with contabo2) was clobbered by a contabo2-only commit
+2026-09-06, breaking its 09-07 cron run — merged into one hostname-branched script, fixed and
+verified on both hosts 2026-09-07** →
+[2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md)
 
+- [2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md) — *closed* — shared-repo clobber; merged into one hostname-branched script
 - [2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md) — **open** — WD MyCloud dead/irrecoverable; found+fixed a live risk where the missing mount would let backup cron rotate out real snapshots; crons disabled, configs wiped, repos preserved
 - [2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md) — *active* — design + deployed implementation; finishing tests
 - [2026-08-14_ceres-empty-snapshots-probe.md](2026-08-14_ceres-empty-snapshots-probe.md) — *closed* — 7 months of empty snapshots; `pct reboot 203` fixed it, cause never proven after 3 probe readings, probe removed 2026-08-26
