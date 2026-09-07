@@ -21,15 +21,16 @@
 >   SODIMM)`, both datasheets). A RAM upgrade **replaces** the pre-installed module. So even a
 >   16 GB machine offers no additive path — the only route to 32 GB is a single 32 GB module,
 >   on any of these models.
-> - The **F4-425 Plus datasheet does still say 16 GB (1x 16GB)** — but it documents the **N150**
->   variant, which TerraMaster lists as **N/A**. The purchasable F4-425 Plus is the **N95 at
->   $510**, whose memory is not covered by any datasheet held here. An earlier note in this file
->   claimed it "now ships with 8 GB" on the strength of an Amazon listing; that is **unconfirmed**
->   and should not be relied on either way.
+> - **The F4-425 Plus N95 ($510) does ship with 16 GB** — confirmed by TerraMaster customer
+>   support 2026-09-07, matching the N150 datasheet. An intermediate note in this file claimed it
+>   "now ships with 8 GB" on the strength of an Amazon listing; **that was wrong, disregard it.**
 >
-> Net: buying up for RAM is not a strategy, because the slot count caps every option equally.
-> See [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) § *The RAM budget is
-> the binding constraint*.
+> Net: §9's instinct — buy the RAM pre-installed rather than aftermarket — **was right**, and is
+> now *more* true, since the single slot means an F2 upgrade discards its bundled 8 GB. The F4-425
+> Plus N95 at $510 is the cheapest route to 16 GB, ~$98 below an F2 plus a ~$209 stick. Only the
+> model numbers and prices in §9 are stale. **The chassis choice is open pending a width
+> measurement** — see [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md)
+> § *The 16 GB question is OPEN*.
 
 **Date**: 2026-08-19. **Status**: research for decision. Nothing purchased.
 Preferences and scope: [[docs/memory_nas-project.md]].

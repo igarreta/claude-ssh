@@ -7,10 +7,15 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
-> **Resume here** (updated 2026-09-07): hardware research is **complete and purchase-ready**, CPU
-> variant decided (N95, not N150), **P1 decided** (both drives now — user is buying secondhand,
-> wants the mirror complete from day one rather than running degraded), **boot NVMe decided**
-> (Patriot P310 480 GB, $65). Nothing bought yet. The full buy list is in "Purchase list" below.
+> **Resume here** (updated 2026-09-07). **One decision blocks the order: the chassis.** Every
+> model has a single SODIMM slot, so the **F4-425 Plus N95 ($510, 16 GB, $944.90 total)** is the
+> cheapest route to 16 GB — and 16 GB is what the RAM budget actually needs. Against it, the
+> **F2-425 Plus N95 ($399, 8 GB, $833.90 total)**. **It turns solely on 59 mm of extra width; the
+> user is measuring.** Order nothing until that lands — see *Open decisions* item 5.
+>
+> Everything else on the hardware side is settled: N95 (not N150), **P1** (both drives now — the
+> drives are secondhand and the user wants the mirror complete from day one rather than running
+> degraded), and the **Patriot P310 480 GB** boot NVMe at $65. Nothing bought yet. Buy list below.
 >
 > **Software stack designed 2026-09-07** — Proxmox VE + ZFS mirror, everything as LXCs (no VMs),
 > SMB + PBS + SFTP + HTTPS, host owns the disks and bind-mounts them into the guests →
@@ -34,12 +39,16 @@
 **Total: $833.90** (was $818 — the chassis was recorded at $383 from an Amazon listing; TerraMaster's
 own store is **$399** for the N95).
 
-### Vendor pricing, terra-master.com 2026-09-07
+### Vendor pricing and RAM, terra-master.com 2026-09-07
 
-| Model | N95 | N150 |
-|---|---|---|
-| F2-425 Plus | **$399** ← chosen | $425 |
-| F4-425 Plus | $510 | **N/A** |
+| Model | N95 | N150 | Pre-installed RAM (1 slot, all models) |
+|---|---|---|---|
+| F2-425 Plus | **$399** | $425 | **8 GB** |
+| F4-425 Plus | **$510** | **N/A** | **16 GB** (N95 confirmed by TerraMaster support) |
+
+> **The chassis choice is REOPENED** — see *Open decisions* item 5. The F4's 16 GB makes it the
+> cheapest path to 16 GB, since the single slot means an F2 upgrade wastes the bundled stick.
+> Pending a width measurement (+59 mm). The $833.90 total below assumes the F2.
 
 **The N150 premium is now $26, not the $42 the 2026-08-30 CPU decision was argued against.** That
 decision assumed "no transcoding use case is planned"; the software stack has since confirmed
@@ -213,20 +222,22 @@ ZFS mirror**; recommended **PBS placement is on the NAS with a local datastore**
 PBS datastores are discouraged, and it puts the backup server on different hardware from
 gr-srv03, which it protects).
 
-**Resolved since**: items 1–2 below were closed by the 2026-08-30 buy decision (P1, $818) and by
-the 2026-09-07 RAM finding. Kept for the reasoning; do not act on them as open questions.
+**Item 1 was closed** by the 2026-08-30 buy decision (P1, $818 at the time). **Item 2 is live
+again** and merged into item 5 — the chassis choice. Kept here for the reasoning.
 
 1. ~~**The budget collision**~~ — closed 2026-08-30. Re-costed builds were **A** F2-425 + NVMe +
    2×6 TB new = $775–835; **B** same with 2×8 TB recertified = ~$615; **C** F4-425 + 2×6 TB =
    $885–945; **D** F4-425 Plus + 2×6 TB = $1013–1073. Resolved by accepting ~$818 (recert 6 TB,
    not 8 TB) rather than by reaching the original <$600 budget.
-2. ~~**8 GB vs 16 GB**~~ — closed by elimination 2026-09-07. The plan was to buy RAM
-   pre-installed via the F4-425 Plus, since a bare 16 GB DDR5 SODIMM costs ~$209. **That model
-   now ships with 8 GB** (user checked Amazon 2026-09-07), and no TerraMaster in this range
-   exceeds it. So: live with 8 GB, or pay ~$209 aftermarket later. Losing Immich's face/smart
-   search is the real cost of 8 GB — see
-   [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) for the full RAM budget,
-   which is *already* at 7.5–9 GB with everything as LXCs.
+2. **8 GB vs 16 GB — this IS the live decision**, now merged into item 5 below. The original plan
+   was to buy RAM pre-installed via the F4-425 Plus, since a bare 16 GB DDR5 SODIMM costs ~$209.
+   **That plan is correct and available**: the F4-425 Plus **N95 ($510) ships with 16 GB**
+   (TerraMaster support, 2026-09-07). An intermediate claim that it "now ships with 8 GB", taken
+   from an Amazon listing earlier the same day, **was wrong — disregard it.** The all-LXC RAM
+   budget is 7.5–9 GB against 8 GB and does not fit; losing Immich's face/smart search is the
+   real cost of staying at 8 GB. See
+   [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) § *The 16 GB question is
+   OPEN*.
 
 **Still open:**
 
@@ -249,8 +260,27 @@ the 2026-09-07 RAM finding. Kept for the reasoning; do not act on them as open q
 
 4. ~~**Does the BACKUP_A/B rotation move to the NAS?**~~ — **decided 2026-09-07: yes, it moves.**
    See "Knock-on" below; this has consequences beyond the NAS.
-5. ~~**2-bay vs 4-bay**~~ — **decided 2026-09-07: 2 bays**, on physical size. The F2-425 Plus
-   stands; the F4-425 Plus is not pursued.
+5. **2-bay vs 4-bay — REOPENED 2026-09-07, awaiting a measurement.** Decided as "2 bays, on box
+   size" earlier the same day, then reopened when TerraMaster support confirmed **the F4-425 Plus
+   N95 ($510) ships with 16 GB**. The premise of the original call — that the F4 step buys "bays
+   only" — was false.
+
+   Because there is **one SODIMM slot**, upgrading the F2 discards its bundled 8 GB, so the F4 is
+   the *cheapest* route to 16 GB:
+
+   | Option | RAM | Bays | Total |
+   |---|---|---|---|
+   | F2-425 Plus N95 | 8 GB | 2 | **$833.90** |
+   | **F4-425 Plus N95** | **16 GB** | **4** | **$944.90** (+$111) |
+   | ~~F2 + ~$209 16 GB SODIMM~~ | 16 GB | 2 | ~$1,042.90 — **dominated, strike it** |
+
+   **$111 buys the fix to this project's binding constraint**, not just headroom: the all-LXC RAM
+   budget is 7.5–9 GB against 8 GB and does not fit, so the F2 path means capping ARC at 1 GB or
+   disabling Immich ML (losing face recognition and smart search).
+
+   **Turns on one number: the F4 is 59 mm wider (122 → 181 mm); height and depth are identical**
+   (150 × … × 219 mm both). Net weight 2.2 → 2.9 kg, so ~3.5 → ~4.2 kg with drives for the trip.
+   **The user is measuring the available space — nothing is ordered until that answer exists.**
 6. ~~**Verify the local restic repo**~~ — **done 2026-09-07, the restore source is sound.**
    BACKUP_B's `restic-wdmycloud` holds 14 snapshots (2025-12-24 → 2026-09-05) at a consistent
    1.450–1.462 TiB with no empties; the latest (`866e7c76`, 2026-09-05) is 117,635 files /

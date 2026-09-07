@@ -119,19 +119,49 @@ what fixed contabo2 after NFS-over-WAN hung
 has to give: ARC down to 1 GB (hurts ZFS), or Immich ML disabled (loses face recognition and
 smart search — the reason Immich was chosen over a plain gallery).
 
-**Correction 2026-09-07 — the cheap 16 GB path is gone.** The 08-19 and 08-20 research recorded
-the **F4-425 Plus as shipping with 16 GB DDR5 at $493**, making it cheaper than any chassis plus
-a $209 SODIMM and the obvious answer if RAM ever became the constraint. The user checked Amazon
-on 2026-09-07: **it now ships with 8 GB.** That escape hatch is closed. Consequences:
+### The 16 GB question is OPEN, pending a physical measurement (2026-09-07)
 
-- No TerraMaster model in this range ships with more than 8 GB. RAM can only be added as a
-  ~$209 aftermarket SODIMM (DRAM shortage pricing, unlikely to ease before 2027).
-- **Verify the SODIMM slot count on the F2-425 Plus before assuming an upgrade is additive.**
-  If it is a single slot, a 16 GB stick *replaces* the 8 GB rather than joining it, and the
-  original stick is wasted.
-- The F2-425 Plus → F4-425 Plus step ($383 → $493) now buys **two extra bays and nothing else**.
-  It is a pure growth-path argument, no longer a RAM argument. The mirror is 57% full on day
-  one, so this is not urgent — but it is the last moment it can be decided cheaply.
+> This section was rewritten three times on 2026-09-07 as better sources arrived — an Amazon
+> listing, then the vendor datasheets, then TerraMaster support. **Only the last is current.**
+> Do not act on the earlier framings still quoted in the 08-19/08-20 research banners.
+
+Established facts, vendor-sourced:
+
+- **Every model in this range has ONE SODIMM slot** (`Total Memory Slot Number: 1`, both
+  datasheets in [`download/`](../download/)). An upgrade **replaces** the module; 32 GB is always
+  a single stick. Aftermarket 16 GB DDR5 SODIMM ≈ **$209** in the ongoing DRAM shortage.
+- **F2-425 Plus N95 ($399): 8 GB.** **F4-425 Plus N95 ($510): 16 GB** — confirmed by TerraMaster
+  customer support 2026-09-07, and consistent with the N150 F4 datasheet.
+
+**The economics invert.** Because there is only one slot, upgrading the F2 wastes its bundled
+8 GB:
+
+| Option | RAM | Bays | Total |
+|---|---|---|---|
+| F2-425 Plus N95 | 8 GB | 2 | **$833.90** |
+| **F4-425 Plus N95** | **16 GB** | **4** | **$944.90** (+$111) |
+| ~~F2 + 16 GB SODIMM~~ | 16 GB | 2 | ~$1,042.90 — **dominated, strike it** |
+
+**This is not a $111 comfort upgrade — it resolves the project's binding constraint.** The
+all-LXC budget above totals 7.5–9 GB against 8 GB and does not fit; the F2 path requires giving
+something up (ARC to 1 GB, or Immich ML off, which costs face recognition and smart search — the
+reason Immich was chosen over a plain gallery). 16 GB removes the compromise instead of managing
+it.
+
+**The 2-bay decision of 2026-09-07 was made on box size, before this was known**, and its premise
+— that the F4 step buys "bays only" — is now false. It is therefore reopened, and turns on one
+number:
+
+| | F2-425 Plus | F4-425 Plus |
+|---|---|---|
+| H × W × D | 150 × **122** × 219 mm | 150 × **181** × 219 mm |
+| Net weight | 2.2 kg | 2.9 kg |
+| With 2 drives, for the trip | ~3.5 kg | ~4.2 kg |
+| Fan / rated noise | 80 mm / 20.0 dB(A) | 120 mm / 20.9 dB(A) |
+
+**Height and depth are identical. The only question is whether 59 mm more width is available.**
+The user is measuring; nothing is ordered until that answer exists. If the space is there, take
+the F4 and 16 GB; if not, the F2 stands and the compromise moves into software.
 
 ## Decided 2026-09-07 — Samba runs in an *unprivileged* LXC with `idmap=passthrough`
 

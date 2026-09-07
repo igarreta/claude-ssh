@@ -1,80 +1,49 @@
 ---
 name: project_nas
-description: "NAS project — buy list decided 2026-08-30 ($818, nothing ordered); software stack decided 2026-09-07 (PVE + all-LXC); 8 GB RAM is the binding constraint"
+description: "NAS project — software stack fully decided 2026-09-07 (PVE + all-LXC); chassis is the one open decision, F2 8GB $833.90 vs F4 16GB $944.90, blocked on a width measurement; nothing ordered"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 674728fe-657f-43ee-985f-f339c95e4974
-  modified: 2026-08-30T22:31:11.787Z
+  modified: 2026-09-07T00:00:00.000Z
 ---
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
-Machine and Proxmox Backup Server, plus Immich for family photo browsing (external-library mode,
-existing folder tree intact). Hardware brought from abroad; day-one need ~3.1 TB.
+Machine and PBS, plus Immich for family photo browsing. Hardware brought from abroad, ~3.1 TB
+day one. **Urgent since 2026-09-06**: the WDMyCloud it replaces is dead
+([[project_ceres_wdmycloud-nas-dead]]), so this is no longer a nice-to-have.
 
-**Status 2026-08-30: research complete, purchase-ready, nothing bought.** OS decided = Proxmox VE
-+ ZFS mirror, PBS on the NAS with a local datastore. Buy list: **TerraMaster F2-425 Plus, N95 CPU,
-$383** (N150 variant rejected — $42 more for ~6% CPU/faster iGPU/AV1 accel, none of which matters
-for a Full-HD-only, no-transcoding-planned use case) + **6 TB recertified SATA enterprise** from
-**goHardDrive** (Ultrastar 7K6000 $179.95 / Exos 7E8 $189.95 — two different makers on purpose).
-**P1 decided** (both drives now, $753 — chosen over P2's $563 because the drives are secondhand
-and the user wants mirror redundancy from day one, not a degraded single-disk interval). **Boot
-NVMe decided**: Patriot P310 480 GB PCIe Gen3 x4, $65 (240 TB TBW, ample for PVE boot + Immich
-DB/thumbnails). **Total $818 — no open decisions remain, nothing ordered yet.**
+**One decision blocks the order — the chassis.** Every model has a single SODIMM slot, so an F2
+upgrade discards its bundled stick, making the **F4-425 Plus N95 ($510, 16 GB, $944.90 total)**
+the cheapest route to 16 GB — ~$98 *under* an F2 plus a ~$209 stick. Against it the **F2-425 Plus
+N95 ($399, 8 GB, $833.90)**. Since the all-LXC RAM budget is 7.5–9 GB against 8 GB, this
+**resolves the binding constraint rather than adding headroom**. "2 bays" was decided on box size
+and then reopened when support confirmed the F4's 16 GB. **It turns solely on 59 mm of extra
+width; the user is measuring. Order nothing until then.**
 
-**Do not re-open these rejections**: base F2-425/F4-425 (N5095, 4 GB DDR4, no M.2 — the 08-19
-research had their specs wrong); UGREEN DH2300 (ARM, cannot run Proxmox); UGREEN DXP2800 ($369 now
-— the $297 that appears in trackers was an Oct 2025 sale); any SAS drive; ServerPartDeals for 6 TB
-(sold out; its $114.99 listing is a ghost price that fools $/TB trackers).
+**Decisions not to re-derive** (each cost real investigation):
 
-Market context: HDD, DRAM and NAND are all in shortage, so aggregator prices are stale in both
-directions and **stock must be verified, not just price**. Original <USD 600 budget is only reachable
-via P2.
+- **All LXCs, no VMs** — forced by shared data (Samba writes what Immich reads; only LXCs
+  bind-mount) as much as by RAM. Host owns the disks, guests get bind mounts.
+- **Samba: unprivileged LXC with `idmap=passthrough`.** The user leaned *privileged* after past
+  idmap pain; the option that removes that pain is ignored on privileged containers, which
+  reversed it. See [[project_proxmox_lxc_idmap_passthrough]].
+- **Immich: podman, no Docker.** Verified feature-by-feature against podman-compose's source.
+  Traps in [[project_podman_compose_gotchas]].
+- **BACKUP_A/B rotation moves to the NAS** — frees gr-srv03's third USB port, makes the
+  already-ordered RSH-A10 hub unnecessary, removes the host's only hot-plugged device (the
+  Zigbee-drop root cause, [[project_gr-srv03_powered-hub-instability]]), and forces ceres's
+  bind-mount backup architecture to change.
 
-**Urgency update 2026-09-06**: the WD MyCloud this NAS was meant to replace is now dead/irrecoverable
-(see [[project_ceres_wdmycloud-nas-dead]]) — its backups are safe (crons disabled, repos untouched)
-but this purchase is no longer just a nice-to-have upgrade.
+**Sourcing rule, learned the hard way**: the RAM story was rewritten **four times on 2026-09-07**
+on aggregator and retailer claims, every one of them wrong. **Trust only the vendor datasheet
+(committed to `download/`), a teardown, or TerraMaster support** — and note the datasheets cover
+the **N150** variants, not the N95 machines being bought. Rejected options are listed in the docs;
+don't re-open them.
 
-**Software stack decided 2026-09-07**: Proxmox VE + ZFS mirror, **everything as LXCs, no VMs** —
-forced by shared data (Samba writes what Immich reads, only LXCs bind-mount) as much as by RAM.
-The host owns the disks; guests get bind mounts, never block devices.
-
-**Samba decided 2026-09-07: unprivileged LXC with `idmap=passthrough`.** The user leaned
-*privileged* after past idmap headaches; checking the actual PVE version reversed it, because the
-per-mount `idmap` option that removes the pain is ignored on privileged containers — so
-unprivileged is now both safer and simpler. See [[project_proxmox_lxc_idmap_passthrough]].
-
-**Immich runtime decided 2026-09-07: podman, no Docker in the fleet.** Checked upstream's actual
-compose files against podman-compose's actual source — every feature Immich uses is supported,
-including `extends:` for QuickSync. Two concerns raised earlier were both wrong (Immich uses
-plain `depends_on`, not `condition: service_healthy`; and `extends` works — `config` output just
-hides it). Traps in [[project_podman_compose_gotchas]]. **No deferred questions remain on the
-software stack.**
-
-**Settled 2026-09-07**: **2 bays** (box size — F4-425 Plus not pursued); **one SODIMM slot** on
-every model in the range, vendor-confirmed, so a RAM upgrade *replaces* the module and buying up
-for RAM was never a strategy; **price corrected $383 → $399** (total $833.90); and **BACKUP_A/B
-rotation moves to the NAS** — which frees gr-srv03's third USB port, makes the already-ordered
-RSH-A10 hub unnecessary, removes the host's only hot-plugged device (the documented Zigbee-drop
-root cause, see [[project_gr-srv03_powered-hub-instability]]), and forces ceres's bind-mount
-backup architecture to change.
-
-**Sourcing rule learned the hard way**: three separate aggregator/retailer spec errors on this
-chassis (N5095-vs-N150, the F4's RAM, the "two SODIMM slots" claim inferred from a 32 GB max).
-**Trust only the vendor datasheet or a teardown** — the datasheets are committed to `download/`
-in the repo, and they document the **N150** variants only, not the N95 machines actually being
-bought.
-
-**RAM correction 2026-09-07 — don't quote the old figure**: the research docs say the F4-425 Plus
-ships with 16 GB and is the cheap way to escape 8 GB. **It now ships with 8 GB.** No model in this
-range exceeds 8 GB, so RAM is a ~$209 aftermarket SODIMM or nothing — and the all-LXC budget is
-*already* 7.5–9 GB. This is the project's binding constraint, not price.
-
-**How to apply**: multi-step project — read the write-ups before proposing hardware or prices.
-Stack, guests, share protocols and the RAM budget are in
-[[docs/2026-09-07_nas-software-stack.md]].
-Scope, sizing arithmetic and the buy list are in [[docs/memory_nas-project.md]] (claude-ssh repo);
-market/hardware/OS research in [[docs/2026-08-19_nas-hardware-research.md]]; disk prices, drive
-selection criteria, RAID layout comparison, enclosure alternatives and recert sourcing in
-[[docs/2026-08-20_nas-disk-prices-and-raid-options.md]]. Related: [[project_backup_schedule]],
-[[project_ceres_wdmycloud_glacier]].
+**How to apply**: multi-step project — read the write-ups before proposing hardware, prices or
+architecture. Stack, guests, share protocols and the RAM budget:
+[[docs/2026-09-07_nas-software-stack.md]]. Scope, sizing, buy list, open decisions:
+[[docs/memory_nas-project.md]]. Market/OS research: [[docs/2026-08-19_nas-hardware-research.md]].
+Disk prices and RAID layouts: [[docs/2026-08-20_nas-disk-prices-and-raid-options.md]].
+Related: [[project_backup_schedule]], [[project_ceres_wdmycloud_glacier]].
