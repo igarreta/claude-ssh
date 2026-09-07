@@ -225,24 +225,65 @@ broken" is the usual reason people reach for privileged and it is not accurate h
 Background: [Proxmox_unpriviedged_LXC_mount_permissions.md](Proxmox_unpriviedged_LXC_mount_permissions.md).
 Prior art in the fleet: samba03 is a TurnKey fileserver appliance whose quirks are already known.
 
-## Open — Immich container runtime
+## Decided 2026-09-07 — Immich runs under podman, no Docker in the fleet
 
-**Deferred to a later discussion (2026-09-07).** Immich upstream supports **Docker Compose
-only**; the user runs **rootful `sudo podman`** on cygnus and prefers it.
+Investigated against the **actual** upstream compose files and the **actual** podman-compose
+source on cygnus (podman 5.4.2, podman-compose 1.3.0), rather than from general reputation.
+**Every feature Immich's compose file uses is supported.** Keep podman.
 
-Points to settle when it is taken up:
+### Two earlier concerns, both wrong
 
-- Rootful podman avoids the worst issue — rootless would add a *second* UID shift on top of the
-  LXC's, double-mapping every file.
-- Remaining friction is `depends_on` + healthcheck semantics, which Immich's compose file leans
-  on and podman's compose handling has historically been weaker at.
-- The Postgres image is not stock: Immich requires a pgvector-enabled image, not a plain
-  `postgres:` tag.
+1. **`depends_on` + healthcheck semantics.** Immich uses **plain list-form `depends_on`**
+   (`- redis`, `- database`), not `condition: service_healthy`. podman-compose normalizes it to
+   `condition: service_started`. There is no gap.
+2. **`extends:` unsupported.** It is supported. The confusion came from `podman-compose config`,
+   which prints `compose.merged_yaml` — the file-level `-f` merge, computed **before**
+   `resolve_extends` runs — so `extends:` appears unresolved with no `devices:`. Calling
+   `resolve_extends` directly on cygnus proved the merge works:
+   `{"app": {"devices": ["/dev/dri:/dev/dri"], ...}}`.
+
+### Feature support, verified in `/usr/lib/python3/dist-packages/podman_compose.py`
+
+| Immich needs | podman-compose 1.3.0 |
+|---|---|
+| `extends:` (hwaccel profiles) | `resolve_extends`, line 1719 |
+| `shm_size: 128mb` (postgres) | → `--shm-size`, line 1135 |
+| `device_cgroup_rules` (OpenVINO ML accel) | line 1061 |
+| `group_add`, `security_opt` | line 1057, present |
+| `healthcheck` incl. `disable: false` | line 1186 — falls through to the image's built-in HEALTHCHECK |
+| `env_file`, named volumes, digest-pinned images | standard; all images fully qualified |
+
+### Operational gotchas
+
+1. **`resolve_extends` opens the `file:` relative to the process CWD**, not the compose file's
+   directory. `sudo podman compose -f /opt/immich/docker-compose.yml up` run from elsewhere will
+   not find `hwaccel.transcoding.yml`. **`cd` into the directory first.**
+2. **Never use `config` to check that hardware acceleration is wired up** — see above; it looks
+   broken when it is not. Verify on the running container instead.
+3. **Rootless podman does not work for `rsi`** on cygnus (`newuidmap: Operation not permitted`),
+   confirming `sudo podman compose` is mandatory. Rootful is also what avoids a *second* UID
+   shift on top of the LXC's.
+4. podman-compose carries a `# WIP: healthchecks are still work in progress` comment. Adequate
+   for Immich's usage, not battle-hardened.
+
+### Escape hatch, if Immich ever outpaces podman-compose
+
+`podman compose` is only a shim. `containers.conf`: *"Specify one or more external providers for
+the compose command. The first found provider is used for execution."* It selected
+`/usr/bin/podman-compose` because that is what is installed. Setting `compose_providers` — or
+simply installing the real Docker Compose v2 binary — swaps in full Compose Spec fidelity with no
+other change. **A config line, not a migration**, so this decision is cheap to reverse.
+
+### Still to verify at build time
+
+- The Postgres image is not stock: Immich requires its own VectorChord/pgvecto.rs build
+  (`ghcr.io/immich-app/postgres:...`), not a plain `postgres:` tag. Pinned by digest upstream.
 - LXC needs `nesting=1`; podman additionally wants `keyctl=1`.
-- `/dev/dri` crosses two boundaries (host → LXC → container). The `render` group GID commonly
-  differs between host and container, producing a silent fallback to software transcoding
-  rather than an error.
-- Immich moves fast and breaks things — pin a release, do not track `:latest`.
+- **`/dev/dri` crosses two boundaries** (host → LXC → container). The `render` group GID commonly
+  differs across them, and the failure mode is a **silent** fallback to software transcoding
+  rather than an error. Immich's `quicksync` profile passes the device with no `group_add`, so
+  GID alignment has to be checked explicitly.
+- Immich moves fast — pin a release, do not track `:latest`.
 
 ## Immich capabilities — resolved 2026-09-07
 

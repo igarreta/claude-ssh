@@ -197,7 +197,9 @@ CPU + 2× 6 TB recert (goHardDrive) + Patriot P310 480 GB boot NVMe →
 [memory_nas-project.md](memory_nas-project.md). **Software stack designed 2026-09-07** — PVE +
 ZFS mirror, all LXCs, host owns the disks and bind-mounts them. **Samba decided 2026-09-07:
 unprivileged LXC with `idmap=passthrough`** (PVE 9.2's per-mount `idmap`, which privileged
-containers cannot use at all); only the Immich runtime remains deferred →
+containers cannot use at all); **Immich decided 2026-09-07: podman, no Docker** — every compose
+feature it uses is supported, verified against podman-compose's source. **No deferred questions
+remain on the stack** →
 [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **The F4-425 Plus now ships
 with 8 GB, not 16 GB** (checked 2026-09-07) — the cheap RAM path is gone and 8 GB is the binding
 constraint.

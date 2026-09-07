@@ -42,9 +42,14 @@ The host owns the disks; guests get bind mounts, never block devices.
 **Samba decided 2026-09-07: unprivileged LXC with `idmap=passthrough`.** The user leaned
 *privileged* after past idmap headaches; checking the actual PVE version reversed it, because the
 per-mount `idmap` option that removes the pain is ignored on privileged containers — so
-unprivileged is now both safer and simpler. See [[project_proxmox_lxc_idmap_passthrough]]. Still
-*explicitly deferred*, so don't re-derive it: **Immich under docker vs podman** (user prefers
-podman; Immich upstream ships compose only).
+unprivileged is now both safer and simpler. See [[project_proxmox_lxc_idmap_passthrough]].
+
+**Immich runtime decided 2026-09-07: podman, no Docker in the fleet.** Checked upstream's actual
+compose files against podman-compose's actual source — every feature Immich uses is supported,
+including `extends:` for QuickSync. Two concerns raised earlier were both wrong (Immich uses
+plain `depends_on`, not `condition: service_healthy`; and `extends` works — `config` output just
+hides it). Traps in [[project_podman_compose_gotchas]]. **No deferred questions remain on the
+software stack.**
 
 **RAM correction 2026-09-07 — don't quote the old figure**: the research docs say the F4-425 Plus
 ships with 16 GB and is the cheap way to escape 8 GB. **It now ships with 8 GB.** No model in this
