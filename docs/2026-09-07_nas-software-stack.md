@@ -285,7 +285,7 @@ seven months of empty snapshots whose cause was never reproduced.
 | Latest | `866e7c76`, 2026-09-05 02:30 — the last run before the NAS died |
 | Contents | 117,635 files, **1.462 TiB** restore size, matching the documented 1.6 TB of WDMyCloud usage |
 | Completeness | includes `Peliculas`, `Shared Music`, `Shared Pictures`, `Shared Videos`, `Outlook` |
-| Integrity | `restic check` structural pass **clean** — all packs, 14/14 snapshots, trees and blobs |
+| Integrity | `restic check` **clean, exit 0** — 14/14 snapshots, trees and blobs, plus `--read-data-subset=2%` reading 1680/1680 packs in 9m38s with no errors |
 | Cron safety | both WDMyCloud cron lines still commented out, so retention cannot be poisoned |
 
 **The local repo, not S3 Glacier, is the restore source.** The Glacier repo deliberately excludes
@@ -298,8 +298,9 @@ Archive carries 12–48 h latency plus retrieval fees. Glacier is the copy of la
 - **BACKUP_A has its own independent repo and is offsite**, so it could not be checked. Its most
   recent WDMyCloud snapshot is only as fresh as its last connection. Worth verifying at the next
   rotation, since it is the second copy of data that now has no live source.
-- A `--read-data-subset=2%` pass was still running when this was written; the structural check
-  above is the part that proves index and tree consistency.
+- The 2% data-read sampled the packs; it is not a full `--read-data`, so undetected bit rot in
+  the other 98% remains possible in principle. Worth a full read-data pass before wiping anything,
+  once the NAS exists and the restore has actually completed.
 - **The restore will arrive with WDMyCloud/TurnKey UIDs** — see the Samba landmines above.
 
 ## Related
