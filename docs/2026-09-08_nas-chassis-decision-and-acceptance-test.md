@@ -251,19 +251,122 @@ wedged RTL-433 be power-cycled from a script without a person walking to the mac
 
 **On the planned unpowered-hub test, three findings:**
 
-1. **Current is not the risk.** A bus-powered hub on a USB 3.x host port has a 900 mA budget less
-   ~50–100 mA of hub silicon. RTL-SDR ≈ 280–320 mA continuous (and it runs hot), Sonoff Zigbee
-   dongle ≈ 60–100 mA. Total ~400 mA against ~800 mA available — roughly 2× margin. On a **USB 2.0
-   host port** the budget is 500 mA and that margin evaporates, so the hub must go on a USB 3 port.
-2. **Do not put the Zigbee dongle behind any hub, powered or not.** On this exact host a hub in
-   the Zigbee path produced `disabled by hub (EMI?)` and `cp210x` disconnects every few minutes,
-   causing 5 zigbee2mqtt restarts in one evening (2026-08-17, same doc as above). Option D already
-   gives Zigbee its own direct port for this reason. Test the hub with the **RTL-433 alone**.
+1. **Current is the risk if the hub is USB 2.0 — CORRECTED 2026-09-08.** The original text here
+   claimed "~2× margin" and blamed the *host port*. That is wrong: what sets the budget is **the
+   hub's own speed**, because a USB 2.0 hub negotiates as a USB 2.0 device (5 unit loads) even when
+   plugged into a USB 3 socket.
+
+   | Hub | Host grants | Hub silicon | Left for devices |
+   |---|---|---|---|
+   | **USB 2.0** | **500 mA** | ~50–100 mA | **~400–450 mA** |
+   | USB 3.0 | 900 mA | ~50–100 mA | ~800 mA |
+
+   Load: RTL-SDR ~300 mA typical / **~350 mA peak** (it runs hot); Sonoff Zigbee ~100 mA idle but
+   **~180 mA peak on TX at full power**. Worst case together ≈ **530 mA**.
+
+   **So RTL + Zigbee together does not fit on a USB 2.0 unpowered hub**, and an over-current trip
+   presents exactly like the August brownout. The SDR *alone* (~350 mA peak) fits comfortably on
+   either. This is the single most useful thing to establish before planning the trial — see the
+   staged procedure below.
+2. **~~Do not put the Zigbee dongle behind any hub, powered or not.~~ — CORRECTED 2026-09-08, see
+   below.** The original claim here carried the 2026-08-17 conclusion past the condition that
+   produced it.
 3. **Prefer a USB 2.0 hub for the SDR, not USB 3.0.** SuperSpeed signalling is a well-known
    broadband RFI source that desenses 2.4 GHz radios and lifts the noise floor of an SDR sitting
    beside it. The RTL-433 is a USB 2.0 device and gains nothing from a USB 3 hub, so a USB 2.0 hub
    removes the noise source for free. If a USB 3.0 hub is used anyway, keep it and its cable
    physically away from the Zigbee dongle and the SDR antenna.
+
+### CORRECTION 2026-09-08 — "never behind a hub" was too strong
+
+Challenged by the user and re-checked against the root-cause analysis in
+[memory_gr-srv03_powered-hub-instability.md](memory_gr-srv03_powered-hub-instability.md)
+§ *Actual root cause*. **The correction stands.**
+
+The stressor in all 7/7 episodes was **BACKUP_A/B hot-plug inrush on the shared 5 V VBUS rail** of
+the single Alder Lake-N xHCI controller. The PCH root ports tolerated the transient; the cheap
+Terminus `1a40:0101` hub — *"minimal decoupling, no local regulation"* — browned out and dropped
+whatever was downstream. **Zigbee was the victim, not a party to the cause.**
+
+So the lesson is *"a hub with no local regulation cannot ride out a rail brownout"*, not *"Zigbee
+must never sit behind a hub"* — and **the brownout source is precisely what is leaving**, since
+BACKUP_A/B is the host's only hot-plugged device.
+
+**Two consequences, one of which inverts the advice above:**
+
+- **If the two dongles share a hub, it should be the *powered* RSH-A10, not an unpowered one.**
+  The documented failure was a power-integrity failure, and the cure is local regulation — which a
+  bus-powered hub lacks *by definition*, passing host VBUS through with a bulk capacitor and
+  nothing else. The RSH-A10 has its own 12 V/3 A supply.
+- **There is an argument *for* putting Zigbee on the hub that was previously missed.** Option D
+  gives the dongle a direct root port, and **root ports have no PPPS** — so the 2026-07-15 recovery
+  watchdog *cannot* power-cycle a wedged dongle today. Moving it onto the RSH-A10 restores scripted
+  recovery for Zigbee **and** the RTL-433. A short extension cable to get the dongle away from the
+  chassis also tends to improve LQI on its own, which offsets the USB 3 RFI concern in item 3.
+
+**Revised recommendation.** Two hubs are in play and they answer different timeframes:
+
+| | Available | Role |
+|---|---|---|
+| **Unpowered hub** | **owned, now** | the near-term trial — free, and ~6 weeks before the other lands |
+| **RSH-A10** (powered, 12 V/3 A, PPPS) | **bought 2026-08-29, in transit, ETA ~2026-10-24** | the long-term home |
+
+**Near term**: run the staged trial below on the unpowered hub with the **RTL-433 only**. It costs
+nothing, and it answers the question that actually matters — whether a hub in this machine's USB
+tree behaves once BACKUP_A/B is no longer browning out the rail.
+
+**Long term, once the RSH-A10 arrives**: it is the better host for **both** dongles. It has the
+local regulation the Terminus chip lacked, and its **PPPS restores a capability Option D quietly
+gave up** — a root port cannot power-cycle a wedged Zigbee dongle, so the 2026-07-15 recovery
+watchdog currently has nothing to act on. Note the hub's *original* justification ("more devices
+than ports") died when BACKUP_A/B moved to the NAS; what still justifies it is regulation, PPPS and
+spare ports.
+
+**Leave Zigbee on its root port until then.** Not because it can never sit behind a hub — that rule
+was wrong — but because the unpowered hub is the weaker of the two in exactly the dimension that
+failed, and there is no reason to move the critical device onto the interim hardware when the
+better hardware is already paid for and on its way.
+
+### The staged trial (execute after the 09-09 LQI recheck closes)
+
+**Step 0 — identify the hub. This decides everything else.**
+
+```sh
+lsusb -t                    # 480M = USB 2.0 hub (500 mA budget); 5000M = USB 3.0 (900 mA)
+lsusb | grep -i hub         # chip vendor:product
+```
+
+> If it reports **`1a40:0101`** it is the Terminus FE1.1s — **the same silicon that browned out in
+> August**, and very common in cheap hubs. Not disqualifying now that the HDD stressor is leaving,
+> but it is the one result that should keep Zigbee off it.
+
+**Step 1 — RTL-433 alone on the hub.** ~350 mA peak against ~400 mA available even on a USB 2.0
+hub, so it fits either way. This is the zero-risk way to learn whether *this specific hub*
+enumerates cleanly under a real continuous load, without putting home automation at risk.
+
+**Step 2 — watch 48 h, then judge:**
+
+```sh
+journalctl -k --since -48h | grep -iE 'error -71|disabled by hub|USB disconnect|cp210x|reset .*device'
+```
+
+Zero events = pass. Any `error -71` or `disabled by hub` is the **August failure signature** —
+stop there and keep the hub for non-critical devices only.
+
+**Step 3 — Zigbee waits for the RSH-A10.** If the trial tempts you to move it sooner, the
+preconditions are: the hub is **USB 3.0** (on a 2.0 hub the pair is over budget, per item 1), Steps
+1–2 came back clean, an LQI baseline is recorded, and the `uhubctl -a on` boot assertion exists.
+Rollback is cheap either way — the dongle goes straight back to its root port and the passthrough
+entry is `host=10c4:ea60`, **vendor:product based, so it follows the dongle with no config change
+and no VM restart**.
+
+If Steps 1–2 come back clean, the near-term spare-ports want is solved for **$0**, and the RSH-A10
+arrives in October to take over as the permanent home for both dongles.
+
+**Hard dependency, still unsatisfied**: the boot-time `uhubctl -l <hub> -a on` assertion, flagged
+2026-08-30 as a dependency of the hub decision and never written. **Nothing critical goes on the
+hub until it exists** — otherwise an outage can leave a port switched off with nobody at the
+machine.
 
 **Timing.** The Zigbee **LQI relapse recheck is due 2026-09-09**
 ([2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md)).

@@ -32,9 +32,13 @@ post-incident one (hub removed, everything on direct ports) documented in
 > hub instead. Three constraints on that trial:
 > **(a)** current is not the risk — RTL-SDR ~300 mA + Zigbee ~100 mA against ~800 mA on a
 > bus-powered USB 3 hub — but a USB **2.0** host port only budgets 500 mA, so the hub must sit on
-> a USB 3 port; **(b)** **the Zigbee dongle does not go behind any hub, powered or not** — the
-> 2026-08-17 `disabled by hub (EMI?)` / `cp210x` disconnects and 5 zigbee2mqtt restarts are the
-> reason Option D gives it a direct port; test with the **RTL-433 alone**; **(c)** prefer a
+> a USB 3 port; **(b)** ~~the Zigbee dongle does not go behind any hub, powered or not~~ —
+> **CORRECTED 2026-09-08**: the 08-17 drops were **BACKUP_A/B hot-plug inrush browning out an
+> unregulated hub**, and that stressor leaves with the drives. If the dongles do share a hub it
+> should be the **powered RSH-A10** — local regulation is the actual cure, and its PPPS restores
+> the dongle power-cycle a root port cannot do. See
+> [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md)
+> § 4 *CORRECTION*. **(c)** prefer a
 > **USB 2.0** hub — the SDR is a USB 2.0 device, and SuperSpeed signalling is a broadband RFI
 > source next to a 433 MHz SDR and a 2.4 GHz radio.
 > **Do not run the trial until the Zigbee LQI relapse recheck (due 2026-09-09) is closed** — it
