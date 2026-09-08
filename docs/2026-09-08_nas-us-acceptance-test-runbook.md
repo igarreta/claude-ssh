@@ -34,6 +34,21 @@ the hard drives** — which matters, since the drives are being bought after the
 Take **9.2-1 amd64** — *not* the `-arm64` build, which is for ARM hosts and will not boot this
 machine. 9.2 is also the same generation as gr-srv03 (pve-manager 9.2.11).
 
+> **`amd64` does not mean "AMD processor".** It is the name of the 64-bit x86 instruction set AMD
+> invented and Intel adopted, so it covers **both** Intel and AMD CPUs. The N150 in this NAS is
+> Intel and takes the `amd64` build. SystemRescue uses the same convention.
+>
+> Proxmox's download page lists releases newest-first, so the ARM build appears **above** the one
+> you want and neither says "Intel". Go by the **filename**:
+>
+> | Page entry | File | Verdict |
+> |---|---|---|
+> | "For ARM64: Proxmox VE 9.2 ISO Installer" | `proxmox-ve_9.2-1-arm64.iso` | **wrong** |
+> | "Proxmox VE 9.2 ISO Installer" | **`proxmox-ve_9.2-1.iso`** (1.71 GB) | **correct** |
+>
+> **The correct file carries no architecture suffix at all.** If `-arm64` appears anywhere in the
+> name, it is the wrong download.
+
 ### Prepare two USB sticks (8 GB+)
 
 Two separate sticks. **Do not combine them on one Ventoy stick** — TerraMaster's own guidance says
