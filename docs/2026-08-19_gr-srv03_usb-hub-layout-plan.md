@@ -24,6 +24,21 @@ below are retained for the record and were not taken.
 (Conable CAL2S-6-3PK); ferrites deprioritised. Current setup is the
 post-incident one (hub removed, everything on direct ports) documented in
 [memory_gr-srv03_powered-hub-instability.md](memory_gr-srv03_powered-hub-instability.md).
+>
+> **Reassessed 2026-09-08** ([2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) § 4).
+> The NAS chassis is decided and the drive move is going ahead, so this is now the plan of record:
+> **keep** the RSH-A10 — it is the only PPPS/`uhubctl`-capable device in the fleet, which is what
+> lets a wedged RTL-433 be power-cycled from a script. The user intends to trial an **unpowered**
+> hub instead. Three constraints on that trial:
+> **(a)** current is not the risk — RTL-SDR ~300 mA + Zigbee ~100 mA against ~800 mA on a
+> bus-powered USB 3 hub — but a USB **2.0** host port only budgets 500 mA, so the hub must sit on
+> a USB 3 port; **(b)** **the Zigbee dongle does not go behind any hub, powered or not** — the
+> 2026-08-17 `disabled by hub (EMI?)` / `cp210x` disconnects and 5 zigbee2mqtt restarts are the
+> reason Option D gives it a direct port; test with the **RTL-433 alone**; **(c)** prefer a
+> **USB 2.0** hub — the SDR is a USB 2.0 device, and SuperSpeed signalling is a broadband RFI
+> source next to a 433 MHz SDR and a 2.4 GHz radio.
+> **Do not run the trial until the Zigbee LQI relapse recheck (due 2026-09-09) is closed** — it
+> would add a variable to an open investigation.
 
 ## The constraint
 

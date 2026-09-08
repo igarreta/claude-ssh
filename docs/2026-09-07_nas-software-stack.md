@@ -3,7 +3,7 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** —
-**Superseded-by:** —
+**Superseded-by:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§ *The RAM budget is the binding constraint* and § *The 16 GB question is OPEN* only)
 
 **Date**: 2026-09-07. Hardware buy list and sizing are in
 [memory_nas-project.md](memory_nas-project.md); this doc covers only what runs on the box
@@ -105,6 +105,13 @@ what fixed contabo2 after NFS-over-WAN hung
 ([2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md](2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md)).
 
 ## The RAM budget is the binding constraint
+
+> **SUPERSEDED 2026-09-08 — this section and the next are no longer true.** The chassis is
+> decided (**F4-425 Plus, N150 variant, 16 GB, $479.99**) and **the 16 GB claim for the N95 below
+> was wrong**: the 16 GB belongs to the N150 SKU. There is no binding RAM constraint any more,
+> ARC is not capped at 1–2 GB, and Immich ML stays on. The current budget is
+> [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md)
+> § 2. Everything **outside** these two sections in this doc remains current.
 
 | | RAM |
 |---|---|

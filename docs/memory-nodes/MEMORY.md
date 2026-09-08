@@ -29,7 +29,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_gr-srv03_ct103-migration-plan.md](project_gr-srv03_ct103-migration-plan.md) — CT103 last non-Turnkey Debian 12 LXC; clone-CT901 migration plan sketched, <30 min job, not started
 - [project_cygnus_backup-checker-iperf3-migration.md](project_cygnus_backup-checker-iperf3-migration.md) — proxmox_backup_checker + iperf3 moved to cygnus 09-05; backup.sh needed no migration
 - [project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration.md](project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration.md) — uptime-kuma/mqtt-explorer moved to cygnus 09-05; cloudflaretunnel's real home is CT103, not cygnus
-- [project_nas.md](project_nas.md) — stack fully decided 09-07; chassis is the one open call (F2 8GB $833.90 vs F4 16GB $944.90), blocked on a width measurement; urgent since the WDMyCloud died 09-06
+- [project_nas.md](project_nas.md) — chassis decided 09-08: F4-425 Plus **N150** (16 GB), ~$914.89; 16 GB is the N150 SKU not the N95, and the vendor store lists only the N95 — buy Amazon US `B0FLHTF2PQ`; disks chosen after the NAS
 - [project_ceres_wdmycloud-nas-dead.md](project_ceres_wdmycloud-nas-dead.md) — WD MyCloud dead 09-06; backup crons disabled to avoid retention deleting real snapshots, repos preserved until replacement (>2mo out)
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated

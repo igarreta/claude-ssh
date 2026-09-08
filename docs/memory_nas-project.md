@@ -7,55 +7,75 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
-> **Resume here** (updated 2026-09-07). **One decision blocks the order: the chassis.** Every
-> model has a single SODIMM slot, so the **F4-425 Plus N95 ($510, 16 GB, $944.90 total)** is the
-> cheapest route to 16 GB — and 16 GB is what the RAM budget actually needs. Against it, the
-> **F2-425 Plus N95 ($399, 8 GB, $833.90 total)**. **It turns solely on 59 mm of extra width; the
-> user is measuring.** Order nothing until that lands — see *Open decisions* item 5.
+> **Resume here** (updated 2026-09-08). **The chassis is DECIDED and the buy list is final.**
+> The user measured the space on 2026-09-08 and the 4-bay fits on a new shelf. Checking the vendor
+> store to order then found that **the 16 GB belongs to the N150 SKU, not the N95** — the 09-07
+> "TerraMaster support confirmed the F4 N95 has 16 GB" was wrong, the fourth spec error on this
+> chassis. Both CPU variants cost the same, so:
 >
-> Everything else on the hardware side is settled: N95 (not N150), **P1** (both drives now — the
-> drives are secondhand and the user wants the mirror complete from day one rather than running
-> degraded), and the **Patriot P310 480 GB** boot NVMe at $65. Nothing bought yet. Buy list below.
+> **Buy the TerraMaster F4-425 Plus, N150 variant, 16 GB, ~$456–520. Total ~$914.89.**
+>
+> **But terra-master.com lists only the N95 (8 GB) right now** (user, 2026-09-08). The N150/16 GB
+> is a separate SKU sold on **Amazon US, ASIN `B0FLHTF2PQ`** (the N95 is `B0GW883KMF` — the model
+> name is identical, check the listing title) and Newegg. **Re-check at buy time.** If it is
+> genuinely unobtainable in the trip window, the fallback ladder is F4 N95 + a ~$209 SODIMM
+> (~$689) before the F2 at 8 GB ($424.99, which reinstates the ARC-vs-Immich-ML compromise) —
+> ladder and reasoning in the 09-08 doc § 1.
+>
+> This also moots the 2026-08-30 "N95 not N150" call — there is no longer a premium to weigh, and
+> the N150's larger iGPU suits the Immich transcoding the software stack introduced. Full
+> correction, revised RAM allocation at 16 GB, the BACKUP_A/B cable spec, the gr-srv03 hub
+> reassessment and the **US acceptance-test procedure** are in
+> [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md).
+>
+> **Open, and worth deciding before the trip:** a **third 6 TB drive as a cold spare (~$180)** —
+> replacing a failed mirror half from Argentina is slow and expensive, and the F4 now has the bay.
 >
 > **Software stack designed 2026-09-07** — Proxmox VE + ZFS mirror, everything as LXCs (no VMs),
 > SMB + PBS + SFTP + HTTPS, host owns the disks and bind-mounts them into the guests →
-> [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **Samba decided
-> 2026-09-07: unprivileged LXC with `idmap=passthrough`** — PVE 9.2's per-mount `idmap` option
-> removes the historical UID pain and is ignored on privileged containers, so unprivileged is now
-> both safer *and* simpler. **Immich runtime decided 2026-09-07: podman, no Docker** — every
-> compose feature Immich uses is supported, verified against podman-compose's source.
-> **No deferred questions remain on the software stack.** The RAM budget is the binding
-> constraint — see "Open decisions" below.
+> [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **Samba: unprivileged LXC
+> with `idmap=passthrough`.** **Immich runtime: podman, no Docker.** At 16 GB the two compromises
+> that doc agonised over are withdrawn: ARC gets 4 GB and Immich ML stays on.
+>
+> Everything else on the hardware side is settled: **P1** (both drives now — secondhand, so the
+> mirror is complete from day one) and the **Patriot P310 480 GB** boot NVMe at $65. Nothing
+> bought yet.
 
 ## Purchase list (prices verified 2026-08-20; CPU variant decided 2026-08-30 — re-check before ordering)
 
 | Item | Source | Price |
 |---|---|---|
-| **TerraMaster F2-425 Plus** (**N95**, 8 GB DDR5 in **1 slot** →32, 3× M.2 PCIe 3.0 x1, 2× 5GbE, 2 bays) | terra-master.com | **$399** |
+| **TerraMaster F4-425 Plus** (**N150**, **16 GB** DDR5 in **1 slot** →32, 3× M.2 PCIe 3.0 x1, 2× 5GbE, **4 bays**) | terra-master.com | **$479.99** |
 | **HGST Ultrastar 7K6000** HUS726060ALE610 6 TB SATA, cert. refurb, 3 yr | [goHardDrive g01-1079](https://www.goHardDrive.com/HGST-Ultrastar-0F23001-6TB-7200RPM-Hard-Drive-p/g01-1079.htm) | **$179.95** |
 | **Seagate Exos 7E8** ST6000NM0115 6 TB SATA, enterprise, 5 yr | [goHardDrive g01-1326](https://www.goHardDrive.com/Seagate-ST6000NM0115-6TB-128MB-SATA-Enterprise-HDD-p/g01-1326.htm) | **$189.95** |
 | **Patriot P310** 480 GB, M.2 2280 PCIe Gen3 x4 NVMe, 240 TB TBW — PVE boot | Amazon/Walmart/B&H | **$65** |
 
-**Total: $833.90** (was $818 — the chassis was recorded at $383 from an Amazon listing; TerraMaster's
-own store is **$399** for the N95).
+**Total: $914.89** (chassis decided 2026-09-08 — see the Resume-here block. The $479.99 is a 20%
+sale price; this SKU has been seen between ~$456 and ~$520, so **re-check before ordering**.)
+Optional cold spare: a third 6 TB drive, ~$180, undecided.
 
 ### Vendor pricing and RAM, terra-master.com 2026-09-07
+
+> **CORRECTED 2026-09-08 — the table below is wrong.** The F4-425 Plus is sold as two SKUs with
+> *different* memory, and the 16 GB is the **N150**'s. Both cost the same. Current, verified on the
+> vendor's own product pages 2026-09-08:
+>
+> | Model | CPU | Pre-installed RAM (1 slot) | Store price |
+> |---|---|---|---|
+> | F2-425 Plus | N95 / N150 | **8 GB** (both) | **$424.99** |
+> | F4-425 Plus | N95 | **8 GB** | **$479.99** |
+> | **F4-425 Plus** | **N150** | **16 GB** | **$479.99** ← buy this |
+>
+> Detail and sources: [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) § 1.
 
 | Model | N95 | N150 | Pre-installed RAM (1 slot, all models) |
 |---|---|---|---|
 | F2-425 Plus | **$399** | $425 | **8 GB** |
-| F4-425 Plus | **$510** | **N/A** | **16 GB** (N95 confirmed by TerraMaster support) |
+| F4-425 Plus | **$510** | **N/A** | ~~**16 GB** (N95 confirmed by TerraMaster support)~~ — **WRONG, see above** |
 
-> **The chassis choice is REOPENED** — see *Open decisions* item 5. The F4's 16 GB makes it the
-> cheapest path to 16 GB, since the single slot means an F2 upgrade wastes the bundled stick.
-> Pending a width measurement (+59 mm). The $833.90 total below assumes the F2.
-
-**The N150 premium is now $26, not the $42 the 2026-08-30 CPU decision was argued against.** That
-decision assumed "no transcoding use case is planned"; the software stack has since confirmed
-Immich *will* transcode video (708 GB of Shared Videos). The original reasoning still holds — the
-N95 comfortably does ≥3 concurrent 1080p transcodes and nothing here is 4K — but the number it was
-weighed against has changed, so it is worth a second's thought before ordering rather than being
-treated as settled.
+> **Resolved 2026-09-08: the N150 premium is $0 on the F4, and it is the 16 GB SKU.** The CPU
+> question below is therefore moot rather than overturned — there is no premium left to weigh, and
+> the N150's larger iGPU happens to suit the Immich transcoding the software stack introduced.
 
 **Note the datasheets in [`download/`](../download/) document the N150 variants only.** The N95
 machines actually being bought are not covered by them; everything below that is chassis-level
@@ -91,7 +111,8 @@ research doc) at no cost. Both carry longer warranties than any manufacturer-dir
 (Seagate direct = 6 months, WD direct = 1 year), though a US warranty is near-useless once the
 drives are in Argentina — test them inside the US return window if the trip allows.
 
-**CPU variant decided 2026-08-30: N95, not N150 (+$42).** Chassis, RAM, M.2 count and LAN are
+**CPU variant decided 2026-08-30: N95, not N150 (+$42) — MOOT since 2026-09-08**, both F4 SKUs
+being $479.99 and only the N150 carrying 16 GB. Reasoning kept for the record. Chassis, RAM, M.2 count and LAN are
 identical between the two — only the CPU/iGPU differ. N150 is ~6% faster CPU-wise and has a
 faster iGPU with AV1 hardware support; N95 lacks AV1 accel and its HEVC-to-HEVC transcode is the
 weakest link. None of that matters here: no transcoding use case is planned, and if one appears
@@ -260,27 +281,21 @@ again** and merged into item 5 — the chassis choice. Kept here for the reasoni
 
 4. ~~**Does the BACKUP_A/B rotation move to the NAS?**~~ — **decided 2026-09-07: yes, it moves.**
    See "Knock-on" below; this has consequences beyond the NAS.
-5. **2-bay vs 4-bay — REOPENED 2026-09-07, awaiting a measurement.** Decided as "2 bays, on box
-   size" earlier the same day, then reopened when TerraMaster support confirmed **the F4-425 Plus
-   N95 ($510) ships with 16 GB**. The premise of the original call — that the F4 step buys "bays
-   only" — was false.
+5. ~~**2-bay vs 4-bay**~~ — **CLOSED 2026-09-08: the F4-425 Plus, N150 variant.** The user
+   measured the space and the 4-bay fits on a new shelf, choosing it for the memory rather than
+   the bays. The SKU then changed on inspecting the vendor store: **the 16 GB is the N150's, not
+   the N95's** — the 09-07 support statement was wrong. Both F4 variants are $479.99, so 16 GB is
+   free of any CPU premium.
 
-   Because there is **one SODIMM slot**, upgrading the F2 discards its bundled 8 GB, so the F4 is
-   the *cheapest* route to 16 GB:
+   | Option | CPU | RAM | Bays | Total |
+   |---|---|---|---|---|
+   | F2-425 Plus | N95/N150 | 8 GB | 2 | $859.89 |
+   | F4-425 Plus | N95 | 8 GB | 4 | $914.89 — pointless |
+   | **F4-425 Plus** | **N150** | **16 GB** | **4** | **$914.89** ← ordered spec |
 
-   | Option | RAM | Bays | Total |
-   |---|---|---|---|
-   | F2-425 Plus N95 | 8 GB | 2 | **$833.90** |
-   | **F4-425 Plus N95** | **16 GB** | **4** | **$944.90** (+$111) |
-   | ~~F2 + ~$209 16 GB SODIMM~~ | 16 GB | 2 | ~$1,042.90 — **dominated, strike it** |
+   Detail, sources and the revised 16 GB allocation:
+   [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md).
 
-   **$111 buys the fix to this project's binding constraint**, not just headroom: the all-LXC RAM
-   budget is 7.5–9 GB against 8 GB and does not fit, so the F2 path means capping ARC at 1 GB or
-   disabling Immich ML (losing face recognition and smart search).
-
-   **Turns on one number: the F4 is 59 mm wider (122 → 181 mm); height and depth are identical**
-   (150 × … × 219 mm both). Net weight 2.2 → 2.9 kg, so ~3.5 → ~4.2 kg with drives for the trip.
-   **The user is measuring the available space — nothing is ordered until that answer exists.**
 6. ~~**Verify the local restic repo**~~ — **done 2026-09-07, the restore source is sound.**
    BACKUP_B's `restic-wdmycloud` holds 14 snapshots (2025-12-24 → 2026-09-05) at a consistent
    1.450–1.462 TiB with no empties; the latest (`866e7c76`, 2026-09-05) is 117,635 files /
@@ -289,8 +304,24 @@ again** and merged into item 5 — the chassis choice. Kept here for the reasoni
    restore source. Full detail and remaining caveats (BACKUP_A unverified, offsite) in
    [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md).
 
+7. **Disk purchase deferred — decided 2026-09-08: the drives are chosen after the NAS is bought.**
+   Costs schedule, not correctness — the 2× 6 TB sizing never depended on the chassis, goHardDrive
+   ships from California, and the **four SATA bays cannot be tested until a drive is in**, so part
+   of the chassis's own return window depends on the drives arriving. Budget ≥1 week of US time
+   after the NAS lands. A **third 6 TB as a cold spare (~$180)** is still open and is best decided
+   in the same order — replacing a failed mirror half from Argentina is slow and expensive, and
+   the F4 has the bay. Neither is in the ~$914.89 total.
+8. **US acceptance test — planned, not executed.** Procedure, SMART pass/fail criteria and what to
+   check inside the return window:
+   [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) § 5.
+9. **BACKUP_A/B cabling and the backup-job rewrite.** Cable spec is settled (§ 3 of the 09-08 doc);
+   **how ceres' restic jobs reach the drive once it is on the NAS is still undesigned** — see the
+   "Knock-on" note above.
+
 ## Related
 
+[[docs/2026-09-08_nas-chassis-decision-and-acceptance-test.md]] — chassis decision, the 16 GB
+allocation, BACKUP_A/B cabling, the hub reassessment and the US acceptance test.
 [[docs/2026-09-07_nas-software-stack.md]] — what runs on the box: base OS, guests, sharing
 protocols, disk topology, the RAM budget, and the two deferred questions.
 [[docs/2026-08-20_nas-disk-prices-and-raid-options.md]] — 2/3/4/6/8 TB street prices, what to look

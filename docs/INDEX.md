@@ -196,31 +196,41 @@ fixed permanently 2026-09-05 with a polling `ExecStartPre` →
 
 ## NAS project
 
-**Current:** buy list settled except the chassis, nothing ordered. **$833.90** with the F2-425
-Plus N95 (re-priced $383→$399 from terra-master.com 2026-09-07), **$944.90** with the F4-425 Plus
-N95 and its 16 GB — pending a width measurement, see below. TerraMaster F2-425 **Plus, N95** CPU + 2× 6 TB
-recert (goHardDrive) + Patriot P310 480 GB boot NVMe →
-[memory_nas-project.md](memory_nas-project.md). **Vendor datasheets now in `download/`** —
-authoritative, and the only source to trust after three aggregator spec errors on this chassis. **Software stack designed 2026-09-07** — PVE +
-ZFS mirror, all LXCs, host owns the disks and bind-mounts them. **Samba decided 2026-09-07:
-unprivileged LXC with `idmap=passthrough`** (PVE 9.2's per-mount `idmap`, which privileged
-containers cannot use at all); **Immich decided 2026-09-07: podman, no Docker** — every compose
-feature it uses is supported, verified against podman-compose's source. **No deferred questions
-remain on the stack** →
-[2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **The F4-425 Plus now ships
-with 8 GB, not 16 GB** (checked 2026-09-07) — the cheap RAM path is gone and 8 GB is the binding
-constraint. **Chassis choice REOPENED 2026-09-07 and is now the blocking decision**: every model
-has ONE SODIMM slot, so an F2 upgrade discards its bundled 8 GB — which makes the **F4-425 Plus
-N95 ($510, 16 GB)** the cheapest route to 16 GB, $111 over the F2 and ~$98 under F2-plus-a-stick.
-It resolves the RAM constraint outright rather than managing it. **Turns solely on whether 59 mm
-more width is available (122 → 181 mm; height and depth identical) — user is measuring.**
+**Current:** **chassis DECIDED 2026-09-08 — buy list is final and nothing blocks the order.**
+The user measured the space and the 4-bay fits. Inspecting the vendor store to place the order
+found the **fourth spec error on this chassis**: the **16 GB belongs to the N150 SKU, not the
+N95** — the 09-07 "TerraMaster support confirmed" line was wrong. Both F4 CPU variants are
+**$479.99**, so buy the **F4-425 Plus N150, 16 GB → ~$914.89 total** (chassis + 2× 6 TB recert
+from goHardDrive + Patriot P310 480 GB boot NVMe). **terra-master.com lists only the N95 right
+now** — the N150/16 GB SKU is on Amazon US (`B0FLHTF2PQ`, vs `B0GW883KMF` for the N95) and Newegg,
+$456–520; re-check at buy time. **Price targets for all four SKUs are tabulated in the 09-08 doc**
+— buy #1 at ≤$470, walk away above $520; the F4 **N95 is 8 GB** and is overpriced at list against
+every alternative; the F2 is **2 bays** and reinstates the ARC-vs-Immich-ML compromise. That also moots the 08-30 "N95 not N150" call: no
+premium left to weigh. **Trust only the vendor product page or datasheet matched to the exact SKU
+— not aggregators, not Amazon listings, and not customer support.**
+**At 16 GB the software stack's two compromises are withdrawn**: ARC gets 4 GB (not 1–2) and
+**Immich ML stays on**, so face recognition and smart search survive; the "PBS on the PVE host"
+fallback is dead. Growth path is a second mirror vdev in the spare bays (→10.9 TiB), never RAIDZ;
+the spare M.2 slots get no L2ARC and no `special` vdev. **Stack design otherwise unchanged** —
+PVE + ZFS mirror, all LXCs, host owns the disks and bind-mounts them; **Samba: unprivileged LXC
+with `idmap=passthrough`** (privileged containers cannot use the option at all); **Immich: podman,
+no Docker**.
 **Also settled 2026-09-07: BACKUP_A/B rotation moves to the NAS** — freeing gr-srv03's third USB
-port and making the ordered RSH-A10 hub unnecessary. Only unverified purchase item: noise from the
-7200 rpm recert drives (the 20.0 dB(A) datasheet figure is standby-only).
+port and making the ordered RSH-A10 unnecessary (keep it anyway: it is the fleet's only
+PPPS/`uhubctl` device). **Open:** disks are now bought *after* the chassis (schedule risk — the SATA bays
+cannot be tested until a drive is in); a ~$180 third drive as a cold spare; the US acceptance test
+(**runbook written 09-08, not yet run** — a 15-min PVE install on the NVMe makes the box an SSH
+target on arrival day, so the chassis is testable before the drives exist; note **TOS aborts long
+SMART tests unless Hard Drive Sleep is set to Never**); and **how ceres' restic jobs reach BACKUP_A/B once it hangs off the NAS**, which is
+still undesigned. Last unverified purchase item: noise from the 7200 rpm recert drives — the
+datasheet dB(A) figure is standby-only, so it can only be judged in the USA, inside the return
+window.
 
-- [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) — **open** — base OS, guests, share protocols, disk topology, RAM budget; corrects the 16 GB F4-425 Plus claim in both research docs; **restore source verified 2026-09-07** (BACKUP_B restic repo sound and complete — S3 Glacier is *not* the restore source)
+- [2026-09-08_nas-us-acceptance-test-runbook.md](2026-09-08_nas-us-acceptance-test-runbook.md) — **open** — **the field procedure**: ISO links (SystemRescue 13.02, PVE 9.2-1), USB prep, a 15-min Proxmox install on the NVMe that makes the NAS an SSH target, the overnight SMART run, pass/fail table, troubleshooting. Self-contained — follow this one on the trip
+- [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) — **open** — chassis decided (F4-425 Plus **N150**, 16 GB, ~$914.89); corrects the N95/16 GB error; **price targets for all four SKUs**; the 16 GB RAM allocation; BACKUP_A/B 60 cm cable spec; gr-srv03 hub reassessment; *why* the acceptance test is shaped as it is (§5 procedure moved to the runbook)
+- [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) — **open** — base OS, guests, share protocols, disk topology; **its two RAM sections are superseded by the 09-08 doc**, the rest is current; **restore source verified 2026-09-07** (BACKUP_B restic repo sound and complete — S3 Glacier is *not* the restore source)
 - [memory_nas-project.md](memory_nas-project.md) — **open** — scope, sizing, buy list, rejected options
-- [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc**; itself **corrected 2026-09-07** on the F4-425 Plus RAM. Verify stock before ordering
+- [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc**; itself **corrected 2026-09-07 and again 2026-09-08** on the F4-425 Plus RAM (16 GB is the N150 SKU). Verify stock before ordering
 - [2026-08-19_nas-hardware-research.md](2026-08-19_nas-hardware-research.md) — *active* — market context and OS choice. **§5 and §9 enclosure specs are wrong** — see above; §9's "buy RAM pre-installed" advice is void
 
 ## Tooling and workstation
