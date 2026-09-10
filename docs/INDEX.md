@@ -196,19 +196,22 @@ fixed permanently 2026-09-05 with a polling `ExecStartPre` →
 
 ## NAS project
 
-**Current:** **chassis DECIDED 2026-09-08 — buy list is final and nothing blocks the order.**
-The user measured the space and the 4-bay fits. Inspecting the vendor store to place the order
-found the **fourth spec error on this chassis**: the **16 GB belongs to the N150 SKU, not the
-N95** — the 09-07 "TerraMaster support confirmed" line was wrong. Both F4 CPU variants are
-**$479.99**, so buy the **F4-425 Plus N150, 16 GB → ~$914.89 total** (chassis + 2× 6 TB recert
-from goHardDrive + Patriot P310 480 GB boot NVMe). **terra-master.com lists only the N95 right
-now** — the N150/16 GB SKU is on Amazon US (`B0FLHTF2PQ`, vs `B0GW883KMF` for the N95) and Newegg,
-$456–520; re-check at buy time. **Price targets for all four SKUs are tabulated in the 09-08 doc**
-— buy #1 at ≤$470, walk away above $520; the F4 **N95 is 8 GB** and is overpriced at list against
-every alternative; the F2 is **2 bays** and reinstates the ARC-vs-Immich-ML compromise. That also moots the 08-30 "N95 not N150" call: no
-premium left to weigh. **Trust only the vendor product page or datasheet matched to the exact SKU
-— not aggregators, not Amazon listings, and not customer support.**
-**At 16 GB the software stack's two compromises are withdrawn**: ARC gets 4 GB (not 1–2) and
+**Current:** **chassis DECIDED 2026-09-10 — TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB),
+$687 Amazon → $1,121.90 total** (chassis + 2× 6 TB recert from goHardDrive + Patriot P310 480 GB
+boot NVMe). Nothing ordered yet. **This replaces the 09-08 F4-425 Plus N150 decision, which rested
+on a price that never existed** — the **fifth** price/spec error on this chassis and the first that
+was ours: $479.99 was the **N95/8 GB** price, scraped from a store page that sells only the N95 and
+then applied to the N150. Real 09-10 prices: N150/16 GB **$649** (list $649.99, best-ever $519.99),
+N95/8 GB $479. The gap is 8 GB of DDR5 at shortage pricing, **not a lapsed sale**, so waiting will
+not bring it back — and it put the Pro line only **$38** above the N150. **The 09-08 price-target
+table is void**; its "walk away above $520" was the SKU's historical *floor*. User's call, and the
+right one: *"now all is 1 GbE… the RAM will make a much larger difference in the long term."* The
+F4-424 Pro doubles cores and RAM for +$38, losing only 5GbE (→2× 2.5GbE, unused either way on a
+1 GbE LAN) and one M.2 slot (3→2, one is needed); it also has a **published Proxmox install guide**
+and the same BIOS menu names the runbook already uses. **Trust only the vendor product page or
+datasheet matched to the exact SKU — and only a price the same page will actually sell you.**
+**At 32 GB the RAM question is closed** — the stack's two compromises were already withdrawn at
+16 GB: ARC gets 4 GB (not 1–2) and
 **Immich ML stays on**, so face recognition and smart search survive; the "PBS on the PVE host"
 fallback is dead. Growth path is a second mirror vdev in the spare bays (→10.9 TiB), never RAIDZ;
 the spare M.2 slots get no L2ARC and no `special` vdev. **Stack design otherwise unchanged** —
@@ -218,16 +221,19 @@ no Docker**.
 **Also settled 2026-09-07: BACKUP_A/B rotation moves to the NAS** — freeing gr-srv03's third USB
 port and making the ordered RSH-A10 unnecessary (keep it anyway: it is the fleet's only
 PPPS/`uhubctl` device). **Open:** disks are now bought *after* the chassis (schedule risk — the SATA bays
-cannot be tested until a drive is in); a ~$180 third drive as a cold spare; the US acceptance test
-(**runbook written 09-08, not yet run** — a 15-min PVE install on the NVMe makes the box an SSH
-target on arrival day, so the chassis is testable before the drives exist; note **TOS aborts long
-SMART tests unless Hard Drive Sleep is set to Never**); and **how ceres' restic jobs reach BACKUP_A/B once it hangs off the NAS**, which is
+cannot be tested until a drive is in); a ~$180 third drive as a cold spare; the F4-424 Pro's **USB
+port count/connector types** (vendor says 2 rear, no front — confirm on unboxing, BACKUP_A/B plugs
+in there); the US acceptance test (**runbook written 09-08, corrected 09-10 for the new chassis,
+not yet run** — a 15-min PVE install on the NVMe makes the box an SSH target on arrival day, so the
+chassis is testable before the drives exist; note **TOS aborts long SMART tests unless Hard Drive
+Sleep is set to Never**); and **how ceres' restic jobs reach BACKUP_A/B once it hangs off the NAS**, which is
 still undesigned. Last unverified purchase item: noise from the 7200 rpm recert drives — the
 datasheet dB(A) figure is standby-only, so it can only be judged in the USA, inside the return
 window.
 
-- [2026-09-08_nas-us-acceptance-test-runbook.md](2026-09-08_nas-us-acceptance-test-runbook.md) — **open** — **the field procedure**: ISO links (SystemRescue 13.02, PVE 9.2-1), USB prep, a 15-min Proxmox install on the NVMe that makes the NAS an SSH target, the overnight SMART run, pass/fail table, troubleshooting. Self-contained — follow this one on the trip
-- [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) — **open** — chassis decided (F4-425 Plus **N150**, 16 GB, ~$914.89); corrects the N95/16 GB error; **price targets for all four SKUs**; the 16 GB RAM allocation; BACKUP_A/B 60 cm cable spec; gr-srv03 hub reassessment; *why* the acceptance test is shaped as it is (§5 procedure moved to the runbook)
+- [2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md) — **open** — **current chassis decision (F4-424 Pro, $687, total $1,121.90)**; why the $479.99 N150 price was never real and the 09-08 price targets are void; the five-SKU price table at real 09-10 prices; the accepted trade-offs (2.5GbE, 2× M.2, 32 GB ceiling) — do not re-open them
+- [2026-09-08_nas-us-acceptance-test-runbook.md](2026-09-08_nas-us-acceptance-test-runbook.md) — **open** — **the field procedure**, **corrected 2026-09-10 for the F4-424 Pro** (expect **32 GB**, not 16 — as written it would have told you to return a correct box; LAN 2500Mb/s; 2 M.2 / 2 rear USB): ISO links (SystemRescue 13.02, PVE 9.2-1), USB prep, a 15-min Proxmox install on the NVMe that makes the NAS an SSH target, the overnight SMART run, pass/fail table, troubleshooting. Self-contained — follow this one on the trip
+- [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) — **open** — **§1 and its price targets are superseded by the 09-10 doc — do not act on them**; the rest stands: the 16 GB RAM allocation; BACKUP_A/B 60 cm cable spec; gr-srv03 hub reassessment; *why* the acceptance test is shaped as it is (§5 procedure moved to the runbook)
 - [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) — **open** — base OS, guests, share protocols, disk topology; **its two RAM sections are superseded by the 09-08 doc**, the rest is current; **restore source verified 2026-09-07** (BACKUP_B restic repo sound and complete — S3 Glacier is *not* the restore source)
 - [memory_nas-project.md](memory_nas-project.md) — **open** — scope, sizing, buy list, rejected options
 - [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc**; itself **corrected 2026-09-07 and again 2026-09-08** on the F4-425 Plus RAM (16 GB is the N150 SKU). Verify stock before ordering

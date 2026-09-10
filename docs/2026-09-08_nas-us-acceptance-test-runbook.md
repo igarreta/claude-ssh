@@ -5,12 +5,21 @@
 **Supersedes:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§ 5 only)
 **Superseded-by:** —
 
+> **CORRECTED 2026-09-10 — the chassis changed to the TerraMaster F4-424 Pro** (i3-N305 8-core,
+> **32 GB**, 2× 2.5GbE, 2× M.2). As originally written this runbook told you to **return the box if
+> the BIOS did not report 16 GB**, which would have rejected a correct machine. The four
+> chassis-specific checks below (memory, memtest duration, LAN speed, USB/M.2 counts) have been
+> updated in place and are marked *(F4-424 Pro)*. **The Proxmox install procedure is unchanged** —
+> the 424 Pro's BIOS uses the same menu names, and unlike the 425 Plus it has a published Proxmox
+> install guide. Why the chassis changed →
+> [2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md)
+
 **Date**: 2026-09-08. Written to be followed **offline, in a hotel room, on a phone or a printout**.
 Nothing here needs the rest of the repo. Why each test exists is in
 [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md);
 this doc is the procedure only.
 
-**Goal**: prove the chassis, the 16 GB, and two *secondhand* 6 TB drives are sound **while a US
+**Goal**: prove the chassis, the 32 GB, and two *secondhand* 6 TB drives are sound **while a US
 return is still possible**. Total hands-on time ≈ 45 min, spread over two sessions plus one
 unattended night.
 
@@ -35,8 +44,8 @@ Take **9.2-1 amd64** — *not* the `-arm64` build, which is for ARM hosts and wi
 machine. 9.2 is also the same generation as gr-srv03 (pve-manager 9.2.11).
 
 > **`amd64` does not mean "AMD processor".** It is the name of the 64-bit x86 instruction set AMD
-> invented and Intel adopted, so it covers **both** Intel and AMD CPUs. The N150 in this NAS is
-> Intel and takes the `amd64` build. SystemRescue uses the same convention.
+> invented and Intel adopted, so it covers **both** Intel and AMD CPUs. The i3-N305 in this NAS
+> is Intel and takes the `amd64` build. SystemRescue uses the same convention.
 >
 > Proxmox's download page lists releases newest-first, so the ARM build appears **above** the one
 > you want and neither says "Intel". Go by the **filename**:
@@ -77,7 +86,8 @@ Finding a bad write in a hotel room is the one avoidable failure in this whole p
 
 ### A1. Fit the boot NVMe only
 
-Patriot P310 into M.2 slot 1. **Leave the drive bays empty** if the HDDs have not arrived.
+Patriot P310 into M.2 slot 1 *(the F4-424 Pro has **2** M.2 slots, not 3)*. **Leave the drive
+bays empty** if the HDDs have not arrived.
 
 ### A2. Connect and enter the BIOS
 
@@ -88,9 +98,10 @@ splash (**F12** gives a one-time boot menu).
 
 | Check | Expected |
 |---|---|
-| **Total memory** | **16384 MB / 16 GB** |
+| **Total memory** | **32768 MB / 32 GB** *(F4-424 Pro)* |
 | NVMe | Patriot P310 listed |
 | SATA ports | 4 present (drives may be absent) |
+| M.2 | 2 slots *(F4-424 Pro)* |
 
 Then set:
 
@@ -99,14 +110,15 @@ Then set:
 - `Boot` → UEFI USB drive as Boot Option #1
 - Save & Exit
 
-> **If the memory does not read 16 GB, stop.** That is the entire reason this chassis was chosen
-> over the cheaper F2. Return it and re-read the SKU table before rebuying — the N95 variant ships
-> with 8 GB.
+> **If the memory does not read 32 GB, stop** *(F4-424 Pro — it ships at its 32 GB maximum and has
+> no upgrade path, so this is not fixable later)*. The RAM is the entire reason this chassis was
+> chosen over the cheaper F2 and over the F4-425 Plus. Return it and confirm the listing was the
+> **F4-424 Pro**, not an F4-425 Plus — those ship with 8 or 16 GB.
 
 ### A3. memtest86+ *(optional, 20 min, recommended)*
 
 Boot the **SystemRescue** stick and pick **memtest86+** from its boot menu. One full pass over
-16 GB takes ~15–20 min. **Zero errors.** Do it while unpacking; it is the only test that proves the
+**32 GB** takes ~**30–40 min** *(F4-424 Pro — twice the RAM, twice the wait)*. **Zero errors.** Do it while unpacking; it is the only test that proves the
 RAM is *good* rather than merely *present*.
 
 ### A4. Install Proxmox VE 9.2 to the NVMe
@@ -266,17 +278,23 @@ re-check `smartctl -a` for any new `UDMA_CRC_Error_Count`.
 ## Phase C — the rest of the machine *(10 min, while it is still returnable)*
 
 ```sh
-ethtool <iface> | grep -i speed          # 5000Mb/s — repeat with the cable in the other port
-lsusb -t                                 # after plugging the Canvio into each of the 4 ports
+ethtool <iface> | grep -i speed          # 2500Mb/s — repeat with the cable in the other port
+lsusb -t                                 # after plugging the Canvio into each rear USB port
 sensors ; smartctl -a /dev/sda | grep -i temperature
 ```
 
-- **Both 5GbE ports** link at 5000Mb/s. Find interface names with `ip -brief a`.
-- **All four USB ports** (1 front Type-A, 2 rear Type-A, 1 rear Type-C), tested with the **Toshiba
-  Canvio and the new 60 cm cable** — that validates the cable purchase too. `lsusb -t` must show
-  **`5000M`**, not `480M`; `480M` means a USB 2.0 Micro-B plug and ~35 MB/s.
+- **Both LAN ports** link at **2500Mb/s** *(F4-424 Pro is 2× 2.5GbE, not 5GbE)*. Find interface
+  names with `ip -brief a`. Nothing on the home LAN exceeds 1 GbE, so this only proves the ports work.
+- **Every USB port**, tested with the **Toshiba Canvio and the new 60 cm cable** — that validates
+  the cable purchase too. `lsusb -t` must show **`5000M`**, not `480M`; `480M` means a USB 2.0
+  Micro-B plug and ~35 MB/s.
+  > *(F4-424 Pro)* The vendor spec table lists **2 rear USB 3.2 Gen2 (10 Gbps)** ports and no front
+  > port; some retail listings say one of them is Type-C. **Count and identify them on unboxing** —
+  > BACKUP_A/B rotation moves to this box, and only one of those drives is ever connected at a time,
+  > so 2 ports is enough but leaves no spare beyond it. If a Type-C is present, check the 60 cm
+  > cable's plug matches.
 - **Fan noise with both drives spinning** — force it with the B6 `dd`, or just re-read a few
-  hundred GB. This is the last unverified item on the buy list: TerraMaster's 20.9 dB(A) figure is
+  hundred GB. This is the last unverified item on the buy list: TerraMaster's 21.0 dB(A) figure is
   measured with drives in **standby** and says nothing about recertified 7200 rpm enterprise drives
   seeking. The USA is the only place a return is possible if it is intolerable.
 - **Drive temperature** under sustained load: under 45 °C is comfortable, over 50 °C wants

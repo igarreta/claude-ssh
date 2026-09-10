@@ -7,7 +7,25 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
-> **Resume here** (updated 2026-09-08). **The chassis is DECIDED and the buy list is final.**
+> **Resume here** (updated 2026-09-10). **The chassis is DECIDED: TerraMaster F4-424 Pro,
+> i3-N305 8-core, 32 GB, $687 (Amazon) — project total $1,121.90.** Nothing ordered yet.
+>
+> **The 09-08 buy list was built on a price that never existed.** The $479.99 taken for the
+> F4-425 Plus N150/16 GB was the **N95/8 GB** price on a store page that sells only the N95. Real
+> prices 2026-09-10: N150/16 GB **$649**, N95/8 GB **$479**. The gap is 8 GB of DDR5 at shortage
+> pricing, not a lapsed sale, so waiting will not bring it back. That put the **Pro line only $38
+> above** the N150 — and the user chose RAM over LAN speed: *"now all is 1 GbE. I may grow later,
+> but the RAM will make a much larger difference in the long term."* The F4-424 Pro doubles cores
+> and RAM for +$38, losing 5GbE (→2× 2.5GbE, unused either way on a 1 GbE LAN) and one M.2 slot
+> (3→2, one is needed). It also has a **published Proxmox install guide**, which the 425 Plus never
+> had. Full correction and the accepted trade-offs →
+> [2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md).
+> **At 32 GB the RAM question is closed for good** — do not re-plan the ARC/Immich allocation
+> before the box exists; tune it after the restore.
+>
+> <details><summary>Superseded 2026-09-08 chassis decision (F4-425 Plus N150) — kept for the trail</summary>
+>
+> **The chassis is DECIDED and the buy list is final.**
 > The user measured the space on 2026-09-08 and the 4-bay fits on a new shelf. Checking the vendor
 > store to order then found that **the 16 GB belongs to the N150 SKU, not the N95** — the 09-07
 > "TerraMaster support confirmed the F4 N95 has 16 GB" was wrong, the fourth spec error on this
@@ -28,14 +46,20 @@
 > reassessment and the **US acceptance-test procedure** are in
 > [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md).
 >
+> </details>
+>
 > **Open, and worth deciding before the trip:** a **third 6 TB drive as a cold spare (~$180)** —
 > replacing a failed mirror half from Argentina is slow and expensive, and the F4 now has the bay.
+>
+> **Open:** the F4-424 Pro's **USB port count/connector types** (vendor says 2 rear, 10 Gbps, no
+> front; some listings mention Type-C) — confirm on unboxing, it is where BACKUP_A/B will plug in.
 >
 > **Software stack designed 2026-09-07** — Proxmox VE + ZFS mirror, everything as LXCs (no VMs),
 > SMB + PBS + SFTP + HTTPS, host owns the disks and bind-mounts them into the guests →
 > [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md). **Samba: unprivileged LXC
 > with `idmap=passthrough`.** **Immich runtime: podman, no Docker.** At 16 GB the two compromises
-> that doc agonised over are withdrawn: ARC gets 4 GB and Immich ML stays on.
+> that doc agonised over are withdrawn: ARC gets 4 GB and Immich ML stays on — and at the 32 GB the
+> F4-424 Pro actually ships with, there is no allocation to argue about at all.
 >
 > Everything else on the hardware side is settled: **P1** (both drives now — secondhand, so the
 > mirror is complete from day one) and the **Patriot P310 480 GB** boot NVMe at $65. Nothing
@@ -45,13 +69,16 @@
 
 | Item | Source | Price |
 |---|---|---|
-| **TerraMaster F4-425 Plus** (**N150**, **16 GB** DDR5 in **1 slot** →32, 3× M.2 PCIe 3.0 x1, 2× 5GbE, **4 bays**) | terra-master.com | **$479.99** |
+| **TerraMaster F4-424 Pro** (**i3-N305 8-core**, **32 GB** DDR5 — at its max, no upgrade path, 2× M.2 PCIe 3.0 x1, 2× 2.5GbE, **4 bays**) | Amazon US | **$687** |
+| ~~TerraMaster F4-425 Plus (N150, 16 GB, 3× M.2, 2× 5GbE, 4 bays)~~ — **superseded 2026-09-10**, actually $649 not $479.99 | Newegg | ~~$479.99~~ |
 | **HGST Ultrastar 7K6000** HUS726060ALE610 6 TB SATA, cert. refurb, 3 yr | [goHardDrive g01-1079](https://www.goHardDrive.com/HGST-Ultrastar-0F23001-6TB-7200RPM-Hard-Drive-p/g01-1079.htm) | **$179.95** |
 | **Seagate Exos 7E8** ST6000NM0115 6 TB SATA, enterprise, 5 yr | [goHardDrive g01-1326](https://www.goHardDrive.com/Seagate-ST6000NM0115-6TB-128MB-SATA-Enterprise-HDD-p/g01-1326.htm) | **$189.95** |
 | **Patriot P310** 480 GB, M.2 2280 PCIe Gen3 x4 NVMe, 240 TB TBW — PVE boot | Amazon/Walmart/B&H | **$65** |
 
-**Total: $914.89** (chassis decided 2026-09-08 — see the Resume-here block. The $479.99 is a 20%
-sale price; this SKU has been seen between ~$456 and ~$520, so **re-check before ordering**.)
+**Total: $1,121.90** (chassis decided 2026-09-10 — see the Resume-here block. The old $914.89 total
+rested on a $479.99 price for the N150/16 GB that was never real; it lists at $649.99. **Re-check
+prices before ordering** —
+[2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md).)
 Optional cold spare: a third 6 TB drive, ~$180, undecided.
 
 ### Vendor pricing and RAM, terra-master.com 2026-09-07

@@ -3,12 +3,21 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** 2026-09-07_nas-software-stack.md (§ *The 16 GB question is OPEN* and § *The RAM budget is the binding constraint* only)
-**Superseded-by:** 2026-09-08_nas-us-acceptance-test-runbook.md (§ 5 only — the procedure moved there)
+**Superseded-by:** 2026-09-08_nas-us-acceptance-test-runbook.md (§ 5 only — the procedure moved there); 2026-09-10_nas-chassis-price-correction-f4-424-pro.md (§ 1 and the price-target table only)
 
 **Date**: 2026-09-08. The user measured the space and **the 4-bay chassis fits** on a new shelf,
 choosing it for the RAM rather than the bays. That closes item 5 of
 [memory_nas-project.md](memory_nas-project.md) — but checking the vendor store to place the order
 turned up a **fourth spec error on this chassis**, and it inverts which SKU to buy.
+
+> **CORRECTED 2026-09-10 — the prices in § 1 below are wrong and the chassis has changed.**
+> The **$479.99 was the N95/8 GB price**, scraped from a store page that (as this same section
+> records) sells only the N95, and then wrongly applied to the N150. The N150/16 GB lists at
+> **$649.99**; its best-ever street price was $519.99. The **price-target table below is void** —
+> its "walk away above $520" was the SKU's historical *floor*. **The buy is now the TerraMaster
+> F4-424 Pro** (i3-N305 8-core, 32 GB, $687, project total $1,121.90), decided 2026-09-10. The
+> RAM correction in this section is still true, and §§ 2–4 are unaffected →
+> [2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md)
 
 ## 1. CORRECTION — the 16 GB belongs to the **N150**, not the N95
 
