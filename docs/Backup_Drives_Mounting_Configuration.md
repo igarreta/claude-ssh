@@ -132,8 +132,8 @@ systemctl stop mnt-backup_a.mount
 | Drive | UUID | Status |
 |-------|------|--------|
 | BACKUP_USB1 | b52be7b7-1bd0-4281-8c16-87ceeca5b665 | fstab (always mounted) |
-| BACKUP_A | ef8a4442-68a6-485c-992c-9fd79b183201 | Systemd + udev (hotplug) |
-| BACKUP_B | 2d0b0d7c-c5bd-4d8a-b477-29732001f6df | Systemd + udev (hotplug) |
+| BACKUP_A | ef8a4442-68a6-485c-992c-9fd79b183201 | Systemd + udev (hotplug) — WDC WD40NDZW-11BCVS0, 4 TB |
+| BACKUP_B | 2d0b0d7c-c5bd-4d8a-b477-29732001f6df | Systemd + udev (hotplug) — Toshiba MQ03UBB300, 3 TB |
 
 To find device/UUID for new drives:
 ```bash
@@ -233,7 +233,11 @@ To eliminate hot-unplug risk, the backup drives are unmounted on a schedule:
 ## Disk Spindown and Backup Wake Script
 
 ### Problem
-`BACKUP_A` and `BACKUP_B` are spinning HDDs (Toshiba MQ03UBB300) with APM level 128.
+`BACKUP_A` and `BACKUP_B` are spinning HDDs, both at APM level 128. They are **not the
+same model**: BACKUP_B is a Toshiba MQ03UBB300 (3 TB), BACKUP_A a WDC WD40NDZW-11BCVS0
+(4 TB, 4800 rpm, WD Elements / My Passport USB) — verified 2026-09-10. The APM level, and
+therefore everything below, applies to both.
+
 At this APM level the drives spin down after ~10 min of inactivity. When ext4 gets
 an EIO during spinup (drive not ready in time), it sets a `shutdown` flag that makes
 the mount permanently unreadable until remounted — even after the drive is fully spun up.
@@ -253,7 +257,7 @@ it restarts the systemd unit to recover the mount. Only logs errors.
 - Each backup job on ceres must start **within 10 min** of its wake.
 - The full backup window is 02:30–~03:30. Two wakes cover both jobs.
 - If you add a backup job outside this window, add a corresponding wake entry here.
-- Both BACKUP_A and BACKUP_B are affected (same drive model, same APM level).
+- Both BACKUP_A and BACKUP_B are affected (different drive models, same APM level).
 
 ### Hardware failure edge case (2026-06-30)
 
@@ -276,3 +280,4 @@ The daily cycle is sufficient for normal rotation.
 
 _Last updated: 2026-03-21 — wake script fixes EIO on host side; slave propagation (see above) handles stale LXC bind mounts_
 _Updated: 2026-06-30 — documented hardware failure edge case where slave propagation doesn't clean up ceres_
+_Updated: 2026-09-10 — corrected the drive models (A and B are not the same model); slave propagation re-verified live during the 15:00 unmount, see 2026-09-10_gr-srv03_backup-a-rotation-check.md_

@@ -82,18 +82,24 @@ daily restart in place →
 08-25→08-26 BACKUP_A rotation — probe **closed and removed 2026-08-26**. **WDMyCloud NAS
 dead 2026-09-06** — its two backup crons on ceres are disabled until a replacement NAS is
 in place (may take >2 months); existing local + S3 Glacier repos left untouched →
-[2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md). **raspberrypi1's
+[2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md).
+**BACKUP_A checked 2026-09-10 after rotating back in: nightly repo healthy (7/7 tags, floors
+passed, `restic check` clean) and its `restic-wdmycloud` copy verified intact (2026-08-31,
+1.462 TiB) — that closes the last unverified WDMyCloud copy, both local repos are now
+confirmed** →
+[2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md). **raspberrypi1's
 `backup.sh` (shared `igarreta/bin` repo with contabo2) was clobbered by a contabo2-only commit
 2026-09-06, breaking its 09-07 cron run — merged into one hostname-branched script, fixed and
 verified on both hosts 2026-09-07** →
 [2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md)
 
+- [2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md) — *closed* — post-rotation verification of BACKUP_A: mount/propagation, 7/7 tags with floors passed, `restic check` clean, SMART clean, and its WDMyCloud repo verified intact; also corrects the drive model in the mounting doc
 - [2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md) — *closed* — shared-repo clobber; merged into one hostname-branched script
-- [2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md) — **open** — WD MyCloud dead/irrecoverable; found+fixed a live risk where the missing mount would let backup cron rotate out real snapshots; crons disabled, configs wiped, repos preserved
+- [2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md) — **open** — WD MyCloud dead/irrecoverable; found+fixed a live risk where the missing mount would let backup cron rotate out real snapshots; crons disabled, configs wiped, repos preserved — **both local copies now verified (B 09-07, A 09-10)**
 - [2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md) — *active* — design + deployed implementation; finishing tests
 - [2026-08-14_ceres-empty-snapshots-probe.md](2026-08-14_ceres-empty-snapshots-probe.md) — *closed* — 7 months of empty snapshots; `pct reboot 203` fixed it, cause never proven after 3 probe readings, probe removed 2026-08-26
 - [memory_backup_schedule.md](memory_backup_schedule.md) — *active* — **read before adding any job**: disk-wake window 02:25–03:30
-- [Backup_Drives_Mounting_Configuration.md](Backup_Drives_Mounting_Configuration.md) — *active* — fstab + udev/systemd mount units for BACKUP_USB1 / A / B
+- [Backup_Drives_Mounting_Configuration.md](Backup_Drives_Mounting_Configuration.md) — *active* — fstab + udev/systemd mount units for BACKUP_USB1 / A / B; drive models corrected 2026-09-10 (A and B are **not** the same model, both APM 128)
 - [2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md](2026-08-17_contabo2_nfs-backup-hang-rclone-migration.md) — *closed* — NFS over WAN → rclone/SFTP
 - [2026-06-27_raspberrypi2z_backup.md](2026-06-27_raspberrypi2z_backup.md) — *active* — monthly SD image → NFS → restic
 - [memory_ceres_wdmycloud_glacier.md](memory_ceres_wdmycloud_glacier.md) — **open** — WDMyCloud → S3 Glacier mechanics; paused, see 2026-09-06_ceres_wdmycloud-nas-dead.md

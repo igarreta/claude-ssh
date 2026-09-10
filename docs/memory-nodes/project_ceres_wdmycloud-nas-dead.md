@@ -30,9 +30,13 @@ and S3 Glacier repo are all left in place untouched — only the OS-level mount 
 clean, latest = 117,635 files / 1.462 TiB matching the documented 1.6 TB. **It is the *complete*
 copy and therefore the restore source — S3 Glacier is not**, since Glacier excludes ~330 GB
 (`Peliculas`, `Copia disco iMac Mantchoff`, `Archivos`, `Shared Music`) and costs 12–48 h plus
-retrieval fees. **BACKUP_A's independent repo is offsite and unverified** — check it at the next
-rotation, it is the second copy of data with no live source. Detail in
-[[docs/2026-09-07_nas-software-stack.md]].
+retrieval fees. Detail in [[docs/2026-09-07_nas-software-stack.md]].
+
+**BACKUP_A verified 2026-09-10** when it rotated back in — this closes the "offsite and
+unverified" second copy. Latest `905e13f3`, 2026-08-31, 1.462 TiB, 6 snapshots, the 08-27→08-31
+dailies in a 1.457–1.462 TiB band matching B's. Both local copies are now confirmed intact; the
+08-31 vs 09-05 gap is just the rotation, and since the NAS died 09-06 nothing was lost by
+disabling the crons. See [[project_backup_a_rotation_check]].
 
 Full writeup: [docs/2026-09-06_ceres_wdmycloud-nas-dead.md](../2026-09-06_ceres_wdmycloud-nas-dead.md).
 Related: [[project_ceres_wdmycloud_glacier]] (the S3 Glacier job's exclusion/retention

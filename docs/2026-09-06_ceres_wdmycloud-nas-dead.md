@@ -52,11 +52,33 @@ comment explaining why and pointing back here. Verified the local repo's latest 
 
 ## Explicitly NOT touched (data preservation)
 
-- ceres local restic repo (`/mnt/backup_b/restic-wdmycloud`, currently on BACKUP_B).
+- ceres local restic repos — **both** `/mnt/backup_b/restic-wdmycloud` and
+  `/mnt/backup_a/restic-wdmycloud` (two independent drives, not mirrors). Both verified
+  intact, see below.
 - S3 Glacier repo (`backup-greven-wdmycloud`).
 - The backup scripts themselves (`backup-wdmycloud-local.sh`, `backup-wdmycloud-s3.sh`,
   `env-wdmycloud-*.sh`, `status-wdmycloud.sh`) — left in place, just not scheduled, so
   they're ready to re-enable once a replacement NAS exists and is backfilled.
+
+## Both local copies verified — the data is safe
+
+BACKUP_B was verified 2026-09-07 (14 snapshots, 2025-12-24 → 2026-09-05, 1.450–1.462 TiB,
+`restic check` clean). BACKUP_A was offsite and unverified until it rotated back in;
+**verified 2026-09-10** → `2026-09-10_gr-srv03_backup-a-rotation-check.md`.
+
+| Copy | Latest snapshot | Size | Role |
+|---|---|---|---|
+| BACKUP_B `restic-wdmycloud` | 2026-09-05 | 1.462 TiB | **restore source** — freshest and complete |
+| BACKUP_A `restic-wdmycloud` | 2026-08-31 (`905e13f3`) | 1.462 TiB | independent second copy |
+| S3 `backup-greven-wdmycloud` | Glacier Deep Archive | — | excludes ~330 GB; 12–48 h + retrieval fees |
+
+BACKUP_A holds 6 snapshots; the 08-27→08-31 dailies run 1.457–1.462 TiB, matching BACKUP_B's
+band, so nothing was shrinking before the NAS died. Its 08-31 end date is exactly where the
+rotation put it offsite — nothing is missing.
+
+**Nothing was lost by disabling the crons.** The NAS died 09-06, so BACKUP_B's 09-05 snapshot
+is the freshest that can ever exist. Neither repo will gain another snapshot until a
+replacement NAS is backfilled.
 
 ## How to apply
 

@@ -38,6 +38,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 ## Backups and storage
 
+- [project_backup_a_rotation_check.md](project_backup_a_rotation_check.md) — BACKUP_A verified healthy 09-10 after rotation; how to inspect a rotated drive, and which apparent gaps are just retention
 - [project_igarreta-bin_shared-repo-hazard.md](project_igarreta-bin_shared-repo-hazard.md) — `~/bin` is one shared git repo across raspberrypi1/contabo2/raspberrypi2z; host-specific scripts must branch on `$HOSTNAME`, not assume the committing host is universal
 - [project_ceres_empty_snapshots.md](project_ceres_empty_snapshots.md) — 7 months of empty backups, cause never reproduced across 3 probe readings; closed 2026-08-26, health monitor is now the safety net
 - [project_backup_schedule.md](project_backup_schedule.md) — **read before adding any job**: the 02:25–03:30 disk-wake window
