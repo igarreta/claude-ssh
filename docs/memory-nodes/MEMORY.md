@@ -21,6 +21,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 ## Open — needs follow-up
 
+- [project_docker03_decommission.md](project_docker03_decommission.md) — umbrella: docker03 is being retired service by service; a service running there may be a rollback copy, not live
 - [project_gr-srv03_ct901-template.md](project_gr-srv03_ct901-template.md) — CT901 is now the LXC clone template (not CT900, kept as rollback per user choice)
 
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI recovered to ~220 by 08-26, RELAPSED to ~120-127 after 09-05 CT206 migration, port confirmed unchanged; 09-09 recheck must address relapse

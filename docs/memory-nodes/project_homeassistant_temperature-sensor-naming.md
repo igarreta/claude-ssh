@@ -11,7 +11,7 @@ metadata:
 Temperature entity naming in Home Assistant was confusing (mixed brand/protocol/location:
 `zigbee_*`, `wifi_*`, `_nexus`, `_rs`). Inventoried, cleaned up (dead/duplicate entities), and
 renamed to `<house>_<room>_<qualifier>_<what>` — done 2026-09-01. Full mapping in
-[[2026-09-01_homeassistant_temperature-sensor-inventory]] (docs/2026-09-01_homeassistant_temperature-sensor-inventory.md).
+[[docs/2026-09-01_homeassistant_temperature-sensor-inventory.md]].
 
 **Why this node persists:** the rename surfaced a real gotcha worth remembering for *any*
 future direct edit of HA's `.storage/*` JSON (entity registry, lovelace dashboards, etc.).
