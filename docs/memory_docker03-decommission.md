@@ -168,9 +168,9 @@ the disk space is needed back. Exact duration not yet decided.
 2. Naming/IP assignment for the two new LXCs.
 3. Cooldown duration for docker03 before final deletion. (Cooldown started 2026-09-06;
    duration still undecided.)
-4. **`onboot: 1` on VM 102** — decide whether to set it to `0` now so a gr-srv03 reboot does
-   not resurrect the VM mid-cooldown, or leave it as-is because rollback is still wanted.
-   Raised 2026-09-10, not changed.
+4. ~~`onboot: 1` on VM 102~~ — **resolved 2026-09-10**: set to `0` at the user's instruction,
+   so a gr-srv03 reboot no longer resurrects the VM mid-cooldown. Manual rollback start is
+   unaffected.
 
 `cloudflaretunnel`, `uptime-kuma`, and `mqtt-explorer` on docker03 were **stopped 2026-09-05**
 (not removed) now that CT103/cygnus are confirmed as their live replacements.
@@ -189,7 +189,9 @@ disabled inside the VM. They do not need disabling while the VM is down — but 
 resume together if it is ever started, so treat "start VM 102" as an action requiring a
 deliberate rollback decision, not a casual diagnostic step.
 
-⚠ **`onboot: 1` is still set on VM 102** (verified 2026-09-10). The VM is stopped by hand, not
-by config: **the next gr-srv03 reboot would start it again**, bringing back zigbee2mqtt
-alongside CT206's live copy and re-enabling the superseded crons. Set `onboot: 0` to make the
-stopped state survive a reboot — see *Still open* below.
+`onboot` was still `1` when this was checked on 2026-09-10 — the VM was stopped by hand, not
+by config, so the next gr-srv03 reboot would have started it again, bringing back zigbee2mqtt
+alongside CT206's live copy and re-enabling the superseded crons. **Set to `0` the same day**
+(`qm set 102 --onboot 0`, verified `onboot: 0` / `status: stopped`), so the stopped state now
+survives a host reboot. Starting it for a rollback is unaffected — that stays a manual
+`qm start 102`.

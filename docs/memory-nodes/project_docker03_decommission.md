@@ -1,6 +1,6 @@
 ---
 name: project_docker03_decommission
-description: docker03 (VM 102) is stopped since 2026-09-06 and not in use, in cooldown before deletion; umbrella for the individual migration nodes
+description: docker03 (VM 102) is stopped since 2026-09-06 and not in use, onboot=0 since 09-10, in cooldown before deletion; umbrella for the individual migration nodes
 metadata:
   type: project
 ---
@@ -14,8 +14,8 @@ cloned from CT901, podman containers on cygnus, or deliberately dropped.
 **Why it matters:** its services still *exist* on disk, including a zigbee2mqtt kept as
 explicit rollback after the 09-05 CT206 cutover and `backup.sh` / `proxmox_backup_checker`
 crons superseded by cygnus's. They are harmless only while the VM is down: starting it
-resurrects all of them at once, next to their live replacements. ⚠ **`onboot: 1` is still
-set**, so a gr-srv03 reboot would do exactly that unasked.
+resurrects all of them at once, next to their live replacements. `onboot` was set to `0` on
+2026-09-10, so only a deliberate `qm start 102` can do that — a host reboot no longer will.
 
 **How to apply:** never start VM 102 as a casual diagnostic step — it is a deliberate
 rollback decision. Don't deploy anything new onto it. Ignore it in outage and service checks,

@@ -143,14 +143,14 @@ it (native systemd, 2026-09-06), cygnus's copy switched from native systemd to a
 container the same day, CT207's is deliberately deferred until production →
 [2026-09-06_beszel-fleet-disk-alerting.md](2026-09-06_beszel-fleet-disk-alerting.md).
 **docker03 (VM 102) was shut down 2026-09-06 16:11 and is not in use — cooldown before
-deletion has started; nothing runs there any more, but `onboot: 1` is still set, so a
-gr-srv03 reboot would resurrect it (and its rollback zigbee2mqtt) unless that is changed.**
-Deletion date and the `onboot` decision remain outstanding, as do mosquitto/pool_heat/dynu/
+deletion has started; nothing runs there any more, and `onboot` was set to `0` on 2026-09-10
+so a gr-srv03 reboot no longer resurrects it (and its rollback zigbee2mqtt).** The deletion
+date remains outstanding, as do mosquitto/pool_heat/dynu/
 mqtt_log/apache2/portainer/orphaned projects (dropped, not migrated; fail2ban lives on
 cygnus) →
 [memory_docker03-decommission.md](memory_docker03-decommission.md)
 
-- [memory_docker03-decommission.md](memory_docker03-decommission.md) — **open** — full inventory + destination for every service, cron job, and mount; **VM stopped 2026-09-06, in cooldown; `onboot: 1` still set**
+- [memory_docker03-decommission.md](memory_docker03-decommission.md) — **open** — full inventory + destination for every service, cron job, and mount; **VM stopped 2026-09-06, in cooldown; `onboot: 0` since 2026-09-10**
 - [2026-09-06_gr-srv03_ct103-cloudflare-migration-plan.md](2026-09-06_gr-srv03_ct103-cloudflare-migration-plan.md) — **open** — CT103 is the last non-Turnkey LXC on Debian 12; clone-CT901/reinstall-cloudflared plan sketched, not started, <30 min job
 - [2026-08-28_gr-srv03_ct901-new-template.md](2026-08-28_gr-srv03_ct901-new-template.md) — *active* — CT901, the new 3 GB template; sudo needs a password, baked-in GitHub deploy key
 - [memory_zigbee2mqtt-migration.md](memory_zigbee2mqtt-migration.md) — **open** — cutover to CT206 done 2026-09-05, no re-pairing needed; only docker03 cleanup (phase 5) remains, held for a soak period
