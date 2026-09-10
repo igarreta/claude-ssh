@@ -1,6 +1,6 @@
 ---
 name: project_docker03_decommission
-description: docker03 (VM 102) is being decommissioned service by service; the umbrella project the individual migration nodes hang off
+description: docker03 (VM 102) is stopped since 2026-09-06 and not in use, in cooldown before deletion; umbrella for the individual migration nodes
 metadata:
   type: project
 ---
@@ -9,15 +9,19 @@ docker03 (VM 102 on gr-srv03) is being retired. Every container, host service, c
 mount was inventoried 2026-08-27 with an agreed destination for each — new dedicated LXCs
 cloned from CT901, podman containers on cygnus, or deliberately dropped.
 
-**Why it matters:** docker03 is still running, so finding a service there does *not* mean it
-is live. Several were migrated with the docker03 copy **left in place as rollback** (notably
-zigbee2mqtt after the 2026-09-05 CT206 cutover) — running on both hosts is expected during
-the soak period, not a split-brain bug to fix. Check the inventory before repairing anything
-on docker03, or you may be fixing a copy nothing uses.
+**VM 102 is stopped and not in use** — shut down 2026-09-06 16:11, cooldown before deletion.
 
-**How to apply:** don't deploy anything new onto docker03. Outstanding as of 2026-09-06:
-fail2ban (still genuinely needed on cygnus), and mosquitto / pool_heat / dynu / mqtt_log /
-apache2 / portainer / the orphaned compose projects, which are dropped rather than migrated.
+**Why it matters:** its services still *exist* on disk, including a zigbee2mqtt kept as
+explicit rollback after the 09-05 CT206 cutover and `backup.sh` / `proxmox_backup_checker`
+crons superseded by cygnus's. They are harmless only while the VM is down: starting it
+resurrects all of them at once, next to their live replacements. ⚠ **`onboot: 1` is still
+set**, so a gr-srv03 reboot would do exactly that unasked.
+
+**How to apply:** never start VM 102 as a casual diagnostic step — it is a deliberate
+rollback decision. Don't deploy anything new onto it. Ignore it in outage and service checks,
+the way [[project_gr-srv03_vm100_stopped]] is ignored. Dropped rather than migrated: mosquitto
+/ pool_heat / dynu / mqtt_log / apache2 / portainer / the orphaned compose projects; fail2ban
+lives on cygnus now.
 
 Full inventory and per-service destinations:
 [docs/memory_docker03-decommission.md](../memory_docker03-decommission.md).

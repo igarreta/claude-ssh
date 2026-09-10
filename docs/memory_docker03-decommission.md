@@ -166,11 +166,30 @@ the disk space is needed back. Exact duration not yet decided.
 1. Exact NFS backup-mount path for the two new LXCs, and whether cygnus's existing backup
    mount can just be extended.
 2. Naming/IP assignment for the two new LXCs.
-3. Cooldown duration for docker03 before final deletion.
+3. Cooldown duration for docker03 before final deletion. (Cooldown started 2026-09-06;
+   duration still undecided.)
+4. **`onboot: 1` on VM 102** — decide whether to set it to `0` now so a gr-srv03 reboot does
+   not resurrect the VM mid-cooldown, or leave it as-is because rollback is still wanted.
+   Raised 2026-09-10, not changed.
 
 `cloudflaretunnel`, `uptime-kuma`, and `mqtt-explorer` on docker03 were **stopped 2026-09-05**
-(not removed) now that CT103/cygnus are confirmed as their live replacements — remaining
-docker03 items still running: `zigbee2mqtt` (kept as explicit rollback, see
-[memory_zigbee2mqtt-migration.md](memory_zigbee2mqtt-migration.md)), `backup.sh`/`proxmox_backup_checker` crons (superseded by
-cygnus's own copies but not yet disabled on docker03 itself), and whatever host services were
-never explicitly stopped (see the 2026-08-27 inventory above).
+(not removed) now that CT103/cygnus are confirmed as their live replacements.
+
+## Update 2026-09-06: the whole VM is stopped — cooldown has started
+
+**docker03 (VM 102) was shut down 2026-09-06 16:11:38 and has stayed down since** (verified
+2026-09-10: `qm status 102` → `stopped`). This is the "leave the VM stopped for a cooldown
+period" step above, now in progress.
+
+This supersedes the per-service running/stopped detail from 09-05: nothing on docker03 is
+running, including `zigbee2mqtt` (still present as the explicit rollback copy, see
+[memory_zigbee2mqtt-migration.md](memory_zigbee2mqtt-migration.md)) and the `backup.sh` /
+`proxmox_backup_checker` crons, which are superseded by cygnus's copies but were never
+disabled inside the VM. They do not need disabling while the VM is down — but they would all
+resume together if it is ever started, so treat "start VM 102" as an action requiring a
+deliberate rollback decision, not a casual diagnostic step.
+
+⚠ **`onboot: 1` is still set on VM 102** (verified 2026-09-10). The VM is stopped by hand, not
+by config: **the next gr-srv03 reboot would start it again**, bringing back zigbee2mqtt
+alongside CT206's live copy and re-enabling the superseded crons. Set `onboot: 0` to make the
+stopped state survive a reboot — see *Still open* below.
