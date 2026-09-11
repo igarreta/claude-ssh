@@ -224,7 +224,7 @@ datasheet matched to the exact SKU — and only a price the same page will actua
 16 GB: ARC gets 4 GB (not 1–2) and
 **Immich ML stays on**, so face recognition and smart search survive; the "PBS on the PVE host"
 fallback is dead. Growth path is a second mirror vdev in the spare bays (→10.9 TiB), never RAIDZ;
-the spare M.2 slots get no L2ARC and no `special` vdev. **Stack design otherwise unchanged** —
+the spare M.2 slots get no L2ARC and no `special` vdev. **Service placement settled 2026-09-11** — one-week rule, **no clustering**, critical services and the radios stay on gr-srv03, NAS takes the data-heavy load, PBS stays on the NAS; see the placement rulebook, whose dependency audit runs at commissioning. **Stack design otherwise unchanged** —
 PVE + ZFS mirror, all LXCs, host owns the disks and bind-mounts them; **Samba: unprivileged LXC
 with `idmap=passthrough`** (privileged containers cannot use the option at all); **Immich: podman,
 no Docker**.
@@ -241,6 +241,7 @@ still undesigned. Last unverified purchase item: noise from the 7200 rpm recert 
 datasheet dB(A) figure is standby-only, so it can only be judged in the USA, inside the return
 window.
 
+- [2026-09-11_nas-gr-srv03_service-placement-rules.md](2026-09-11_nas-gr-srv03_service-placement-rules.md) — **open** — **the placement rulebook for the two-server fleet**: the one-week rule, split by volatility not capacity, **no clustering** (and why — ZFS, quorum coupling, self-fencing, irreversibility), one-way dependencies, DBs live with their service, PBS stays on the NAS with an off-box encryption key. **Its §7 dependency audit is a NAS-commissioning task** — and flags that the NAS frees no gr-srv03 RAM, so the VM 102 decommission is now a prerequisite
 - [2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md) — **open** — **current chassis decision (F4-424 Pro, $687, total $1,121.90)**; why the $479.99 N150 price was never real and the 09-08 price targets are void; the five-SKU price table at real 09-10 prices; the accepted trade-offs (2.5GbE, 2× M.2, 32 GB ceiling) — do not re-open them
 - [2026-09-08_nas-us-acceptance-test-runbook.md](2026-09-08_nas-us-acceptance-test-runbook.md) — **open** — **the field procedure**, **corrected 2026-09-10 for the F4-424 Pro** (expect **32 GB**, not 16 — as written it would have told you to return a correct box; LAN 2500Mb/s; 2 M.2 / 2 rear USB): ISO links (SystemRescue 13.02, PVE 9.2-1), USB prep, a 15-min Proxmox install on the NVMe that makes the NAS an SSH target, the overnight SMART run, pass/fail table, troubleshooting. Self-contained — follow this one on the trip
 - [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) — **open** — **§1 and its price targets are superseded by the 09-10 doc — do not act on them**; the rest stands: the 16 GB RAM allocation; BACKUP_A/B 60 cm cable spec; gr-srv03 hub reassessment; *why* the acceptance test is shaped as it is (§5 procedure moved to the runbook)
