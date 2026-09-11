@@ -18,6 +18,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [feedback_dont-trust-vendor-fix-on-prod.md](feedback_dont-trust-vendor-fix-on-prod.md) — verify a tool's own suggested fix against this host's actual config before running it on a live service
 - [feedback_mcp_privileged_policy_denied.md](feedback_mcp_privileged_policy_denied.md) — MCP `privileged-command` is policy-denied on all "prod" host-group connectors, not just docker03
 - [feedback_fail2ban_tailscale_only.md](feedback_fail2ban_tailscale_only.md) — don't add fail2ban to new hosts reachable only via Tailscale, no public exposure
+- [feedback_stale_failed_unit_false_positive.md](feedback_stale_failed_unit_false_positive.md) — a stale `failed` unit escalates daily; check the thing is actually running before believing the report
 
 ## Open — needs follow-up
 
@@ -59,6 +60,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_docker03_zigbee2mqtt.md](project_docker03_zigbee2mqtt.md) — 07-15 outage from USB re-enumeration; stable `by-id` mapping + watchdog
 - [project_mosquitto_broker_migration.md](project_mosquitto_broker_migration.md) — migration done, all clients cut over; `uptimekuma`/`mqttexplorer` need explicit `$SYS/#` ACL line, `#` doesn't cover it
 - [project_mosquitto_ssh-socket-failed.md](project_mosquitto_ssh-socket-failed.md) — ssh.socket failed-unit noise was a harmless port race with ssh.service, disabled 2026-08-28
+- [project_mosquitto_networkd_masked.md](project_mosquitto_networkd_masked.md) — networkd masked+stopped 09-11; ifupdown owns eth0, don't re-enable it to "fix" a network question
 - [project_docker03_tailscale-key-expiry-2026-08-17.md](project_docker03_tailscale-key-expiry-2026-08-17.md) — node-key expiry, not the USB storm; MagicDNS-only resolv.conf broke container DNS
 - [project_docker03_fail2ban.md](project_docker03_fail2ban.md) — no rsyslog meant no auth.log; fixed with `backend = systemd`
 - [project_log-monitor_journal-group-gap.md](project_log-monitor_journal-group-gap.md) — log-monitor was silently blind on docker03/mosquitto/contabo2 without adm/systemd-journal; all hosts now fixed and verified

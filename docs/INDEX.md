@@ -114,6 +114,7 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 - [memory_mqtt-broker-migration.md](memory_mqtt-broker-migration.md) — **open**
 - [HomeAssistant_MQTT_Autodiscovery.md](HomeAssistant_MQTT_Autodiscovery.md) — *active* — always use autodiscovery; lesson learned the hard way
 - [2026-08-28_mosquitto_ssh-socket-failed.md](2026-08-28_mosquitto_ssh-socket-failed.md) — *closed* — `ssh.socket` vs `ssh.service` port race, cosmetic only, disabled the socket unit
+- [2026-09-11_mosquitto_networkd-wait-online-timeout.md](2026-09-11_mosquitto_networkd-wait-online-timeout.md) — *closed* — daily `wait-online` warnings; networkd managed zero links (ifupdown owns eth0), masked + stopped. **Different cause from contabo2's identical log lines**
 
 ## Home Assistant
 
@@ -188,6 +189,7 @@ not just the default `always` →
 - [Proxmox_8.4_to_9.1_Upgrade_Summary.md](Proxmox_8.4_to_9.1_Upgrade_Summary.md) — *closed*
 - [2026-04-25_gr-srv03_lvm-monitor-and-docker03-discard.md](2026-04-25_gr-srv03_lvm-monitor-and-docker03-discard.md) — *closed* — thin-pool monitor + discard
 - [2026-05-13_gr-srv03_disable-apt-timers.md](2026-05-13_gr-srv03_disable-apt-timers.md) — *closed*
+- [2026-09-11_gr-srv03_stale-pve-container-debug-unit.md](2026-09-11_gr-srv03_stale-pve-container-debug-unit.md) — *closed* — a failed `pct start --debug` leaves a `failed` unit that log-monitor escalates daily; check `pct status <id>` first, then `reset-failed`
 
 ## Database — castor
 
@@ -252,10 +254,14 @@ window.
 
 ## Tooling and workstation
 
-**Current:** log-monitor covers 6 hosts and is healthy as of 2026-08-30. Two collection bugs
+**Current:** log-monitor covers 6 hosts and is healthy as of 2026-09-11. Two collection bugs
 found and fixed in quick succession: the `adm`/`systemd-journal` blind spot (08-26) and the
 `collect.sh` SIGPIPE it then exposed (08-30) →
-[2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md)
+[2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md).
+Two standing daily false positives cleared 09-11 — a stale `pve-container-debug@203` unit on
+gr-srv03 and networkd `wait-online` timeouts on mosquitto (see the Proxmox and MQTT threads).
+**A stale `failed` unit escalates every day until `reset-failed`** — check whether the thing
+it names is actually running before investigating the report's hypothesis.
 
 - [2026-06-30_log-monitor.md](2026-06-30_log-monitor.md) — *active* — daily log review from comet; architecture, `SUPPRESS_PATTERN`, adding a host
 - [2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md) — *closed* — 4-day contabo2 blackout reported as "(ssh error)"; was `head`+`pipefail`+`set -e`. Suppression now runs remotely before the cap
