@@ -77,7 +77,8 @@ Finding a bad write in a hotel room is the one avoidable failure in this whole p
 - A small USB keyboard
 - **Your own HDMI cable** — a hotel TV's is usually captive behind the panel
 - An Ethernet cable (or two, for the dual-NIC check)
-- The new 60 cm USB 3.0 A→Micro-B cable (Phase C tests it)
+- The new **1 m** USB 3.0 A→Micro-B cable — UGREEN 10841, 22 AWG (Phase C tests it). Bring both if
+  the spare was bought.
 - This runbook, on the phone or printed
 
 ---
@@ -285,13 +286,13 @@ sensors ; smartctl -a /dev/sda | grep -i temperature
 
 - **Both LAN ports** link at **2500Mb/s** *(F4-424 Pro is 2× 2.5GbE, not 5GbE)*. Find interface
   names with `ip -brief a`. Nothing on the home LAN exceeds 1 GbE, so this only proves the ports work.
-- **Every USB port**, tested with the **Toshiba Canvio and the new 60 cm cable** — that validates
+- **Every USB port**, tested with the **Toshiba Canvio and the new 1 m cable** — that validates
   the cable purchase too. `lsusb -t` must show **`5000M`**, not `480M`; `480M` means a USB 2.0
   Micro-B plug and ~35 MB/s.
   > *(F4-424 Pro)* The vendor spec table lists **2 rear USB 3.2 Gen2 (10 Gbps)** ports and no front
   > port; some retail listings say one of them is Type-C. **Count and identify them on unboxing** —
   > BACKUP_A/B rotation moves to this box, and only one of those drives is ever connected at a time,
-  > so 2 ports is enough but leaves no spare beyond it. If a Type-C is present, check the 60 cm
+  > so 2 ports is enough but leaves no spare beyond it. If a Type-C is present, check the new
   > cable's plug matches.
 - **Fan noise with both drives spinning** — force it with the B6 `dd`, or just re-read a few
   hundred GB. This is the last unverified item on the buy list: TerraMaster's 21.0 dB(A) figure is

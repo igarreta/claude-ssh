@@ -2,7 +2,7 @@
 
 **Status:** open
 **Host:** (project)
-**Supersedes:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§1 and its price-target table only)
+**Supersedes:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§1, its price-target table, and §3's USB port layout only)
 **Superseded-by:** —
 
 **Date**: 2026-09-10. The user went to order and found street prices nothing like the ones on the

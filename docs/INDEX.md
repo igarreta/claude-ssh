@@ -234,6 +234,12 @@ the spare M.2 slots get no L2ARC and no `special` vdev. **Service placement sett
 PVE + ZFS mirror, all LXCs, host owns the disks and bind-mounts them; **Samba: unprivileged LXC
 with `idmap=passthrough`** (privileged containers cannot use the option at all); **Immich: podman,
 no Docker**.
+**BACKUP_A/B cable settled 2026-09-11: UGREEN 10841, 1 m, 22 AWG** — 1 m *deliberately*, because
+the F4-424 Pro has no front port and the NAS will not be easily reachable, so the weekly swap must
+happen where the drive can be seen; gauge beats length ~4:1, so never trade a published 22 AWG for a
+shorter unknown cable. Buy two. Also corrected there: **A and B are different drives** (WD Elements
+4 TB / Toshiba Canvio 3 TB), both Micro-B, so one cable type serves the rotation — verify the socket
+on *both* before travelling.
 **Also settled 2026-09-07: BACKUP_A/B rotation moves to the NAS** — freeing gr-srv03's third USB
 port and making the ordered RSH-A10 unnecessary (keep it anyway: it is the fleet's only
 PPPS/`uhubctl` device). **Open:** disks are now bought *after* the chassis (schedule risk — the SATA bays
@@ -250,7 +256,7 @@ window.
 - [2026-09-11_nas-gr-srv03_service-placement-rules.md](2026-09-11_nas-gr-srv03_service-placement-rules.md) — **open** — **the placement rulebook for the two-server fleet**: the one-week rule, split by volatility not capacity, **no clustering** (and why — ZFS, quorum coupling, self-fencing, irreversibility), one-way dependencies, DBs live with their service, PBS stays on the NAS with an off-box encryption key. **Its §7 dependency audit is a NAS-commissioning task** — and flags that the NAS frees no gr-srv03 RAM, so the VM 102 decommission is now a prerequisite
 - [2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md) — **open** — **current chassis decision (F4-424 Pro, $687, total $1,121.90)**; why the $479.99 N150 price was never real and the 09-08 price targets are void; the five-SKU price table at real 09-10 prices; the accepted trade-offs (2.5GbE, 2× M.2, 32 GB ceiling) — do not re-open them
 - [2026-09-08_nas-us-acceptance-test-runbook.md](2026-09-08_nas-us-acceptance-test-runbook.md) — **open** — **the field procedure**, **corrected 2026-09-10 for the F4-424 Pro** (expect **32 GB**, not 16 — as written it would have told you to return a correct box; LAN 2500Mb/s; 2 M.2 / 2 rear USB): ISO links (SystemRescue 13.02, PVE 9.2-1), USB prep, a 15-min Proxmox install on the NVMe that makes the NAS an SSH target, the overnight SMART run, pass/fail table, troubleshooting. Self-contained — follow this one on the trip
-- [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) — **open** — **§1 and its price targets are superseded by the 09-10 doc — do not act on them**; the rest stands: the 16 GB RAM allocation; BACKUP_A/B 60 cm cable spec; gr-srv03 hub reassessment; *why* the acceptance test is shaped as it is (§5 procedure moved to the runbook)
+- [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) — **open** — **§1 and its price targets are superseded by the 09-10 doc — do not act on them**; the rest stands: the 16 GB RAM allocation; the BACKUP_A/B cable spec and the chosen cable (UGREEN 10841, 1 m, 22 AWG — §3 updated 09-11, and its port-layout premise corrected); gr-srv03 hub reassessment; *why* the acceptance test is shaped as it is (§5 procedure moved to the runbook)
 - [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) — **open** — base OS, guests, share protocols, disk topology; **its two RAM sections are superseded by the 09-08 doc**, the rest is current; **restore source verified 2026-09-07** (BACKUP_B restic repo sound and complete — S3 Glacier is *not* the restore source)
 - [memory_nas-project.md](memory_nas-project.md) — **open** — scope, sizing, buy list, rejected options
 - [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc**; itself **corrected 2026-09-07 and again 2026-09-08** on the F4-425 Plus RAM (16 GB is the N150 SKU). Verify stock before ordering

@@ -3,7 +3,7 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** 2026-09-07_nas-software-stack.md (§ *The 16 GB question is OPEN* and § *The RAM budget is the binding constraint* only)
-**Superseded-by:** 2026-09-08_nas-us-acceptance-test-runbook.md (§ 5 only — the procedure moved there); 2026-09-10_nas-chassis-price-correction-f4-424-pro.md (§ 1 and the price-target table only)
+**Superseded-by:** 2026-09-08_nas-us-acceptance-test-runbook.md (§ 5 only — the procedure moved there); 2026-09-10_nas-chassis-price-correction-f4-424-pro.md (§ 1, the price-target table, and § 3's USB port layout only)
 
 **Date**: 2026-09-08. The user measured the space and **the 4-bay chassis fits** on a new shelf,
 choosing it for the RAM rather than the bays. That closes item 5 of
@@ -195,22 +195,44 @@ vdev** would help SMB directory walks and restic/PBS chunk lookups, but it must 
 **before the 1.6 TB restore, or never**. Recommendation: **skip it.** Noted here so the "add it
 later" instinct is not acted on after the restore, when it can no longer help.
 
-## 3. BACKUP_A/B on a 60 cm cable — specification
+## 3. BACKUP_A/B cable — specification, and the cable chosen
 
-The rotating drive moves off gr-srv03 and hangs off the NAS. The F4-425 Plus has **four USB
-ports at 10 Gbps — one front Type-A, two rear Type-A, one rear Type-C**. Use the **front Type-A**
-for the rotating drive: the weekly offsite swap is a hot-plug by hand, and a front port means no
-reaching behind the chassis, no strain on the cable, and no disturbing the rear cabling.
+> **UPDATED 2026-09-11 — cable chosen, and two premises in this section were stale.**
+> **(a)** The chassis is the **F4-424 Pro**, which has **2 rear USB ports and no front port**
+> ([2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md)).
+> The "use the front Type-A" advice was written for the F4-425 Plus and **cannot be followed**.
+> **(b)** **BACKUP_A and BACKUP_B are different drives**, not one Canvio — established by
+> [2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md)
+> two days after this section was written. Both are SuperSpeed Micro-B, so the specification below
+> holds for both, but the *verify by eye* step now applies to **two** drives.
+> **(c)** **Cable chosen: UGREEN 10841, 1 m** — and **1 m deliberately, not 0.6 m**, because the
+> NAS will not be in an easily reachable spot. See *The cable chosen* and *Why 1 m* below.
 
-**The drive**: Toshiba Canvio Basics 3 TB, `0480:a202`, mechanism MQ03UBB300 — a bus-powered
-2.5" USB 3.0 portable with a **SuperSpeed Micro-B (10-pin)** socket. *Confirm by eye before
-buying* — a newer replacement unit could be USB-C, in which case buy A→C instead and everything
-below still applies.
+The rotating drive moves off gr-srv03 and hangs off the NAS. The **F4-424 Pro has 2 rear USB 3.2
+Gen2 (10 Gbps) ports and no front port** — some retail listings say one of the two is Type-C;
+**count and identify them on unboxing**. There is therefore no front-port option: the plug lives at
+the rear, and reaching it is what drives the length choice. Only one of BACKUP_A/BACKUP_B is ever
+connected at a time, so 2 ports is sufficient, just not roomy.
+
+**The drives** — BACKUP_A and BACKUP_B are **not the same model** (verified 2026-09-10,
+[2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md)):
+
+| | Drive | USB ID | Socket |
+|---|---|---|---|
+| BACKUP_A | WDC WD40NDZW-11BCVS0, 4 TB, 4800 rpm (WD Elements Portable) | `1058:2621` | SuperSpeed Micro-B |
+| BACKUP_B | Toshiba MQ03UBB300, 3 TB (Canvio Basics) | `0480:a202` | SuperSpeed Micro-B |
+
+Both are bus-powered 2.5" USB 3.0 portables with a **SuperSpeed Micro-B (10-pin)** socket, so **one
+cable type serves the whole rotation**. *Confirm by eye on **both** drives before buying* — a
+replacement unit could be USB-C, in which case buy an A→C as well and everything below still
+applies. Neither vendor publishes a spin-up current for these enclosures, but both are certified
+bus-powered on a single USB 3.0 port, which caps them at **900 mA** by spec — so the 0.9 A
+arithmetic below covers both.
 
 | Spec | Requirement | Why |
 |---|---|---|
 | Connectors | **USB 3.0/3.2 Gen1 Standard-A male → SuperSpeed Micro-B male** | see the trap below |
-| Length | **0.5–0.6 m** | shorter is better; do not exceed 1 m |
+| Length | **1 m** as chosen (0.5 m only if the drive can sit beside the chassis) | **do not exceed 1 m** — see *Why 1 m* below |
 | **Power-pair gauge** | **≥ 24 AWG, prefer 22 AWG** — look for a jacket marking like `28AWG/1P + 28AWG/2C + 22AWG/2C` (the last figure is VBUS/GND) | the one spec that actually matters — see below |
 | Data pairs | 28/30 AWG twisted, individually shielded | standard on any real SS cable |
 | Rating | USB-IF certified, 5 Gbps minimum, full 9-conductor | |
@@ -218,9 +240,9 @@ below still applies.
 | Build | molded, strain-relieved plugs; right-angle Micro-B only if clearance demands it | SS Micro-B plugs are mechanically fragile |
 | Path | **direct, single cable** — no extension, no hub, no adapters | |
 
-**Why the gauge matters.** The Canvio is bus-powered and rated 5 V / 0.9 A, which is the entire
-USB 3.x budget for one port, and its peak is at **spin-up** — which happens nightly, because APM
-level 128 spins these drives down after ~10 min idle
+**Why the gauge matters.** Both drives are bus-powered and capped at 5 V / 0.9 A, which is the
+entire USB 3.x budget for one port, and the peak is at **spin-up** — which happens nightly, because
+both report APM level 128 and spin down after ~10 min idle
 ([Backup_Drives_Mounting_Configuration.md](Backup_Drives_Mounting_Configuration.md)). Round-trip
 drop over 0.6 m at 0.9 A:
 
@@ -229,6 +251,14 @@ drop over 0.6 m at 0.9 A:
 | 28 AWG (cheap cable) | ~0.26 Ω | **~0.23 V** |
 | 24 AWG | ~0.10 Ω | ~0.09 V |
 | **22 AWG** | ~0.06 Ω | **~0.06 V** |
+
+At the chosen **1 m** the 22 AWG figures double to ~0.106 Ω and **~95 mV** — 21% of the 450 mV
+droop budget (host guarantees ≥ 4.45 V at the port, device must work to 4.00 V), with the
+connector contact resistance of ~50–100 mΩ adding the same amount at either length.
+
+**Gauge dominates length by about 4×**, which is the decision rule if both cannot be had: a **1 m
+22 AWG cable is twice as good as a 0.5 m 28 AWG one**. Never trade a known gauge for a shorter
+unknown cable.
 
 Nothing here is exotic; the point is margin at spin-up. This host family already has the failure
 mode on record — the 2026-07-15 incident presented as a drive that *"cannot enable, maybe the USB
@@ -245,8 +275,56 @@ verify after connecting: `lsusb -t` must show `5000M`, not `480M`.
 for data + power, one for power only), or the rear **Type-C** port with an A-less C→Micro-B cable,
 which has a larger current budget. Neither should be needed.
 
-**Buy two** — one as the spare, on the same US trip. It is a $10 item that is annoying to source
-locally and is in the path of the only offsite backup.
+### The cable chosen
+
+**UGREEN 10841** (US130 family, 1 m). Its 0.5 m sibling is **10840**; the US Amazon 1.5 ft variant
+is ASIN `B00P0C4M3Y`. Published specification, which is why it won:
+
+| | Value | vs. requirement |
+|---|---|---|
+| Power core | **22 AWG** tin-plated copper | ≥ 24 AWG, prefer 22 — **best case** |
+| Current rating | 3 A max | 0.9 A needed — large margin |
+| Pins | **9** | full SuperSpeed, not the USB 2.0 trap |
+| Data | 5 Gbps, bare copper, multi-layer (foil + braid) shield | ✓ |
+| Plugs | gold-plated, molded | ✓ |
+
+**Why not the alternatives.** ITANDA and OkyLink were both considered and both **publish no wire
+gauge** — the one spec that matters here. Their construction claims are fine (OkyLink even states
+"not compatible with USB 2.0 Micro-B ports", which positively confirms a 10-pin plug), but buying
+either means verifying the gauge from the jacket marking *after* it arrives. Two further OkyLink
+traps if that brand is ever revisited: most of its Micro-B range is **active** (amplifier chip,
+5 m+ — wrong twice over for a bus-powered drive, since the repeater draws off the same 5 V rail),
+and one ASIN covers both a 1 m passive and a 5 m active variant, so the ASIN alone does not pin the
+length. **UGREEN is also heavily counterfeited** — buy from its own storefront or an authorised
+seller; a fake has the molding and none of the copper.
+
+**Why 1 m.** Electrically 1 m costs ~47 mV against 0.5 m — negligible at 22 AWG, and signal
+integrity is irrelevant either way (passive USB 3.0 is good to ~3 m). The deciding factor is
+mechanical, and it **favours the longer cable here**: with no front port, the A plug lives at the
+rear of a chassis that will not be easily accessible, and the drive end is what gets unplugged
+weekly because that drive physically leaves the building. At 0.5 m the weekly swap means working a
+fragile SS Micro-B plug blind in a tight space; at 1 m the drive sits where it can be seen and
+reached. Longer is better for connector life in *this* installation — the usual "shorter is
+better" reasoning assumes an accessible port.
+
+### Install notes (the slack has to be managed)
+
+- **Do not coil the excess**, especially not near the Zigbee dongle or the RTL-433 receiver — a
+  coiled HDD cable is a loop antenna, and those two are the fleet's known RF victims
+  ([2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) names
+  the HDD cables as the broadband noise source). Route the slack as a loose run, away from them.
+- **Strain-relieve at the drive end.** The point of the extra length is that the drive can sit
+  somewhere reachable; anchor the cable so the weekly plug/unplug pulls against a tie-down and not
+  against the Micro-B socket.
+
+**Buy two.** One cable suffices operationally — only one drive is ever connected, so the cable stays
+with the NAS and the drives rotate through it. The spare is about **sourcing asymmetry**: this is a
+US-trip purchase, so a failure in Argentina is not a next-day reorder but the next trip or customs,
+with the offsite rotation stopped meanwhile. It is also the **only un-redundant link in the chain**
+— two drives, two repos and S3 Glacier all have fallbacks, the cable does not — and the Micro-B
+plug is the **wear item**, hand-cycled ~52×/year in an awkward spot. Finally, an identical
+known-good spare answers *"is it the cable?"* in one swap, which on this fleet has earned its keep:
+a bad extension cable was the kernel's first suspicion in the 2026-07-15 episode. ~$8 and no weight.
 
 ## 4. The USB hub on gr-srv03 — reassessed
 
