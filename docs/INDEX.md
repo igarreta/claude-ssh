@@ -44,9 +44,12 @@ commit `b24d961`); Manual-mode phantom-zero bugs fixed 2026-08-01 →
 
 **Current:** powered hub removed 2026-08-17, root cause confirmed 08-19 (BACKUP_A/_B hot-plug
 transients on the shared xHCI 5V rail). Coordinator RF degraded in its bare chassis port, then
-**recovered to ~220 LQI after the 08-25 wall-mounted final placement** — recheck 2026-09-09
-before closing and cancelling the shielded-cable purchase →
-[2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md).
+**recovered to ~220 LQI after the 08-25 wall-mounted final placement, then relapsed to ~120
+on 09-05** → [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md).
+Recheck done 2026-09-11 (§8), still **open**: the WiFi-channel test is impossible (Deco mesh has
+no manual channel), LQI is unrecovered, route errors have doubled past August's worst day, and
+the LQI turns out to **swing ~60 points across the day** (86 at 04h, 147 at 16h) — measuring it
+now needs the collector, not a spot check. Shielded-cable purchase stays on.
 The storage hub for the rebuild (Rosonway RSH-A10) was **ordered 2026-08-29, ETA ~2026-10-24**
 and the layout was decided 2026-08-30 (**Option D** — Zigbee keeps its own direct host port,
 test-only RTL-433 goes on the hub, no second hub) — nothing is installed until it lands.
@@ -55,7 +58,8 @@ test-only RTL-433 goes on the hub, no second hub) — nothing is installed until
 hot-plugged device, the documented root cause of the Zigbee drops. Re-evaluate Option D when the
 NAS is commissioned, not when the hub arrives.
 
-- [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md) — **open** — fleet LQI 200→134, recovered to ~220 after 08-25 final placement; recheck 2026-09-09. Baselines in [data/](data/)
+- [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md) — **open** — fleet LQI 200→134, recovered to ~220 after 08-25 final placement, relapsed to ~120 on 09-05; §8 is the 09-11 recheck (diurnal swing, route errors doubled). Baselines in [data/](data/)
+- [memory_zigbee-lqi-collector.md](memory_zigbee-lqi-collector.md) — *active* — persistent LQI/route-error CSVs on CT206 (5-min timer), because z2m's own logs only hold ~22 h; `report.sh` / `report.sh hourly N`
 - [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) — **open** — RSH-A10 ordered 2026-08-29 (ETA ~10-24); layout decided 2026-08-30 (**Option D**: Zigbee stays direct on port 3, test-only RTL-433 on the hub); § *To implement when the hub arrives* carries the mandatory `uhubctl -a on` assertion and the pre-rebuild LQI baseline
 - [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md) — **open** — storage hub ordered 2026-08-29 (Rosonway RSH-A10); dongle hub closed, none needed
 - [memory_gr-srv03_powered-hub-instability.md](memory_gr-srv03_powered-hub-instability.md) — *closed* — root cause + current post-incident topology

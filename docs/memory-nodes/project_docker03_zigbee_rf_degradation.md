@@ -1,11 +1,11 @@
 ---
 name: project_docker03_zigbee_rf_degradation
-description: "Zigbee coordinator RF degraded after the 2026-08-17 dongle move; fleet LQI 200→134; 08-25 fix lifted it to ~220; RELAPSED to ~120-127 after the 09-05 CT206 migration, dongle port confirmed unchanged; 09-09 recheck must address the relapse, not just confirm the August fix"
+description: "Zigbee coordinator RF degraded after the 2026-08-17 dongle move; fleet LQI 200→134; 08-25 fix lifted it to ~220; RELAPSED to ~120 after the 09-05 CT206 migration; 09-11 recheck: still unrecovered, WiFi-channel test impossible on a Deco mesh, and LQI swings ~60 points across the day so spot checks mislead"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 3a5d59b8-5617-4ea7-8442-e072c0e4686f
-  modified: 2026-09-06T19:07:52.832Z
+  modified: 2026-09-11T19:45:00.000Z
 ---
 
 The Zigbee coordinator's RF degraded after the 2026-08-17 dongle move to a bare chassis port
@@ -61,3 +61,20 @@ outage from the move not re-seating cleanly; §6 has the 08-26 LQI confirmation 
 numbers. Also fixed there: HA offline/online automations dead since 2026-04-30 on a
 missing entity. Related: [[project_gr-srv03_powered-hub-instability]],
 [[project_docker03_zigbee2mqtt]], [[project_zigbee2mqtt_migration]].
+
+**2026-09-11 recheck (§8 of the doc):** still open. Three things changed how to read this
+fault. (1) **LQI is not a stable degraded level — it swings ~60 points daily** (86 at 04h,
+147 at 16h on 09-11), so every earlier single number, including the ~220 of 08-26 and the
+~134 floor, is only as good as the hour it was taken; compare like-for-like hours from now
+on. (2) The nightly trough starts near the 02:25-03:30 backup disk-wake window
+([[project_backup_schedule]]) but outlasts it by ~3 h — suggestive, one night only, needs
+two or three more nights before believing it. (3) Route errors are now ~1900/day against
+825 on August's worst day, and they stay flat through the LQI swing — the two symptoms look
+decoupled, so a recovered LQI would not by itself mean the fault is gone.
+
+**The WiFi-channel test is dead**, not pending: the AP is a TP-Link Deco mesh with no manual
+2.4 GHz channel selection. The only remaining lever on that hypothesis is moving Zigbee off
+channel 11, which costs re-pairing 8 devices — don't spend it while cheaper leads are open.
+
+Measuring this now goes through the collector on CT206, not through the z2m logs (~22 h of
+retention): [[project_zigbee_lqi_collector]].

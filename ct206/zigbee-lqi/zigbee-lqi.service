@@ -1,0 +1,7 @@
+[Unit]
+Description=Zigbee LQI collector (zigbee2mqtt log -> daily CSV)
+After=zigbee2mqtt.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/zigbee-lqi/collect.sh

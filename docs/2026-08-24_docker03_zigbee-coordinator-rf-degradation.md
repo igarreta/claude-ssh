@@ -11,7 +11,9 @@ estable desde el 08-26 hasta el 09-04. **Recaída detectada el 2026-09-05/06** (
 flota volvió a caer a ~120-127, coincidiendo con la migración de zigbee2mqtt a CT206 —
 puerto físico del dongle confirmado sin cambios (`usb 1-3`, sigue en bus separado de los
 discos). **La revisión del 2026-09-09 ya no es un simple cierre** — hay que decidir con
-esta recaída sobre la mesa, no solo con los datos de agosto.
+esta recaída sobre la mesa, no solo con los datos de agosto. **Hecha el 2026-09-11 (§8):
+la recaída sigue, la prueba de canal WiFi resultó imposible (Deco sin selección manual),
+y apareció un patrón diurno nuevo. Sigue abierto.**
 
 Investigación disparada por un `switch.turn_on` de Home Assistant que nunca llegó al
 relé, el 2026-08-22 18:46:11 (hora local, UTC-3).
@@ -478,6 +480,90 @@ lee el `/dev/ttyUSB0`.
 cancelar la compra del cable apantallado** solo por el buen dato del 08-26 — hace falta
 explicar esta caída primero. Sugerido: mover el AP WiFi de canal (pendiente ítem 2,
 gratis, descarta una hipótesis) antes del 09-09, y ver si el LQI reacciona.
+
+---
+
+## 8. Revisión 2026-09-11 (la del 09-09, con dos días de retraso)
+
+### La prueba del canal WiFi no se puede hacer
+
+El AP es un **TP-Link Deco (mesh)** y no expone selección manual de canal en 2.4 GHz en este
+modo — el mesh además reasigna canales por su cuenta. La única acción concreta que quedaba
+pendiente de la §4 ítem 2 queda **descartada por imposible**, no por refutada. Si en algún
+momento hace falta cerrar esa hipótesis, la palanca que queda es mover **Zigbee** (canal 11 →
+15/20/25), no el WiFi — con el costo de re-emparejar los 8 dispositivos, así que no se hace
+mientras haya pistas más baratas.
+
+### El LQI sigue deprimido
+
+Promedio de flota (`Enchufe_1`, `Enchufe_2`, `luces medianera z` — el mismo conjunto de 1-2
+saltos de las §2/§6/§7):
+
+| Fecha | LQI de flota |
+|---|---|
+| 08-26 (pico post-arreglo) | ~220 |
+| 09-05/06 (recaída) | ~120-127 |
+| 09-10 | 125.6 |
+| 09-11 | 120.4 (parcial) |
+
+Sin recuperación. Los dos días están en el nivel de la recaída, por debajo del piso de la
+degradación original (134).
+
+### Hallazgo nuevo: el LQI tiene un ciclo diurno
+
+Por hora, desde que arrancan los datos disponibles:
+
+| Hora | LQI | Hora | LQI |
+|---|---|---|---|
+| 09-10 16h | 135.1 | 09-11 06h | 97.1 |
+| 09-10 18h | 128.2 | 09-11 07h | 121.6 |
+| 09-10 23h | 113.9 | 09-11 10h | 123.3 |
+| 09-11 02h | 112.8 | 09-11 12h | 133.9 |
+| 09-11 03h | 104.8 | 09-11 14h | 145.2 |
+| 09-11 04h | **86.3** | 09-11 16h | 147.5 |
+| 09-11 05h | 90.0 | | |
+
+El valle nocturno (86-97 entre las 04 y las 06) es el peor dato registrado en toda esta
+investigación, y la recuperación de la tarde (147 a las 16h) es la mejor desde la recaída.
+**El LQI no es un nivel estable degradado: oscila ~60 puntos en el día.** Eso reencuadra
+todas las mediciones anteriores — un promedio diario, o una muestra puntual, dependen de a
+qué hora se tomaron.
+
+La caída empieza alrededor de las 02-03h, que es cuando abre la ventana de despertar de
+discos de backup (02:25-03:30, ver `memory_backup_schedule.md`) — el mecanismo de ruido
+USB3 ya documentado en la §2. **Pero el valle se extiende hasta las 06h, casi tres horas
+después de que la ventana cierra**, así que la correlación es parcial y es una sola noche.
+No alcanza para concluir; sí alcanza para justificar medir bien.
+
+### Los errores de ruta empeoraron, y no siguen al LQI
+
+| Día | Errores de ruta |
+|---|---|
+| 08-22 (peor día de agosto) | 825 |
+| 09-06 (parcial) | 551 |
+| 09-10 (parcial, desde 16:15) | 691 |
+| 09-11 (parcial, hasta 16:40) | 1290 |
+
+Normalizado son ~80/hora en ambos días, es decir **~1900/día contra los 825 del peor día de
+agosto**: más del doble. Y son planos — entre 57 y 115 por hora, sin relación con el ciclo
+diurno del LQI. Los dos síntomas parecen desacoplados: lo que hunde el LQI de noche no es lo
+que genera los errores de ruta.
+
+### Se instaló un colector persistente
+
+Toda esta sección se pudo escribir con ~22 h de datos porque es lo único que sobrevive a la
+rotación de logs de zigbee2mqtt. Para no seguir midiendo a ciegas se instaló un colector en
+CT206 que guarda cada muestra de `linkquality` y cada error de ruta en CSVs diarios →
+[memory_zigbee-lqi-collector.md](memory_zigbee-lqi-collector.md).
+
+### Qué sigue
+
+1. **Dos o tres noches de datos** del colector, y contrastar el valle nocturno contra las
+   horas reales de los jobs de backup en ceres. Si el valle sigue la ventana de discos, el
+   mecanismo es el conocido de la §2 y el arreglo ya está decidido (Opción D / cable
+   apantallado). Si el valle aparece también en una noche sin backups, no lo es.
+2. Recién después de eso tiene sentido plantear el A/B del dongle VM vs. LXC (§7).
+3. **La compra del cable apantallado sigue sin cancelarse.**
 
 ---
 

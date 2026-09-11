@@ -25,7 +25,8 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_docker03_decommission.md](project_docker03_decommission.md) — VM 102 stopped since 09-06 and not in use, `onboot: 0` since 09-10; in cooldown, don't start it casually — that's a rollback decision
 - [project_gr-srv03_ct901-template.md](project_gr-srv03_ct901-template.md) — CT901 is now the LXC clone template (not CT900, kept as rollback per user choice)
 
-- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — coordinator LQI recovered to ~220 by 08-26, RELAPSED to ~120-127 after 09-05 CT206 migration, port confirmed unchanged; 09-09 recheck must address relapse
+- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — relapsed to ~120 after the 09-05 CT206 migration and still unrecovered at the 09-11 recheck; LQI swings ~60 points daily, so spot checks mislead
+- [project_zigbee_lqi_collector.md](project_zigbee_lqi_collector.md) — LQI/route-error CSVs on CT206; z2m's own logs hold only ~22 h, so day-over-day evidence comes from here
 - [project_zigbee2mqtt_migration.md](project_zigbee2mqtt_migration.md) — cutover to CT206 done 09-05; docker03 kept as rollback until soak period, HA/TTato/actuator checks still needed
 - [project_gr-srv03_rtl433-ct207.md](project_gr-srv03_rtl433-ct207.md) — CT207 built/tested 09-05, test dongle removed, container stopped; permanent config still pending
 - [project_gr-srv03_ct103-migration-plan.md](project_gr-srv03_ct103-migration-plan.md) — CT103 last non-Turnkey Debian 12 LXC; clone-CT901 migration plan sketched, <30 min job, not started
