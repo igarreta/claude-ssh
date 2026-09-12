@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily zigbee2mqtt state staging (02:00, before backup.sh at 02:07)
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

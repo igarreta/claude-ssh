@@ -95,8 +95,15 @@ confirmed** →
 `backup.sh` (shared `igarreta/bin` repo with contabo2) was clobbered by a contabo2-only commit
 2026-09-06, breaking its 09-07 cron run — merged into one hostname-branched script, fixed and
 verified on both hosts 2026-09-07** →
-[2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md)
+[2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md).
+**zigbee2mqtt (CT206) got its own nightly backup 2026-09-12** — its Zigbee network key and device
+registry had only the weekly whole-container vzdump until then. The same pass fixed two adjacent
+faults: mosquitto's `backup.sh` had broken that very morning (the 09-07 merge branched on
+raspberrypi1, so every *other* host fell into contabo2's SFTP path — now branches on the
+exception), and `/mnt/backup_usb1/mosquitto` turned out to be in **no restic tag at all** →
+[2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md)
 
+- [2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md) — *active* — the z2m state backup end to end: what is and is not copied, why it is gpg-encrypted and validated instead of quiesced, the **restore procedure**, plus the mosquitto `backup.sh` break and the `--group-by host,tags` retention trap that adding a path to a restic tag springs
 - [2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md) — *closed* — post-rotation verification of BACKUP_A: mount/propagation, 7/7 tags with floors passed, `restic check` clean, SMART clean, and its WDMyCloud repo verified intact; also corrects the drive model in the mounting doc
 - [2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md) — *closed* — shared-repo clobber; merged into one hostname-branched script
 - [2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md) — **open** — WD MyCloud dead/irrecoverable; found+fixed a live risk where the missing mount would let backup cron rotate out real snapshots; crons disabled, configs wiped, repos preserved — **both local copies now verified (B 09-07, A 09-10)**
@@ -159,6 +166,7 @@ cygnus) →
 - [2026-09-06_gr-srv03_ct103-cloudflare-migration-plan.md](2026-09-06_gr-srv03_ct103-cloudflare-migration-plan.md) — **open** — CT103 is the last non-Turnkey LXC on Debian 12; clone-CT901/reinstall-cloudflared plan sketched, not started, <30 min job
 - [2026-08-28_gr-srv03_ct901-new-template.md](2026-08-28_gr-srv03_ct901-new-template.md) — *active* — CT901, the new 3 GB template; sudo needs a password, baked-in GitHub deploy key
 - [memory_zigbee2mqtt-migration.md](memory_zigbee2mqtt-migration.md) — **open** — cutover to CT206 done 2026-09-05, no re-pairing needed; only docker03 cleanup (phase 5) remains, held for a soak period
+- [2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md) — *active* — CT206's Zigbee network state now has its own nightly backup and a written restore procedure; filed under **Backups**, cross-listed here
 - [memory_rtl433-lxc-ct207.md](memory_rtl433-lxc-ct207.md) — **open** — CT207 built and tested 2026-09-05; DVB-driver blacklist + whole-tree `/dev/bus/usb` bind mount pattern; permanent setup (config, service, physical dongle move) still pending
 
 ## Containers — podman (cygnus) and docker (docker03)

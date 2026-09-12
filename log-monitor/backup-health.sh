@@ -34,7 +34,7 @@ DRIFT_PCT=40            # finding if latest < (100-DRIFT_PCT)% of the rolling me
 DRIFT_MIN_SAMPLES=5     # don't judge drift on thin history
 DRIFT_LOOKBACK=30       # samples to pull for the median, most recent first
 
-TAGS_LOCAL_JSON='["homeassistant","containers","castor-pg","proxmox-config","vm-images","raspberrypi","gickup"]'
+TAGS_LOCAL_JSON='["homeassistant","containers","castor-pg","proxmox-config","vm-images","raspberrypi","gickup","zigbee2mqtt"]'
 
 mkdir -p "$STATE_DIR"
 [[ -f "$SIZES_CSV" ]] || echo "date,source,tag,bytes" > "$SIZES_CSV"

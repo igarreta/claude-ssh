@@ -11,7 +11,7 @@ All backup jobs run on gr-srv03 hardware. ceres and cygnus are LXCs sharing the 
 
 **Scheduled unmount/remount**: gr-srv03 unmounts BACKUP_A/B at 15:00 and remounts at 00:30 daily. Disk swap window is 18:00–22:00. This eliminates hot-unplug risk. No manual intervention needed for weekly disk swaps.
 
-**Schedule (as of 2026-04-30):**
+**Schedule (as of 2026-09-12):**
 
 | Time | Machine | Job |
 |------|---------|-----|
@@ -21,6 +21,9 @@ All backup jobs run on gr-srv03 hardware. ceres and cygnus are LXCs sharing the 
 | 1:30 | cygnus | backup.sh (local copies) |
 | 1:45 | ceres | backup.sh |
 | 1:50 Mon | cygnus | gickup (GitHub backup via podman) |
+| 2:00 | zigbee2mqtt (CT206) | z2m-backup.timer — stage Zigbee state into ~/bak (gpg). Target is backup_usb1 (SSD), no disk wake needed |
+| 2:07 | zigbee2mqtt (CT206) | backup.sh — ship ~/bak + ~/etc to /mnt/backup_usb1/zigbee2mqtt |
+| 2:07 | mosquitto (CT105) | backup.sh — **was broken 2026-09-12** (pulled the merged script, took contabo2's SFTP branch); fixed same day |
 | 0:30 | gr-srv03 | remount BACKUP_A/B (if disk present) |
 | 2:25 | gr-srv03 | wake-backup-disks.sh |
 | 2:30 | ceres | backup-wdmycloud-local.sh (WDMyCloud → BACKUP_A/B) |
@@ -37,3 +40,9 @@ All backup jobs run on gr-srv03 hardware. ceres and cygnus are LXCs sharing the 
 **Jobs not yet confirmed in crontabs**: 3:08 docker03 rclone, 4:10 copias largas — verify on docker03.
 
 **Why cygnus jobs are at 1:30/1:50:** Load alerts on ceres+cygnus at 2:36–2:46 were caused by cygnus backup.sh (2:07) still running when ceres WDMyCloud backup started (2:30). Cygnus jobs moved earlier (2026-04-30) to fix this.
+
+**2026-09-12 — zigbee2mqtt (CT206) joins the chain.** Stage 02:00, ship 02:07, picked up by
+ceres' 03:00 `backup-usb1-local.sh` under its own `zigbee2mqtt` restic tag. Both writes land
+on `backup_usb1` (always-mounted SSD), so neither needs a `wake-backup-disks.sh` entry and the
+02:25–03:30 rule above does not apply to them. See
+[2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md).

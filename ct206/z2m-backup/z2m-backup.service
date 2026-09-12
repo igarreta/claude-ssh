@@ -1,0 +1,8 @@
+[Unit]
+Description=Stage zigbee2mqtt state into ~/bak for the nightly backup chain
+Documentation=https://github.com/igarreta/claude-ssh/blob/main/docs/2026-09-12_ct206_zigbee2mqtt-backup.md
+After=zigbee2mqtt.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/z2m-backup/z2m-backup-stage.sh

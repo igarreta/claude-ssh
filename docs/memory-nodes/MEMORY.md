@@ -44,9 +44,10 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 ## Backups and storage
 
 - [project_backup_a_rotation_check.md](project_backup_a_rotation_check.md) — BACKUP_A verified healthy 09-10 after rotation; how to inspect a rotated drive, and which apparent gaps are just retention
-- [project_igarreta-bin_shared-repo-hazard.md](project_igarreta-bin_shared-repo-hazard.md) — `~/bin` is one shared git repo across raspberrypi1/contabo2/raspberrypi2z; host-specific scripts must branch on `$HOSTNAME`, not assume the committing host is universal
+- [project_igarreta-bin_shared-repo-hazard.md](project_igarreta-bin_shared-repo-hazard.md) — `~/bin` is one shared git repo across most hosts; branch on the **exception**, never on one normal host — that shape broke raspberrypi1 (09-07) and mosquitto (09-12)
 - [project_ceres_empty_snapshots.md](project_ceres_empty_snapshots.md) — 7 months of empty backups, cause never reproduced across 3 probe readings; closed 2026-08-26, health monitor is now the safety net
 - [project_backup_schedule.md](project_backup_schedule.md) — **read before adding any job**: the 02:25–03:30 disk-wake window
+- [project_zigbee2mqtt_backup.md](project_zigbee2mqtt_backup.md) — CT206's Zigbee network state has its own nightly encrypted backup + written restore; adding a path to a restic tag needs `--group-by host,tags`
 - [project_gr-srv03_powered-hub-instability.md](project_gr-srv03_powered-hub-instability.md) — Zigbee drops were BACKUP_A/_B hot-plug transients on the shared 5V rail
 - [project_contabo2_nfs-backup-rclone-fix.md](project_contabo2_nfs-backup-rclone-fix.md) — NFS over WAN hung; migrated to rclone/SFTP
 - [project_ceres_wdmycloud_glacier.md](project_ceres_wdmycloud_glacier.md) — WDMyCloud → S3 Glacier; pruning the old snapshot isn't worth it
