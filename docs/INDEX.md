@@ -32,8 +32,12 @@ grep -l '^\*\*Host:\*\*.*docker03' docs/*.md       # everything about one host
 
 **Current:** MQTT command subscription fixed permanently 2026-08-15 (`on_connect` resubscribe,
 commit `b24d961`); Manual-mode phantom-zero bugs fixed 2026-08-01 →
-[2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md](2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md)
+[2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md](2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md).
+A **long-term plan** exists to split TTato into a gr-srv03 brain + an ESP32 at the boiler, and to
+turn raspberrypi1 into a thin radio head — **not scheduled, nothing built** →
+[2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md](2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md)
 
+- [2026-09-12_..._radio-head-and-ttato-split.md](2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md) — **open** — long-term architecture: TTato split, z2m state stays on gr-srv03, Pi runs `ser2net`; full GPIO map + 7 open questions
 - [2026-08-15_..._ttato-mqtt-resubscribe-fix.md](2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md) — *closed* — permanent fix
 - [2026-08-01_..._ttato-mqtt-subscription-drop.md](2026-08-01_raspberrypi1_ttato-mqtt-subscription-drop.md) — **superseded** by the above; its "restart the container" remedy is not the fix
 - [2026-08-01_..._ttato-manual-mode-phantom-zero-heating.md](2026-08-01_raspberrypi1_ttato-manual-mode-phantom-zero-heating.md) — *closed* — stale-sensor + HA unknown-state bugs in `CheckManual()`
@@ -77,6 +81,7 @@ daily restart in place →
 - [2026-07-21_raspberrypi2z_rtl433-decode-drop.md](2026-07-21_raspberrypi2z_rtl433-decode-drop.md) — *closed* — dropped to 1 of 3 sensors; daily restart added
 - [2026-07-02_raspberrypi2z_oregon-sensor-outage.md](2026-07-02_raspberrypi2z_oregon-sensor-outage.md) — *closed*
 - [memory_raspberrypi2z_pool-thermometer.md](memory_raspberrypi2z_pool-thermometer.md) — **open** — WT0124 (protocol 109) bought, not yet integrated
+- [2026-09-12_..._radio-head-and-ttato-split.md](2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md) — **open** — long-term: z2m/rtl_433 placement, and why raspberrypi2z is ruled out as a z2m host
 - [memory_rtl-test.md](memory_rtl-test.md) — **open** — docker03 garage-remote capture, unfinished
 
 ## Backups

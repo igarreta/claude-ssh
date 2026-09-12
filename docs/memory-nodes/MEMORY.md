@@ -37,6 +37,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_nas.md](project_nas.md) — chassis decided 09-10: **F4-424 Pro** (i3-N305 8c, 32 GB), $687, total $1,121.90; the 09-08 N150 pick rested on a $479.99 price that never existed; disks chosen after the NAS
 - [project_ceres_wdmycloud-nas-dead.md](project_ceres_wdmycloud-nas-dead.md) — WD MyCloud dead 09-06; backup crons disabled to avoid retention deleting real snapshots, repos preserved until replacement (>2mo out)
 - [project_backup_health_monitor.md](project_backup_health_monitor.md) — deployed 08-15, tests being finished
+- [project_ttato-split-and-radio-head.md](project_ttato-split-and-radio-head.md) — long-term plan, not scheduled: TTato → gr-srv03 brain + ESP32, raspberrypi1 as radio head; radio and compute placement are separable
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
 - [project_docker03_rtl-test.md](project_docker03_rtl-test.md) — garage-remote 433 MHz capture, unfinished
 - [project_raspberrypi1_sudo-hardening.md](project_raspberrypi1_sudo-hardening.md) — passwordless sudo removal requested 09-06, blocked from MCP, user needs to run it
