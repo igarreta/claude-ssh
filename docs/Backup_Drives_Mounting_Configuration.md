@@ -131,7 +131,7 @@ systemctl stop mnt-backup_a.mount
 
 | Drive | UUID | Status |
 |-------|------|--------|
-| BACKUP_USB1 | b52be7b7-1bd0-4281-8c16-87ceeca5b665 | fstab (always mounted) |
+| BACKUP_USB1 | b52be7b7-1bd0-4281-8c16-87ceeca5b665 | fstab (always mounted) — **Kingston XS1000, 1 TB USB SSD**, never disconnected, not part of the rotation. `lsblk -o ROTA` wrongly reports `1` (the USB bridge hides the flag); `smartctl -i` says `Solid State Device` |
 | BACKUP_A | ef8a4442-68a6-485c-992c-9fd79b183201 | Systemd + udev (hotplug) — WDC WD40NDZW-11BCVS0, 4 TB |
 | BACKUP_B | 2d0b0d7c-c5bd-4d8a-b477-29732001f6df | Systemd + udev (hotplug) — Toshiba MQ03UBB300, 3 TB |
 

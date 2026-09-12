@@ -32,6 +32,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_gr-srv03_ct103-migration-plan.md](project_gr-srv03_ct103-migration-plan.md) — CT103 last non-Turnkey Debian 12 LXC; clone-CT901 migration plan sketched, <30 min job, not started
 - [project_cygnus_backup-checker-iperf3-migration.md](project_cygnus_backup-checker-iperf3-migration.md) — proxmox_backup_checker + iperf3 moved to cygnus 09-05; backup.sh needed no migration
 - [project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration.md](project_docker03_uptime-kuma-mqtt-explorer-cloudflare-migration.md) — uptime-kuma/mqtt-explorer moved to cygnus 09-05; cloudflaretunnel's real home is CT103, not cygnus
+- [project_pbs-cross-backup.md](project_pbs-cross-backup.md) — PBS on each host backing up the other, no sync jobs; guest backups carry no host config and no bind-mounted data
 - [project_nas-service-placement-rules.md](project_nas-service-placement-rules.md) — placement rulebook for gr-srv03 + NAS: one-week rule, **no clustering**, one-way dependencies; **run the dependency audit when the NAS is commissioned**
 - [project_nas.md](project_nas.md) — chassis decided 09-10: **F4-424 Pro** (i3-N305 8c, 32 GB), $687, total $1,121.90; the 09-08 N150 pick rested on a $479.99 price that never existed; disks chosen after the NAS
 - [project_ceres_wdmycloud-nas-dead.md](project_ceres_wdmycloud-nas-dead.md) — WD MyCloud dead 09-06; backup crons disabled to avoid retention deleting real snapshots, repos preserved until replacement (>2mo out)

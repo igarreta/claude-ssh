@@ -39,6 +39,12 @@ that gets rebooted. gr-srv03 has no disks to swap and nothing to resilver, so it
 |---|---|
 | Home Assistant (VM 104), mosquitto (105), zigbee2mqtt (206), rtl433 (207), castor/postgres (205), cloudflare ingress (103) | Immich, Samba shares, Time Machine, PBS, media, `tank/backups` |
 
+> **Extended 2026-09-12: PBS runs on *both* hosts, each backing up the other** — the NAS
+> PBS keeps gr-srv03's backups as this table says, and a second PBS on gr-srv03 keeps the
+> NAS's, plus a 3–7 day local copy of gr-srv03's own guests. No sync jobs. See
+> [2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md](2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md).
+> This does not change §1 or §4: backup traffic is class-4 push-style in both directions.
+
 **The radios stay on gr-srv03** (user's call, 2026-09-11). USB passthrough pins a guest to its
 host, so z2m and rtl433 could never have failed over anyway; deciding once where the radios
 live decides where the whole automation chain lives.

@@ -3,7 +3,7 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** —
-**Superseded-by:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§ *The RAM budget is the binding constraint* and § *The 16 GB question is OPEN* only)
+**Superseded-by:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§ *The RAM budget is the binding constraint* and § *The 16 GB question is OPEN* only), 2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md (the `pbs` LXC row of § *Guests* only)
 
 **Date**: 2026-09-07. Hardware buy list and sizing are in
 [memory_nas-project.md](memory_nas-project.md); this doc covers only what runs on the box
