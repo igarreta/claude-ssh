@@ -113,8 +113,15 @@ registry had only the weekly whole-container vzdump until then. The same pass fi
 faults: mosquitto's `backup.sh` had broken that very morning (the 09-07 merge branched on
 raspberrypi1, so every *other* host fell into contabo2's SFTP path — now branches on the
 exception), and `/mnt/backup_usb1/mosquitto` turned out to be in **no restic tag at all** →
-[2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md)
+[2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md).
+**2026-09-13: ceres lost three nightly backups (09-11/12/13) to a stale restic lock that the
+script could never clear** — its staleness check parsed `restic cat lock`'s pretty-printed JSON
+with a compact-JSON pattern, and `date -d ""` returns *today at midnight*, so the computed age
+was permanently `3h` at the 03:00 cron and never reached the 6 h threshold. Lock cleared, backup
+re-run, check rewritten (and the same pattern fixed in three sibling scripts) →
+[2026-09-13_ceres_restic-lock-deadlock.md](2026-09-13_ceres_restic-lock-deadlock.md)
 
+- [2026-09-13_ceres_restic-lock-deadlock.md](2026-09-13_ceres_restic-lock-deadlock.md) — *closed* — three nightly backups skipped by a 09-10 stale lock; the age check returned "hours since midnight" because the JSON pattern missed a space and `date -d ""` yields midnight rather than failing. Records what looked broken but was not (the 15:00–00:30 unmount window, `/mnt/backup_a` showing as `pve-root`)
 - [2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md) — *active* — the z2m state backup end to end: what is and is not copied, why it is gpg-encrypted and validated instead of quiesced, the **restore procedure**, plus the mosquitto `backup.sh` break and the `--group-by host,tags` retention trap that adding a path to a restic tag springs
 - [2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md) — *closed* — post-rotation verification of BACKUP_A: mount/propagation, 7/7 tags with floors passed, `restic check` clean, SMART clean, and its WDMyCloud repo verified intact; also corrects the drive model in the mounting doc
 - [2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md) — *closed* — shared-repo clobber; merged into one hostname-branched script

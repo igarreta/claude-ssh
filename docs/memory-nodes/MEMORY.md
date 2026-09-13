@@ -18,6 +18,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [feedback_dont-trust-vendor-fix-on-prod.md](feedback_dont-trust-vendor-fix-on-prod.md) — verify a tool's own suggested fix against this host's actual config before running it on a live service
 - [feedback_mcp_privileged_policy_denied.md](feedback_mcp_privileged_policy_denied.md) — MCP `privileged-command` is policy-denied on all "prod" host-group connectors, not just docker03
 - [feedback_fail2ban_tailscale_only.md](feedback_fail2ban_tailscale_only.md) — don't add fail2ban to new hosts reachable only via Tailscale, no public exposure
+- [feedback_no_alert_escalation_counters.md](feedback_no_alert_escalation_counters.md) — don't propose failure counters or alert escalation; a repeating daily alert is working as intended
 - [feedback_stale_failed_unit_false_positive.md](feedback_stale_failed_unit_false_positive.md) — a stale `failed` unit escalates daily; check the thing is actually running before believing the report
 
 ## Open — needs follow-up
@@ -44,6 +45,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 
 ## Backups and storage
 
+- [project_ceres_restic-lock-deadlock.md](project_ceres_restic-lock-deadlock.md) — 3 nightly backups lost to a lock whose age always read "3h"; `date -d ""` returns midnight, not an error
 - [project_backup_a_rotation_check.md](project_backup_a_rotation_check.md) — BACKUP_A verified healthy 09-10 after rotation; how to inspect a rotated drive, and which apparent gaps are just retention
 - [project_igarreta-bin_shared-repo-hazard.md](project_igarreta-bin_shared-repo-hazard.md) — `~/bin` is one shared git repo across most hosts; branch on the **exception**, never on one normal host — that shape broke raspberrypi1 (09-07) and mosquitto (09-12)
 - [project_ceres_empty_snapshots.md](project_ceres_empty_snapshots.md) — 7 months of empty backups, cause never reproduced across 3 probe readings; closed 2026-08-26, health monitor is now the safety net
