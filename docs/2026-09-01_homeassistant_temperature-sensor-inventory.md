@@ -3,7 +3,7 @@
 **Status:** closed
 **Host:** homeassistant
 **Supersedes:** —
-**Superseded-by:** —
+**Superseded-by:** 2026-09-13_homeassistant_exterior-sensor-backup-zb2.md (§2 exterior chain only)
 
 Snapshot taken 2026-09-01 by querying `home-assistant_v2.db` (recorder, latest state per
 entity) and `configuration.yaml` / `.storage/core.entity_registry` for source-of-truth.

@@ -150,9 +150,17 @@ esp32-pileta found late) — old docker03 broker **stopped** 2026-08-26, not yet
 
 **Current:** temperature sensors inventoried, cleaned up, and renamed to a consistent
 `<house>_<room>_<qualifier>_<what>` convention, all 2026-09-01; disk cleanup 2026-09-05
-freed ~1.7GB (stale 1GB log + 8 old full backups) →
-[2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md)
+freed ~1.7GB (stale 1GB log + 8 old full backups).
+**2026-09-13: a second exterior Zigbee sensor (`casa_ext_zb2_*`, Tuya ZY-ZTH02) is now
+priority 3 of the `sensor.casa_ext_temp` chain**, with a measured **−1.5 °C** correction and a
+100-min staleness guard — three local sources now, up from two →
+[2026-09-13_homeassistant_exterior-sensor-backup-zb2.md](2026-09-13_homeassistant_exterior-sensor-backup-zb2.md).
+**Also 2026-09-13: `/config` is no longer writable from the `homeassistant` ssh-mcp connector**
+(addon went unprivileged on 09-11) — edits now go through `qm guest exec 104` from gr-srv03 →
+[2026-09-13_homeassistant_config-write-path-lost.md](2026-09-13_homeassistant_config-write-path-lost.md)
 
+- [2026-09-13_homeassistant_exterior-sensor-backup-zb2.md](2026-09-13_homeassistant_exterior-sensor-backup-zb2.md) — *active* — second exterior Zigbee sensor as priority-3 backup leg; measured +1.44 median offset → −1.5 correction, 30-min heartbeat → 100-min guard, 14 dropouts >1 h in 8 days; ZY-ZTH02 battery/voltage are constants so the daily battery alarm can never fire for it
+- [2026-09-13_homeassistant_config-write-path-lost.md](2026-09-13_homeassistant_config-write-path-lost.md) — *active* — ssh-mcp connector lost `/config` write + SFTP + `ha` CLI on 09-11; protection mode is **not** the fix; use `qm guest exec 104`, and the HAOS quirks (no python3, `PATH` omits `/bin`) that come with it
 - [2026-09-05_homeassistant_disk-cleanup.md](2026-09-05_homeassistant_disk-cleanup.md) — *closed* — stale log + old backups removed, 74%→69% disk usage; notes the MCP shell's restricted view (`du` only sees ~2.5G of the 22G `df` total)
 - [2026-09-01_homeassistant_temperature-sensor-inventory.md](2026-09-01_homeassistant_temperature-sensor-inventory.md) — *closed* — full old→new entity_id mapping; dead/duplicate entities removed, dashboards + templates repointed; documents the HA `.storage` live-edit-doesn't-stick gotcha; hab-chicos Nexus (channel 3/id 12) commented out as unreliable
 - [2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md](2026-08-30_homeassistant_battery-binary-sensors-and-exterior-zigbee-swap.md) — *closed* — 4 rtl_433 battery sensors → `binary_sensor`; exterior Zigbee sensor `0xa4c1386e91d0faf4` → `0xa4c1380a7834ffff`, same friendly_name, zero config changes needed

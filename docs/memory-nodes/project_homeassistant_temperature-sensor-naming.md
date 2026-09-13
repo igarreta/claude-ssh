@@ -27,6 +27,14 @@ Claude over SSH, and `sudo` commands over SSH get blocked too (see
 [[feedback_sudo_commands_no_ssh_wrap]]) — the user has to run all three steps themselves in
 their own session.
 
+**Renaming a handful of entities (2026-09-13):** the stop/edit/start dance above is only
+worth it for a bulk rename like 09-01's. For a few entities that nothing references yet, rename
+them in the **HA UI** (device → entity → cog → Entity ID) — supported, no downtime, recorder
+history carries across. Renaming the device in zigbee2mqtt does **not** work: z2m's discovery
+`unique_id` is `<ieee>_<property>_zigbee2mqtt`, so HA matches on that and leaves the entity_id
+alone. New qualifier in use: `zb2` for a second Zigbee sensor in the same room
+(`casa_ext_zb2_*`). See [[project_homeassistant_stale_sensor_chain]].
+
 **Companion app gotcha (2026-09-07):** after this rename, renamed sensors showed in the HA
 iPhone app but not in the iOS widget's entity picker. Fix was simply force-quitting the
 Companion app and reopening it — the widget picker holds a stale local snapshot of the entity
