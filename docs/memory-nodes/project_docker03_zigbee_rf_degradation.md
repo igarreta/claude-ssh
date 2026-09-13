@@ -106,7 +106,7 @@ so **every `routeerr-*.csv` before 2026-09-13 is inflated ~3-4x** and cannot be 
 rotate at ~22 h). `parse.awk` was fixed to count the one `info`-level line that both log levels
 emit, so counts are now stable and carry the device again; `ZIGBEE_DELIVERY_FAILED` split off to
 its own `delivfail-*.csv` (empty while log_level is info). **09-13 is a mixed day — discard it.
-The clean baseline starts 2026-09-14.** Versioned copy: `zigbee-lqi/parse.awk` in claude-ssh.
+The clean baseline starts 2026-09-14.** Versioned copy: `ct206/zigbee-lqi/parse.awk` in claude-ssh.
 
 **Now measuring.** Give it several days, compare like-for-like hours, and **change nothing else
 meanwhile** — especially don't move the dongle physically.

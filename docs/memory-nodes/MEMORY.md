@@ -26,7 +26,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_gr-srv03_ct901-template.md](project_gr-srv03_ct901-template.md) — CT901 is now the LXC clone template (not CT900, kept as rollback per user choice)
 
 - [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — channel moved 11→25 on 09-13 at zero re-pairing cost; the real signal is ~1700-2000 route errors/day on a 10-device net, not the LQI — and not the dongle
-- [project_zigbee_lqi_collector.md](project_zigbee_lqi_collector.md) — LQI/route-error CSVs on CT206; z2m's own logs hold only ~22 h, so day-over-day evidence comes from here
+- [project_zigbee_lqi_collector.md](project_zigbee_lqi_collector.md) — LQI/route-error CSVs on CT206; it parses log text, so a `log_level` change rescales the counts — pre-09-13 route errors are inflated ~3-4x
 - [project_zigbee2mqtt_migration.md](project_zigbee2mqtt_migration.md) — cutover to CT206 done 09-05; docker03 kept as rollback until soak period, HA/TTato/actuator checks still needed
 - [project_gr-srv03_rtl433-ct207.md](project_gr-srv03_rtl433-ct207.md) — CT207 built/tested 09-05, test dongle removed, container stopped; permanent config still pending
 - [project_gr-srv03_ct103-migration-plan.md](project_gr-srv03_ct103-migration-plan.md) — CT103 last non-Turnkey Debian 12 LXC; clone-CT901 migration plan sketched, <30 min job, not started

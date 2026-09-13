@@ -729,7 +729,8 @@ formato, con lo que se recupera la atribución por dispositivo. Las entregas fal
 `delivfail-*.csv` propio, vacío mientras el nivel sea `info`, y reaparecen intactas si alguna
 vez se vuelve a `debug` para investigar.
 
-Copia versionada del script en `zigbee-lqi/parse.awk` de este repo; el original quedó en
+Copia versionada del script en `ct206/zigbee-lqi/parse.awk` de este repo (junto al resto del
+colector — no crear una segunda copia en otro sitio); el original quedó en
 CT206 como `/opt/zigbee-lqi/parse.awk.pre-2026-09-13`.
 
 ### 9.9 Qué medir ahora
