@@ -57,7 +57,9 @@ now needs the collector, not a spot check. Shielded-cable purchase stays on.
 **2026-09-13 (§9): Zigbee channel moved 11 → 25 and `log_level` debug → info.** The channel
 change cost **zero re-pairings** (the §8 assumption that it needed 8 was wrong). The finding
 that reorients this: **~1700-2000 route errors/day on a 10-device network** — that, not LQI, is
-the metric now. The **dongle is ruled out** (EmberZNet 8.0.2 GA on EFR32MG21). Measuring;
+the metric now — **pero ojo: los recuentos previos al 09-13 están inflados ~3-4x** (artefacto de
+`log_level: debug`, §9.8); `parse.awk` corregido, **línea de base limpia desde el 09-14**.
+The **dongle is ruled out** (EmberZNet 8.0.2 GA on EFR32MG21). Measuring;
 change nothing else meanwhile.
 The storage hub for the rebuild (Rosonway RSH-A10) was **ordered 2026-08-29, ETA ~2026-10-24**
 and the layout was decided 2026-08-30 (**Option D** — Zigbee keeps its own direct host port,

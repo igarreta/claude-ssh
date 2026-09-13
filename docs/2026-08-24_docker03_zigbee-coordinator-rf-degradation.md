@@ -623,8 +623,12 @@ Inventario real leído de `database.db`: **5 routers** (todos a red — 2× `lum
 2× `TS011F`, 1× `TS0505B`), **4 end devices** a batería, 1 coordinador, más 1 entrada
 fantasma (`0xa4c138d53b816b8e`, sin `linkquality`, sin verse hace ~92 días).
 
-**1 700–2 000 route errors diarios en una malla de 10 nodos con 5 routers a red es anómalo
-por uno o dos órdenes de magnitud.** Una red así debería producir un puñado. Esto es firma de
+> ⚠️ **Estos recuentos están inflados ~3-4x** — son líneas de log, no errores. Ver §9.8. La
+> conclusión cualitativa se sostiene; los números no son comparables con los posteriores al
+> 2026-09-13.
+
+**Cientos de route errors diarios en una malla de 10 nodos con 5 routers a red es anómalo por
+uno o dos órdenes de magnitud.** Una red así debería producir un puñado. Esto es firma de
 interferencia, no de un coordinador saturado — y es la métrica a vigilar de ahora en adelante,
 más que el LQI, que ya se sabe que oscila ~60 puntos a lo largo del día.
 
@@ -690,7 +694,45 @@ Es el destino de la mayoría de los `ROUTE_ERROR_SOURCE_ROUTE_FAILURE` del colec
 atribuir esta falla al cambio de canal.** Queda como ítem abierto: ver si el canal 25 la
 resuelve o si es un problema propio del dispositivo (ubicación, alimentación, o hardware).
 
-### 9.8 Qué medir ahora
+### 9.8 Efecto colateral: el contador de route errors cambió de escala
+
+**Bajar `log_level` a `info` rompió la comparabilidad del colector, y hubo que arreglarlo.**
+
+Bajo `debug`, **un solo** route error emitía 3-4 líneas que el patrón `/ROUTE_ERROR/` del
+`parse.awk` contaba todas:
+
+```
+debug: ezspIncomingNetworkStatusHandler: errorCode=ROUTE_ERROR_SOURCE_ROUTE_FAILURE target=43800
+info:  Received network/route error ROUTE_ERROR_SOURCE_ROUTE_FAILURE for "43800".
+debug: <=== [CBFRAME: ID=128:"INCOMING_ROUTE_ERROR_HANDLER" Seq=7 Len=11]
+debug: ezspIncomingRouteErrorHandler: status=ZIGBEE_SOURCE_ROUTE_FAILURE target=43800
+```
+
+Bajo `info` sobrevive sólo la segunda — que además no lleva `errorCode=` ni `target=`, así que
+el parser viejo la registraba como `unknown` con destino vacío.
+
+Consecuencias, en orden de importancia:
+
+1. **Los `routeerr-*.csv` anteriores al 2026-09-13 están inflados ~3-4x.** Los 690 / 1 962 /
+   1 746 de la §9.3 son recuentos de *líneas de log*, no de errores. La conclusión cualitativa
+   no cambia (siguen siendo cientos de errores reales en una red de 10 nodos, sigue siendo
+   anómalo), pero **los números no son comparables con los de ahora en adelante.**
+2. Esos logs ya rotaron (~22 h de retención), así que **no se pueden recalcular.**
+3. **El 2026-09-13 es un día mixto** — parser viejo hasta ~18:50, nuevo después. Descartarlo.
+   **La línea de base limpia empieza el 2026-09-14.**
+
+**Arreglo aplicado:** `parse.awk` ahora cuenta la línea de nivel `info` (`Received network/route
+error … for "NNNNN"`), que **se emite en ambos niveles de log** — así el recuento es de un
+registro por error, estable e independiente de `log_level`. Extrae el código y el destino de ese
+formato, con lo que se recupera la atribución por dispositivo. Las entregas fallidas
+(`ZIGBEE_DELIVERY_FAILED`) son un evento **distinto** y sólo se loguean en `debug`: pasan a un
+`delivfail-*.csv` propio, vacío mientras el nivel sea `info`, y reaparecen intactas si alguna
+vez se vuelve a `debug` para investigar.
+
+Copia versionada del script en `zigbee-lqi/parse.awk` de este repo; el original quedó en
+CT206 como `/opt/zigbee-lqi/parse.awk.pre-2026-09-13`.
+
+### 9.9 Qué medir ahora
 
 - **Route errors por día** en el colector — es la métrica sensible, no el LQI.
 - LQI de flota, comparado contra la línea de base: ~220 (pico 08-26), ~120-127 (recaída),
