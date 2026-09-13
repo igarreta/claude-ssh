@@ -54,6 +54,11 @@ Recheck done 2026-09-11 (§8), still **open**: the WiFi-channel test is impossib
 no manual channel), LQI is unrecovered, route errors have doubled past August's worst day, and
 the LQI turns out to **swing ~60 points across the day** (86 at 04h, 147 at 16h) — measuring it
 now needs the collector, not a spot check. Shielded-cable purchase stays on.
+**2026-09-13 (§9): Zigbee channel moved 11 → 25 and `log_level` debug → info.** The channel
+change cost **zero re-pairings** (the §8 assumption that it needed 8 was wrong). The finding
+that reorients this: **~1700-2000 route errors/day on a 10-device network** — that, not LQI, is
+the metric now. The **dongle is ruled out** (EmberZNet 8.0.2 GA on EFR32MG21). Measuring;
+change nothing else meanwhile.
 The storage hub for the rebuild (Rosonway RSH-A10) was **ordered 2026-08-29, ETA ~2026-10-24**
 and the layout was decided 2026-08-30 (**Option D** — Zigbee keeps its own direct host port,
 test-only RTL-433 goes on the hub, no second hub) — nothing is installed until it lands.

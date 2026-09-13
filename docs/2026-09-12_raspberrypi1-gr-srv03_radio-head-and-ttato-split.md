@@ -102,16 +102,31 @@ the difference between them.
 
 ## 5. Coordinator migration — the re-pairing trap
 
+> **CORRECTED 2026-09-13** — the original wording of this section said a different coordinator
+> chip means re-pairing the whole mesh and that a restore does not fix it. **That was too
+> strong**, and it matters for the buying decision. Corrected text below.
+
 - Keeping the **existing dongle** and merely relocating it preserves the network: same chip,
-  same IEEE address, **no re-pairing**.
-- Swapping to a network-native coordinator (SLZB-06 and similar) requires the radio family to
-  match, or the entire mesh must be re-paired. A restore does not fix a chip change.
+  same IEEE address, **no re-pairing**. This is the zero-risk case.
+- Swapping to a network-native coordinator (SLZB-06 and similar) is a **supported migration,
+  not a wipe.** The `zigpy/open-coordinator-backup` format exists for exactly this: a same-stack
+  move (ember → ember, which SLZB-06 is — also EFR32) restores PAN ID, extended PAN ID and
+  network key, and devices keep working. The wrinkle is that z2m writes the original EUI64 to
+  the new adapter as a custom manufacturing token, and on EFR32 that is typically a **one-time
+  write** — so it is a real path, but not one you get to retry. **Verify against current z2m
+  docs before buying.**
+- Cross-stack migration (ember ↔ zstack) is also supported but is the riskier case.
 - The nightly Zigbee network-state backup covers the host-move case →
   [memory-nodes/project_zigbee2mqtt_backup.md](memory-nodes/project_zigbee2mqtt_backup.md).
+- **The coordinator is not a performance bottleneck** — established 2026-09-13: EmberZNet
+  8.0.2 [GA] on an EFR32MG21 carrying 10 devices. If a coordinator is bought, the justification
+  is **Ethernet-attached placement freedom**, which is what this plan is about, not more radio.
 
 **Measurement warning:** moving the coordinator changes the variable currently under
 investigation. LQI is unrecovered since the 09-05 relapse and swings ~60 points across the
-day. Take before/after readings from the CT206 collector, never a spot check →
+day. **The Zigbee channel was moved 11 → 25 on 2026-09-13** (§9 of the RF degradation doc) and
+that measurement is in flight — do not also move the dongle physically until it concludes.
+Take before/after readings from the CT206 collector, never a spot check →
 [memory-nodes/project_zigbee_lqi_collector.md](memory-nodes/project_zigbee_lqi_collector.md).
 
 ## 6. The TTato split

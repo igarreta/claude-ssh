@@ -1,11 +1,11 @@
 ---
 name: project_docker03_zigbee_rf_degradation
-description: "Zigbee coordinator RF degraded after the 2026-08-17 dongle move; fleet LQI 200→134; 08-25 fix lifted it to ~220; RELAPSED to ~120 after the 09-05 CT206 migration; 09-11 recheck: still unrecovered, WiFi-channel test impossible on a Deco mesh, and LQI swings ~60 points across the day so spot checks mislead"
+description: "Zigbee coordinator RF degraded after the 2026-08-17 dongle move; fleet LQI 200→134; 08-25 fix lifted it to ~220; RELAPSED to ~120 after the 09-05 CT206 migration; 09-13: moved Zigbee ch 11→25 at zero re-pairing cost, and the real signal turns out to be ~1700-2000 route errors/day on a 10-device network — not the LQI, and not the dongle"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 3a5d59b8-5617-4ea7-8442-e072c0e4686f
-  modified: 2026-09-11T19:45:00.000Z
+  modified: 2026-09-13T22:00:00.000Z
 ---
 
 The Zigbee coordinator's RF degraded after the 2026-08-17 dongle move to a bare chassis port
@@ -73,8 +73,35 @@ two or three more nights before believing it. (3) Route errors are now ~1900/day
 decoupled, so a recovered LQI would not by itself mean the fault is gone.
 
 **The WiFi-channel test is dead**, not pending: the AP is a TP-Link Deco mesh with no manual
-2.4 GHz channel selection. The only remaining lever on that hypothesis is moving Zigbee off
-channel 11, which costs re-pairing 8 devices — don't spend it while cheaper leads are open.
+2.4 GHz channel selection. The remaining lever was moving Zigbee off channel 11 — **done on
+2026-09-13, see below. The feared re-pairing cost did not exist.**
+
+**2026-09-13 (§9 of the doc) — three things settled:**
+
+1. **Channel moved 11 → 25, and it was free.** All 9 real devices republished within 4 minutes,
+   battery end devices included. **Zero re-pairings.** The §8 reasoning that deferred this
+   ("costs re-pairing 8 devices") was wrong — `pan_id`/`ext_pan_id`/`network_key` are pinned in
+   `configuration.yaml`, so only the channel migrated, which is the clean case. **Don't defer a
+   channel change again on that assumption.** Chose 25 (2475 MHz) over 15/20 because a real
+   `nmcli` scan from raspberrypi1 put the loudest AP on WiFi ch 3 and another on ch 10, and 25
+   sits above all of WiFi 1–11 — so it survives the Deco reassigning itself.
+2. **The metric to watch is route errors, not LQI.** ~1700–2000/day on a network of **10
+   devices** (5 mains routers, 4 battery end devices) is anomalous by one to two orders of
+   magnitude. A mesh that small should produce a handful.
+3. **The dongle is ruled out as the cause.** Startup banner: **EmberZNet 8.0.2 [GA]**, build 397,
+   EZSP v14, on a Sonoff ZBDongle-E (EFR32MG21) — current firmware, well past the 6.10.3 factory
+   image, on a chip rated for 100+ devices. Note EZSP v14 is shared by EmberZNet 7.4.x *and* 8.x,
+   so read the stack version off the boot banner, never inferred from the EZSP number.
+   See [[project_ttato-split-and-radio-head]]: if a coordinator is ever bought, the reason is
+   Ethernet-attached placement, not more radio.
+
+Also done 09-13: `log_level: debug` → `info` (it was writing every ASH frame to disk). And a
+pre-existing fault to not misattribute: **`bomba agua z` (NWK 43800) was already failing
+delivery before the channel change** and is the target of most route errors — open question
+whether ch 25 fixes it or it's a device-level problem.
+
+**Now measuring.** Give it several days, compare like-for-like hours, and **change nothing else
+meanwhile** — especially don't move the dongle physically.
 
 Measuring this now goes through the collector on CT206, not through the z2m logs (~22 h of
 retention): [[project_zigbee_lqi_collector]].

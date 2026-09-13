@@ -14,6 +14,13 @@ discos). **La revisión del 2026-09-09 ya no es un simple cierre** — hay que d
 esta recaída sobre la mesa, no solo con los datos de agosto. **Hecha el 2026-09-11 (§8):
 la recaída sigue, la prueba de canal WiFi resultó imposible (Deco sin selección manual),
 y apareció un patrón diurno nuevo. Sigue abierto.**
+**2026-09-13 (§9): ejecutado el cambio de canal Zigbee 11 → 25** que la §8 había descartado
+por costo — el costo no existió, **cero re-emparejamientos**, los 9 dispositivos volvieron en
+menos de 4 minutos. También `log_level: debug` → `info`. Y el hallazgo que reorienta esto: con
+**10 dispositivos** la red produce **1 700–2 000 route errors diarios**, anómalo por uno o dos
+órdenes de magnitud — ésa, y no el LQI, es la métrica a vigilar. El dongle queda **descartado
+como causa** (EmberZNet 8.0.2 GA sobre EFR32MG21, sobredimensionado para 10 nodos). Pendiente:
+medir varios días antes de concluir, y no mover nada más mientras tanto.
 
 Investigación disparada por un `switch.turn_on` de Home Assistant que nunca llegó al
 relé, el 2026-08-22 18:46:11 (hora local, UTC-3).
@@ -566,6 +573,131 @@ CT206 que guarda cada muestra de `linkquality` y cada error de ruta en CSVs diar
 3. **La compra del cable apantallado sigue sin cancelarse.**
 
 ---
+
+## 9. Acción 2026-09-13: canal Zigbee 11 → 25, y el hallazgo de los route errors
+
+La §8 dejó anotado que "la palanca que queda es mover **Zigbee** (canal 11 → 15/20/25)" y la
+descartó por el costo supuesto de re-emparejar. **Ese costo no se materializó: cero
+re-emparejamientos.** Se ejecutó el cambio.
+
+### 9.1 El escaneo WiFi que faltaba
+
+No se puede fijar el canal del Deco, pero sí se puede *medir* dónde está. Escaneo desde
+raspberrypi1 (`nmcli -f SSID,CHAN,FREQ,SIGNAL dev wifi list`, 2026-09-12):
+
+| SSID | Canal WiFi | Frecuencia | Señal |
+|---|---|---|---|
+| GrEven | **3** | 2422 MHz | **100** |
+| GrEven | 10 | 2457 MHz | 69 |
+| GrEven | 48 | 5240 MHz | 92 |
+
+- WiFi canal 3 → ocupa ~**2412–2432 MHz** (el AP más fuerte de la casa)
+- WiFi canal 10 → ocupa ~**2447–2467 MHz**
+- Zigbee canal 11 → **2405 MHz**
+
+Zigbee 11 quedaba 7 MHz por debajo del borde inferior del canal 3 — fuera del lóbulo
+principal, pero dentro de la falda espectral del transmisor más potente del entorno. Y como
+el Deco reasigna canales solo, la situación puede empeorar sin aviso.
+
+### 9.2 Por qué el 25 y no el 15 ni el 20
+
+| Canal Zigbee | Frecuencia | Veredicto |
+|---|---|---|
+| 15 | 2425 MHz | **Malo hoy** — dentro de WiFi ch 3 |
+| 20 | 2450 MHz | **Malo hoy** — dentro de WiFi ch 10 |
+| 17 / 18 | 2435 / 2440 MHz | Limpios hoy (hueco entre ch 3 y ch 10), pero dejan de serlo si el Deco se mueve |
+| **25** | **2475 MHz** | **Elegido** — por encima de todo WiFi 1–11, sobrevive al reasignado automático |
+| 26 | 2480 MHz | Descartado — potencia de TX reducida por regulación en muchos chips |
+
+### 9.3 El hallazgo que reorienta la investigación: los route errors
+
+Del colector de la §8, sobre una red de **10 dispositivos**:
+
+| Fecha | LQI media (mín–máx) | Muestras | **Route errors** |
+|---|---|---|---|
+| 09-10 | 125 (52–255) | 1 872 | **690** |
+| 09-11 | 122 (52–255) | 5 809 | **1 962** |
+| 09-12 | 131 (60–255) | 4 931 | **1 746** |
+
+Inventario real leído de `database.db`: **5 routers** (todos a red — 2× `lumi.plug`,
+2× `TS011F`, 1× `TS0505B`), **4 end devices** a batería, 1 coordinador, más 1 entrada
+fantasma (`0xa4c138d53b816b8e`, sin `linkquality`, sin verse hace ~92 días).
+
+**1 700–2 000 route errors diarios en una malla de 10 nodos con 5 routers a red es anómalo
+por uno o dos órdenes de magnitud.** Una red así debería producir un puñado. Esto es firma de
+interferencia, no de un coordinador saturado — y es la métrica a vigilar de ahora en adelante,
+más que el LQI, que ya se sabe que oscila ~60 puntos a lo largo del día.
+
+### 9.4 El dongle queda descartado como causa
+
+Banner de arranque de z2m, leído el 2026-09-13:
+
+```
+Coordinator firmware version: {"meta":{"build":397,"ezsp":14,"major":8,"minor":0,"patch":2,
+"revision":"8.0.2 [GA]","special":0,"type":170},"type":"EmberZNet"}
+```
+
+**EmberZNet 8.0.2 [GA]**, build 397, EZSP v14, sobre un Sonoff ZBDongle-E (EFR32MG21, puente
+CP210x), con z2m 2.12.0 / zigbee-herdsman 10.4.0. Es firmware actual — muy por delante de la
+imagen de fábrica 6.10.3 / EZSP v8 — sobre un chip que soporta más de cien dispositivos. Para
+una red de 10, el coordinador está sobredimensionado. **Cambiar el dongle no era la respuesta.**
+
+> Nota: EZSP v14 lo usan tanto EmberZNet 7.4.x como 8.x. Inferir la versión del stack desde el
+> número de EZSP es ambiguo; el banner de arranque es la fuente correcta.
+
+### 9.5 Lo que se hizo
+
+1. Respaldo previo: `/root/z2m-pre-channel-change-2026-09-13.tar.gz` en CT206
+   (`configuration.yaml`, `coordinator_backup.json`, `database.db`, `state.json`).
+2. `advanced.channel: 11` → **`25`**, y `advanced.log_level: debug` → **`info`**.
+   El nivel `debug` estaba escribiendo cada trama ASH a disco de forma continua.
+3. Reinicio de `zigbee2mqtt`.
+
+`pan_id` (`83e8`), `ext_pan_id` (`fc4a9e735e5082bf`) y `network_key` estaban fijados
+explícitamente en `configuration.yaml` y **no se tocaron** — por eso la migración fue sólo de
+canal, que es el caso limpio.
+
+### 9.6 Resultado
+
+```
+zh:controller: Configured channel '25' does not match adapter channel '11', changing channel
+zh:controller: Changing channel from '11' to '25'
+zh:controller: Channel changed to '25'
+zh:ember: [STACK STATUS] Channel changed.
+```
+
+- **Los 9 dispositivos reales volvieron a publicar en menos de 4 minutos**, incluidos los 4
+  end devices a batería (`zigbee_temperatura_exterior`, `zigbee_temp_living`,
+  `Porton levadizo`, `0xa4c1388a037daa90`). **Cero re-emparejamientos.** El costo que la §8
+  temía no existió.
+- `coordinator_backup.json` quedó en canal 11 tras el primer reinicio — se escribe al *apagar*,
+  4 segundos antes del cambio. Un segundo reinicio lo dejó correcto (canal 25, PAN intacto).
+  **A tener en cuenta si alguna vez se restaura un backup tomado el mismo día de un cambio de
+  canal.**
+- `log_level: info` verificado: 0 líneas `debug:` tras el reinicio.
+
+### 9.7 Falla preexistente, no causada por el cambio
+
+`bomba agua z` (`0x385cfbfffec868fb`, NWK 43800) ya fallaba **antes** del reinicio — a las
+18:41, con el coordinador todavía en canal 11:
+
+```
+ezspIncomingNetworkStatusHandler: errorCode=ROUTE_ERROR_SOURCE_ROUTE_FAILURE target=43800
+ZCL command ... failed (Delivery failed for '43800'.)
+```
+
+Es el destino de la mayoría de los `ROUTE_ERROR_SOURCE_ROUTE_FAILURE` del colector. **No
+atribuir esta falla al cambio de canal.** Queda como ítem abierto: ver si el canal 25 la
+resuelve o si es un problema propio del dispositivo (ubicación, alimentación, o hardware).
+
+### 9.8 Qué medir ahora
+
+- **Route errors por día** en el colector — es la métrica sensible, no el LQI.
+- LQI de flota, comparado contra la línea de base: ~220 (pico 08-26), ~120-127 (recaída),
+  125/122/131 (09-10/11/12).
+- Dar varios días antes de concluir: el LQI oscila ~60 puntos entre las 04 h y las 16 h, así
+  que una lectura puntual no dice nada.
+- **No mover el dongle de sitio mientras se mide esto.** Un solo cambio por vez.
 
 ## Apéndice: mapeo NWK ↔ dispositivo
 
