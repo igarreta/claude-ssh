@@ -22,6 +22,14 @@ sized off that device's measured heartbeat — Zigbee battery sensors have no `e
 equivalent, and on the Tuya ZY-ZTH02 the battery/voltage entities are constants, so the daily
 battery alarm is no safety net either. Measure a new sensor's offset against the two sources
 that already agree before trusting it; the 09-13 one read +1.44 median high.
+**Known exception, 2026-09-19: `last_reported` guards do not work on a polled TS011F.** That
+device republishes its cached measurement on every state change and every poll, so
+`last_reported` refreshes while the *number* is from the previous régime — guard on time since
+the switch changed state instead. See [[project_bomba-agua_current-measurement]]. Also relevant
+here: `zigbee_temperatura_exterior_alt`, the priority-3 leg added 09-13, **has been off the
+network since that same evening** and the chain never noticed, because the primary leg kept
+reporting — [[project_docker03_zigbee_rf_degradation]].
+
 Detail: `docs/2026-09-13_homeassistant_exterior-sensor-backup-zb2.md` and
 `docs/2026-08-19_homeassistant_temperatura-exterior-parque-stale-chain.md`. Related:
 [[project_homeassistant_temperature-sensor-naming]], [[project_homeassistant_config_write_path]],

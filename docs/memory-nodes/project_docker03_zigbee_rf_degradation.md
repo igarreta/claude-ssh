@@ -108,8 +108,37 @@ emit, so counts are now stable and carry the device again; `ZIGBEE_DELIVERY_FAIL
 its own `delivfail-*.csv` (empty while log_level is info). **09-13 is a mixed day — discard it.
 The clean baseline starts 2026-09-14.** Versioned copy: `ct206/zigbee-lqi/parse.awk` in claude-ssh.
 
+**2026-09-19 (§10 of the doc) — two of the 09-13 conclusions above are wrong:**
+
+1. **The route-error headline is retracted.** `bomba agua z` had been **physically unplugged
+   since 09-09 22:06**, and it is a mains TS011F, i.e. a *router*. Splitting the pre-09-13 files
+   by event code: 09-11 was 346 genuine `SOURCE_ROUTE_FAILURE` + **825 `ZIGBEE_DELIVERY_FAILED`**
+   (attempts to reach the unplugged pump) + 779 duplicate `debug` lines. So "~1700-2000 route
+   errors/day, anomalous by one to two orders of magnitude" **was never true** — real route
+   errors were ~300-360/day, and mostly aimed at the dead device too.
+2. **"Zero re-pairings" was a misreading.** The channel change **cost two sensors** —
+   `zigbee_temp_living` and `zigbee_temperatura_exterior_alt` (both ZY-ZTH02) have been silent
+   since 2026-09-13 18:45/19:15. What was taken as proof they returned is z2m's retained-state
+   republish plus HA discovery configs, which it emits for **every configured device whether or
+   not it rejoined**. Other battery devices did follow, so it is not "all end devices".
+
+**What genuinely improved is LQI**, not the errors: daily means 121 → 133 → 143 → **154**, the
+diurnal swing collapsed from 68 points to 25, and the night trough vanished — which also weakens
+the §8 backup-disk-wake correlation. `SOURCE_ROUTE_FAILURE` went the *other* way, 346/day →
+1321/day, and moved wholesale from 43800 to **25060 (`luces medianera z`)** at the 18:45 restart.
+The log shows a route error and, in the same second, a successful publish from that device: the
+source route fails, repairs, and the poll gets through — ~1 repair per poll. There is **no stale
+route through the dead node** (only 6 mentions of 43800 since, all `Failed to ping`); the likelier
+story is that ch 25 rebuilt every route from scratch **with one router fewer**.
+
+Pump **manually re-paired 2026-09-19 14:44**, new NWK **46746** (was 43800 — every earlier
+reference is historical), LQI 225-232. **No verdict yet** on whether that repairs the 25060 path:
+baseline to beat is 41.6 route errors/hour. Also found: this TS011F never honours its
+attribute-reporting config — [[project_bomba-agua_current-measurement]].
+
 **Now measuring.** Give it several days, compare like-for-like hours, and **change nothing else
-meanwhile** — especially don't move the dongle physically.
+meanwhile** — especially don't move the dongle physically. Still to do: **re-pair the two lost
+sensors**.
 
 Measuring this now goes through the collector on CT206, not through the z2m logs (~22 h of
 retention): [[project_zigbee_lqi_collector]].

@@ -28,7 +28,14 @@ changes what it counts.** Dropping `debug` → `info` cut 3-4 matching lines per
 to 1, which would have read as a large improvement that never happened. `parse.awk` was fixed to
 key on the one line emitted at *both* levels, so counts are now level-independent — but
 **every `routeerr-*.csv` before 2026-09-13 is inflated ~3-4x**, can't be recomputed (logs
-rotated), and 09-13 is a mixed day. **Comparable baseline starts 2026-09-14.** Re-check
+rotated), and 09-13 is a mixed day. **Comparable baseline starts 2026-09-14.**
+
+**Sharper, found 2026-09-19: those old files don't just over-count, they mix three unrelated
+event types.** 09-11 breaks down as 346 `SOURCE_ROUTE_FAILURE` + 825 `ZIGBEE_DELIVERY_FAILED` +
+779 `unknown` + 13 `MANY_TO_ONE`. So a pre-09-13 total is **not a route-error count scaled by a
+constant — it is a different metric.** Always read the code column (field 2) rather than
+`wc -l`, or use nothing before 09-14. Quoting those totals as route errors is what produced the
+retracted "1700-2000/day" headline in [[project_docker03_zigbee_rf_degradation]]. Re-check
 `parse.awk` any time `log_level` moves. Details, including why `tail -F | awk` was abandoned (mawk
 block-buffers its input — the CSVs look empty while it lags ~13 min):
 `docs/memory_zigbee-lqi-collector.md`.

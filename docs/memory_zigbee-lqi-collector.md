@@ -54,6 +54,16 @@ Retention: 180 days, pruned by `collect.sh`. Volume is ~250 KB/day.
    rotated. 2026-09-13 itself is a mixed day (old parser until ~18:50); **the comparable
    baseline starts 2026-09-14.**
 
+   **Worse than "inflated" — the old files mix three unrelated event types (found 2026-09-19).**
+   Break `routeerr-2026-09-11.csv` down by the code column and it is 346 genuine
+   `SOURCE_ROUTE_FAILURE`, **825 `ZIGBEE_DELIVERY_FAILED`**, 779 `unknown` duplicate handler
+   lines and 13 `MANY_TO_ONE`. So the pre-09-13 totals are not a route-error count scaled by a
+   constant; they are a different metric. **Never quote a pre-09-13 total as a route-error
+   figure** — read the code column, or use nothing before 09-14. The delivery failures in that
+   825 were attempts to reach a device someone had physically unplugged, which is what made the
+   original "1700-2000 route errors/day" headline wrong. Details:
+   `2026-08-24_docker03_zigbee-coordinator-rf-degradation.md` §10.1.
+
    `parse.awk` now keys on the one line z2m emits at `info`, which is present at *both*
    levels:
 

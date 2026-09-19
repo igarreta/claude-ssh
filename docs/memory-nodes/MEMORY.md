@@ -26,8 +26,9 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_docker03_decommission.md](project_docker03_decommission.md) — VM 102 stopped since 09-06 and not in use, `onboot: 0` since 09-10; in cooldown, don't start it casually — that's a rollback decision
 - [project_gr-srv03_ct901-template.md](project_gr-srv03_ct901-template.md) — CT901 is now the LXC clone template (not CT900, kept as rollback per user choice)
 
-- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — channel moved 11→25 on 09-13 at zero re-pairing cost; the real signal is ~1700-2000 route errors/day on a 10-device net, not the LQI — and not the dongle
-- [project_zigbee_lqi_collector.md](project_zigbee_lqi_collector.md) — LQI/route-error CSVs on CT206; it parses log text, so a `log_level` change rescales the counts — pre-09-13 route errors are inflated ~3-4x
+- [project_docker03_zigbee_rf_degradation.md](project_docker03_zigbee_rf_degradation.md) — 09-19 retracts both 09-13 conclusions: the route-error headline was an unplugged pump, and the channel change cost two sensors; LQI did improve, route errors did not
+- [project_zigbee_lqi_collector.md](project_zigbee_lqi_collector.md) — LQI/route-error CSVs on CT206; a pre-09-13 `routeerr` total mixes three event types and is not a route-error count at all — read the code column or use nothing before 09-14
+- [project_bomba-agua_current-measurement.md](project_bomba-agua_current-measurement.md) — the TS011F accepts its reporting config and never honours it; current updates only on the poll, and right after a state change the value is actively wrong, not stale
 - [project_zigbee2mqtt_migration.md](project_zigbee2mqtt_migration.md) — cutover to CT206 done 09-05; docker03 kept as rollback until soak period, HA/TTato/actuator checks still needed
 - [project_gr-srv03_rtl433-ct207.md](project_gr-srv03_rtl433-ct207.md) — CT207 built/tested 09-05, test dongle removed, container stopped; permanent config still pending
 - [project_gr-srv03_ct103-migration-plan.md](project_gr-srv03_ct103-migration-plan.md) — CT103 last non-Turnkey Debian 12 LXC; clone-CT901 migration plan sketched, <30 min job, not started

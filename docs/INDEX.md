@@ -54,13 +54,21 @@ Recheck done 2026-09-11 (§8), still **open**: the WiFi-channel test is impossib
 no manual channel), LQI is unrecovered, route errors have doubled past August's worst day, and
 the LQI turns out to **swing ~60 points across the day** (86 at 04h, 147 at 16h) — measuring it
 now needs the collector, not a spot check. Shielded-cable purchase stays on.
-**2026-09-13 (§9): Zigbee channel moved 11 → 25 and `log_level` debug → info.** The channel
-change cost **zero re-pairings** (the §8 assumption that it needed 8 was wrong). The finding
-that reorients this: **~1700-2000 route errors/day on a 10-device network** — that, not LQI, is
-the metric now — **pero ojo: los recuentos previos al 09-13 están inflados ~3-4x** (artefacto de
-`log_level: debug`, §9.8); `parse.awk` corregido, **línea de base limpia desde el 09-14**.
-The **dongle is ruled out** (EmberZNet 8.0.2 GA on EFR32MG21). Measuring;
-change nothing else meanwhile.
+**2026-09-13 (§9): Zigbee channel moved 11 → 25 and `log_level` debug → info.** The
+**dongle is ruled out** (EmberZNet 8.0.2 GA on EFR32MG21).
+**2026-09-19 (§10) corrects two §9 conclusions.** (1) The "~1700-2000 route errors/day,
+anomalous by one to two orders of magnitude" headline is **wrong**: ~825/day were delivery
+failures to `bomba agua z`, **physically unplugged since 09-09**, and ~780/day were duplicate
+`debug` lines — genuine route errors were ~300-360/day. **A pre-09-13 `routeerr-*.csv` total is
+not a route-error count at all**, it mixes three event types; read the code column or use
+nothing before 09-14. (2) "Zero re-pairings" was **a misreading** — the channel change **cost
+two sensors** (`zigbee_temp_living`, `zigbee_temperatura_exterior_alt`, silent since 09-13);
+what looked like their return was z2m's retained-state republish, which it emits for every
+configured device whether or not it rejoined. **LQI genuinely improved** (daily means 121 →
+154, diurnal swing 68 → 25 points, night trough gone). `SOURCE_ROUTE_FAILURE` went the other
+way: 346/day → 1321/day, now **all** against `luces medianera z`, repairing a route on nearly
+every poll. Pump re-paired 09-19 (new NWK **46746**); **no verdict yet** on whether restoring
+that router fixes the path. Next: one full day of measurement, and re-pair the two lost sensors.
 The storage hub for the rebuild (Rosonway RSH-A10) was **ordered 2026-08-29, ETA ~2026-10-24**
 and the layout was decided 2026-08-30 (**Option D** — Zigbee keeps its own direct host port,
 test-only RTL-433 goes on the hub, no second hub) — nothing is installed until it lands.
@@ -69,7 +77,7 @@ test-only RTL-433 goes on the hub, no second hub) — nothing is installed until
 hot-plugged device, the documented root cause of the Zigbee drops. Re-evaluate Option D when the
 NAS is commissioned, not when the hub arrives.
 
-- [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md) — **open** — fleet LQI 200→134, recovered to ~220 after 08-25 final placement, relapsed to ~120 on 09-05; §8 is the 09-11 recheck (diurnal swing, route errors doubled). Baselines in [data/](data/)
+- [2026-08-24_docker03_zigbee-coordinator-rf-degradation.md](2026-08-24_docker03_zigbee-coordinator-rf-degradation.md) — **open** — fleet LQI 200→134, recovered to ~220 after 08-25 final placement, relapsed to ~120 on 09-05; §8 is the 09-11 recheck (diurnal swing, route errors doubled); **§10 (09-19) retracts the §9 route-error headline and the "zero re-pairings" claim** — the unplugged pump explains most of the count, and the channel change cost two sensors. Baselines in [data/](data/)
 - [memory_zigbee-lqi-collector.md](memory_zigbee-lqi-collector.md) — *active* — persistent LQI/route-error CSVs on CT206 (5-min timer), because z2m's own logs only hold ~22 h; `report.sh` / `report.sh hourly N`
 - [2026-08-19_gr-srv03_usb-hub-layout-plan.md](2026-08-19_gr-srv03_usb-hub-layout-plan.md) — **open** — RSH-A10 ordered 2026-08-29 (ETA ~10-24); layout decided 2026-08-30 (**Option D**: Zigbee stays direct on port 3, test-only RTL-433 on the hub); § *To implement when the hub arrives* carries the mandatory `uhubctl -a on` assertion and the pre-rebuild LQI baseline
 - [2026-08-19_gr-srv03_usb-hub-comparison.md](2026-08-19_gr-srv03_usb-hub-comparison.md) — **open** — storage hub ordered 2026-08-29 (Rosonway RSH-A10); dongle hub closed, none needed
@@ -157,8 +165,15 @@ priority 3 of the `sensor.casa_ext_temp` chain**, with a measured **−1.5 °C**
 [2026-09-13_homeassistant_exterior-sensor-backup-zb2.md](2026-09-13_homeassistant_exterior-sensor-backup-zb2.md).
 **Also 2026-09-13: `/config` is no longer writable from the `homeassistant` ssh-mcp connector**
 (addon went unprivileged on 09-11) — edits now go through `qm guest exec 104` from gr-srv03 →
-[2026-09-13_homeassistant_config-write-path-lost.md](2026-09-13_homeassistant_config-write-path-lost.md)
+[2026-09-13_homeassistant_config-write-path-lost.md](2026-09-13_homeassistant_config-write-path-lost.md).
+**2026-09-19: the water pump's three current-based automations were rescaled** for a replacement
+pump (1.3 → 1.15 A) **and given a staleness guard**, after finding that the TS011F **accepts its
+attribute-reporting config and never honours it** — current only ever updates on the poll, and
+for up to one poll interval after any state change the value is not stale but *actively wrong*.
+`measurement_poll_interval` 120 → 10 s →
+[2026-09-19_homeassistant_bomba-agua-current-thresholds.md](2026-09-19_homeassistant_bomba-agua-current-thresholds.md)
 
+- [2026-09-19_homeassistant_bomba-agua-current-thresholds.md](2026-09-19_homeassistant_bomba-agua-current-thresholds.md) — *active* — TS011F ignores its own `configuredReportings` (proof: current read 1.15 A for 52 s after the relay opened, and both real changes landed exactly on the 120 s poll grid); thresholds rescaled 2.0→1.77 / 1.55→1.37 / 1.1→0.97 A; why `last_reported` **cannot** detect this staleness and why the guard must be ≤ the trigger's own `for:` or a pump that starts already blocked never trips. **Open item: measure the real closed-valve current on this pump**
 - [2026-09-13_homeassistant_exterior-sensor-backup-zb2.md](2026-09-13_homeassistant_exterior-sensor-backup-zb2.md) — *active* — second exterior Zigbee sensor as priority-3 backup leg; measured +1.44 median offset → −1.5 correction, 30-min heartbeat → 100-min guard, 14 dropouts >1 h in 8 days; ZY-ZTH02 battery/voltage are constants so the daily battery alarm can never fire for it
 - [2026-09-13_homeassistant_config-write-path-lost.md](2026-09-13_homeassistant_config-write-path-lost.md) — *active* — ssh-mcp connector lost `/config` write + SFTP + `ha` CLI on 09-11; protection mode is **not** the fix; use `qm guest exec 104`, and the HAOS quirks (no python3, `PATH` omits `/bin`) that come with it
 - [2026-09-05_homeassistant_disk-cleanup.md](2026-09-05_homeassistant_disk-cleanup.md) — *closed* — stale log + old backups removed, 74%→69% disk usage; notes the MCP shell's restricted view (`du` only sees ~2.5G of the 22G `df` total)

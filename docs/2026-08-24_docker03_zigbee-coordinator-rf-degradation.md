@@ -15,12 +15,21 @@ esta recaída sobre la mesa, no solo con los datos de agosto. **Hecha el 2026-09
 la recaída sigue, la prueba de canal WiFi resultó imposible (Deco sin selección manual),
 y apareció un patrón diurno nuevo. Sigue abierto.**
 **2026-09-13 (§9): ejecutado el cambio de canal Zigbee 11 → 25** que la §8 había descartado
-por costo — el costo no existió, **cero re-emparejamientos**, los 9 dispositivos volvieron en
-menos de 4 minutos. También `log_level: debug` → `info`. Y el hallazgo que reorienta esto: con
-**10 dispositivos** la red produce **1 700–2 000 route errors diarios**, anómalo por uno o dos
-órdenes de magnitud — ésa, y no el LQI, es la métrica a vigilar. El dongle queda **descartado
-como causa** (EmberZNet 8.0.2 GA sobre EFR32MG21, sobredimensionado para 10 nodos). Pendiente:
-medir varios días antes de concluir, y no mover nada más mientras tanto.
+por costo. También `log_level: debug` → `info`. El dongle queda **descartado como causa**
+(EmberZNet 8.0.2 GA sobre EFR32MG21, sobredimensionado para 10 nodos).
+**2026-09-19 (§10) — la §9 tenía dos conclusiones equivocadas, ambas corregidas ahí:**
+(1) el titular de **"1 700–2 000 route errors/día, anómalo por uno o dos órdenes de
+magnitud"** **no es correcto** — ~825/día eran entregas fallidas a `bomba agua z`, que estaba
+**desenchufada desde el 09-09**, y ~780/día eran líneas duplicadas de `debug`; los route errors
+genuinos eran ~300-360/día. (2) **"cero re-emparejamientos" era una lectura equivocada**: el
+cambio de canal **costó dos sensores** (`zigbee_temp_living` y
+`zigbee_temperatura_exterior_alt`, mudos desde el 09-13), y lo que se tomó por su regreso eran
+los republish de estado retenido que z2m emite para todo dispositivo configurado.
+**Lo que sí mejoró es el LQI** (medias diarias 121 → 154, y la oscilación diaria de 68 a 25
+puntos). Lo que empeoró son los `SOURCE_ROUTE_FAILURE`: 346/día → 1 321/día, ahora **todos**
+contra `luces medianera z`, reparando ruta en casi cada poll. Bomba re-emparejada el 09-19
+(NWK nuevo **46746**); **sin veredicto todavía** sobre si eso repara la ruta. Pendiente:
+un día completo de medición, y re-emparejar los dos sensores perdidos.
 
 Investigación disparada por un `switch.turn_on` de Home Assistant que nunca llegó al
 relé, el 2026-08-22 18:46:11 (hora local, UTC-3).
@@ -742,6 +751,125 @@ CT206 como `/opt/zigbee-lqi/parse.awk.pre-2026-09-13`.
   que una lectura puntual no dice nada.
 - **No mover el dongle de sitio mientras se mide esto.** Un solo cambio por vez.
 
+## 10. Revisión 2026-09-19: la bomba estaba desenchufada, y eso reescribe los números de la §9
+
+Dato que no estaba sobre la mesa cuando se escribió la §9: **`bomba agua z` (NWK 43800) llevaba
+desconectada físicamente desde el 2026-09-09 22:06** (último `last_seen`). Es un **TS011F
+alimentado de red, es decir un router** de la malla, no un end device.
+
+### 10.1 Los "~1700-2000 route errors/día" eran tres cosas distintas
+
+Separando por código de evento — que es justo lo que el parser viejo no hacía:
+
+| Fecha | `SOURCE_ROUTE_FAILURE` | `ZIGBEE_DELIVERY_FAILED` | `unknown` (líneas duplicadas) | `MANY_TO_ONE` / otros |
+|---|---|---|---|---|
+| 09-11 | 346 | 825 | 779 | 13 |
+| 09-12 | 298 | 817 | 774 | 44 |
+| 09-14 | **1321** | 0 | 0 | 0 |
+| 09-15 (hasta 14:26) | 621 | 0 | 0 | 0 |
+
+- Los ~**825/día** de `ZIGBEE_DELIVERY_FAILED` eran **intentos de alcanzar una bomba apagada**,
+  pollada cada 120 s más los pings de disponibilidad. No eran un fallo de RF.
+- Los ~**780/día** de `unknown` son el artefacto de `log_level: debug` ya documentado en §9.8.
+- **Route errors genuinos antes del cambio de canal: ~300-360/día**, y casi todos apuntaban
+  también a 43800, el dispositivo desenchufado.
+
+**Corrección a la §9.8.** Allí quedó escrito que "la conclusión cualitativa no cambia (siguen
+siendo cientos de errores reales en una red de 10 nodos, sigue siendo anómalo)". Eso se sostiene
+sólo a medias: el volumen real era bastante menor **y estaba dominado por un dispositivo que
+alguien había desenchufado**. El titular de la §9 —"~1700-2000 route errors/día, anómalo en uno o
+dos órdenes de magnitud"— **no es correcto**.
+
+### 10.2 El LQI sí mejoró con el canal 25
+
+Comparando franjas equivalentes (el LQI oscila ~60 puntos al día, así que sólo vale hora contra
+hora). Media de flota de los 3 dispositivos de red que sigue el `report.sh`:
+
+| Franja | 09-11 (ch 11) | 09-12 (ch 11) | 09-14 (ch 25) | 09-15 (ch 25) |
+|---|---|---|---|---|
+| 00–06 | 86–114 | 124–130 | 118–124 | **143–144** |
+| 10–16 | 123–149 | 125–138 | 155–161 | **165–168** |
+| 18–23 | 98–128 | 129–152 | 143–147 | — |
+
+Medias diarias: **121 → 133 → 143 → 154**. Dos cosas más allá del nivel:
+
+1. **La oscilación diaria se desplomó**: 68 puntos el 09-11 (86 a las 04 h, 154 a las 17 h)
+   contra 25 puntos el 09-15 (143–168).
+2. **El valle nocturno prácticamente desapareció** — el 09-15 se mantuvo en 143–144 de 00 a 06 h.
+   Eso **debilita la correlación con la ventana de despertar de discos** que la §8 dejó anotada
+   como sospecha.
+
+Las muestras/hora subieron de ~183 a ~200.
+
+### 10.3 Los route errors se mudaron de dispositivo, y el corte es el cambio de canal
+
+Por hora del 09-13, contando sólo filas con destino:
+
+- Hasta la hora 18: **43800**, entre 5 y 15 por hora.
+- Hora 18 en adelante: 43800 **desaparece** y entra **25060** con 67, 43, 32, 30, 75 por hora.
+
+El corte está en el reinicio de las 18:45 — el del cambio de canal. Desde el 09-14 es **100 %
+hacia 25060 (`luces medianera z`)** y **cero hacia 43800**.
+
+Patrón en el log, repetido: un route error e **inmediatamente, en el mismo segundo, un publish
+correcto de `luces medianera z`**. La source route falla, se repara, y el poll pasa. Son ~1321
+errores contra ~720 polls/día: **la ruta se repara en casi cada poll**. El dispositivo en sí está
+sano (LQI 154, 674 publishes/día).
+
+**No hay evidencia de ruta obsoleta a través del nodo muerto**: sólo **6 menciones de 43800** en
+todo el log desde el cambio de canal, y las seis son `Failed to ping`. El coordinador no está
+intentando rutear por ahí.
+
+Lectura más plausible: en el canal 11 las rutas se habían construido cuando la bomba todavía
+alimentaba un router y sobrevivieron a su pérdida; el canal 25 **reconstruyó todas las rutas
+desde cero con un router menos**, y el camino al otro relé del parque quedó marginal.
+
+### 10.4 Dos sensores no siguieron al canal 25
+
+Último publish de estado real, leído del log vivo:
+
+| Dispositivo | IEEE | Modelo | Último estado |
+|---|---|---|---|
+| `zigbee_temp_living` | `0xa4c1384c7eceb614` | ZY-ZTH02 | **2026-09-13 18:45:58** |
+| `zigbee_temperatura_exterior_alt` | `0xa4c1388a037daa90` | ZY-ZTH02 | **2026-09-13 19:14:58** |
+
+Ambos publicaban con normalidad el 09-12 y el 09-13, así que tenían padre vivo; se perdieron en
+los reinicios del cambio de canal. `zigbee_temperatura_exterior` y `Porton levadizo` —
+dispositivos a batería del mismo tipo— siguen publicando, así que **no es "todos los end
+devices"**.
+
+**Corrección a la §9.** Allí se afirmó que "los 9 dispositivos reales republicaron en 4 minutos,
+end devices a batería incluidos, cero re-emparejamientos". Esa lectura era equivocada: los
+publishes de las 18:45/19:15 son el **republish del estado retenido más los configs de
+descubrimiento de HA**, que z2m emite para todos los dispositivos configurados **hayan reingresado
+o no**. El cambio de canal **no salió gratis**: costó dos sensores.
+
+El caso de `zigbee_temperatura_exterior_alt` es el peor de los dos: es la **pata de respaldo de
+`casa_ext_temp`** añadida ese mismo día (commit `4ccc6d3`,
+`2026-09-13_homeassistant_exterior-sensor-backup-zb2.md`). Murió a la hora de crearse y quedó
+invisible porque la pata principal sigue reportando — exactamente el fallo que la guardia de
+`last_reported` existe para atrapar.
+
+### 10.5 Reconexión de `bomba agua z` (2026-09-19)
+
+Re-emparejada **manualmente** a las 14:44:37 (no fue un rejoin seguro automático). **NWK nuevo:
+46746**, antes 43800 — toda referencia a 43800 en las §§7-9 es histórica. LQI 225-232, el enlace
+más fuerte de la flota después de `Porton levadizo`.
+
+**Sin veredicto todavía** sobre si restaurar ese router repara la ruta a 25060: a las 14:55 el
+ritmo seguía plano en 36-48/h contra una base de **41.6/h**.
+
+Se descubrió además que este TS011F **no cumple su configuración de attribute reporting** — la
+corriente sólo se actualiza por poll. Eso es un hilo propio:
+`2026-09-19_homeassistant_bomba-agua-current-thresholds.md`.
+
+### 10.6 Qué medir ahora
+
+1. **Route errors hacia 25060** contra la base de 41.6/h, con un día completo desde la
+   reconexión de la bomba.
+2. **Re-emparejar `zigbee_temp_living` y `zigbee_temperatura_exterior_alt`.**
+3. Seguir sin mover el dongle.
+
 ## Apéndice: mapeo NWK ↔ dispositivo
 
 | NWK | IEEE | modelo | friendly name |
@@ -749,7 +877,7 @@ CT206 como `/opt/zigbee-lqi/parse.awk.pre-2026-09-13`.
 | 0 | `0x1cc089fffedfc56f` | Sonoff ZBDongle-E | coordinador |
 | 20396 | `0x00158d00039e6c25` | `lumi.plug` | Enchufe_1 (pasillo garage) |
 | 25060 | `0x385cfbfffed14d3c` | `TS011F` | **luces medianera z** |
-| 43800 | `0x385cfbfffec868fb` | `TS011F` | bomba agua z |
+| 46746 | `0x385cfbfffec868fb` | `TS011F` | bomba agua z — **NWK nuevo desde el re-emparejamiento del 2026-09-19; era 43800**, valor con el que aparece en las §§7-10.1 |
 | 54505 | `0x00158d000393603d` | `lumi.plug` | Enchufe_2 |
 | 60764 | `0xa4c138bbde82f3e2` | `TS0505B` | luz exterior garage |
 | 27260 | `0xa4c138123e89ffff` | `SNZB-04PR2` | Porton levadizo |
