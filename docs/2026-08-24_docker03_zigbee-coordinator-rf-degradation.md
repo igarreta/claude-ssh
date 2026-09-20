@@ -28,8 +28,15 @@ los republish de estado retenido que z2m emite para todo dispositivo configurado
 **Lo que sí mejoró es el LQI** (medias diarias 121 → 154, y la oscilación diaria de 68 a 25
 puntos). Lo que empeoró son los `SOURCE_ROUTE_FAILURE`: 346/día → 1 321/día, ahora **todos**
 contra `luces medianera z`, reparando ruta en casi cada poll. Bomba re-emparejada el 09-19
-(NWK nuevo **46746**); **sin veredicto todavía** sobre si eso repara la ruta. Pendiente:
-un día completo de medición, y re-emparejar los dos sensores perdidos.
+(NWK nuevo **46746**); **sin veredicto todavía** sobre si eso repara la ruta.
+**2026-09-20 (§11): los dos sensores perdidos fueron re-emparejados el 09-19 ~15:00, ambos
+limpios desde entonces.** La bomba también sigue limpia (cero route errors). Pero **la ruta
+hacia `luces medianera z` no mejoró** — ~42/h el 09-20, igual a la base pre-reparación. El
+enlace real medido Enchufe_1↔25060 es LQI 93 (el más débil de la casa) — y el usuario
+confirmó que ese dispositivo está en caja metálica embutida, funcionando sin problemas
+durante meses hasta hace un par de semanas, fecha que coincide con la recaída de flota de
+la §7. **No es una falla de hardware nueva: es el enlace sin margen de la casa, y el canario
+de la causa raíz aún sin resolver.** Sigue **abierto**.
 
 Investigación disparada por un `switch.turn_on` de Home Assistant que nunca llegó al
 relé, el 2026-08-22 18:46:11 (hora local, UTC-3).
@@ -869,6 +876,69 @@ corriente sólo se actualiza por poll. Eso es un hilo propio:
    reconexión de la bomba.
 2. **Re-emparejar `zigbee_temp_living` y `zigbee_temperatura_exterior_alt`.**
 3. Seguir sin mover el dongle.
+
+## 11. Revisión 2026-09-20: los dos sensores volvieron, la ruta a 25060 no mejoró
+
+Los dos sensores de la §10.4 fueron re-emparejados manualmente el **2026-09-19 ~15:00**
+(`zigbee_temperatura_exterior_alt` primer sample 15:00:37; `zigbee_temp_living` publicando
+esa misma tarde). Ambos con LQI normal desde entonces: `zigbee_temp_living` 196.6 (09-19,
+parcial) → 157.5 (09-20); `zigbee_temperatura_exterior_alt` 208.1 → 158.7. `bomba agua z`
+(NWK 46746) sigue con LQI 230-233 y **cero route errors atribuidos** — el re-emparejamiento
+del 09-19 dejó ese dispositivo limpio.
+
+**La pregunta abierta de la §10.6 se responde: no, restaurar la bomba no reparó la ruta a
+25060.** Contando sólo `routeerr-2026-09-20.csv` (00:00-12:45, día parcial): 541 errores,
+todos hacia **25060**, ninguno hacia otro NWK. Eso da **~42.4/h**, esencialmente igual a la
+base de 41.6/h medida el 09-19 antes del re-emparejamiento de los sensores. Los tres días
+completos disponibles desde el cambio de canal (09-18: 1036, 09-19: 1000, 09-20 proyectado
+~1020) están planos alrededor de ~1000-1050/día — sin tendencia a la baja.
+
+**Fleet LQI se mantiene en el rango recuperado**, 130-165 según dispositivo, coherente con
+el `Enchufe_1`/`Enchufe_2`/`luces medianera z` (mismo bus de report, ~150-165) desde el
+09-14. `Porton levadizo` sigue siendo el enlace más fuerte (190-250), `luz exterior garage`
+el más débil de los mains-powered (117-143) — sin cambios de tendencia atribuibles a esta
+recuperación.
+
+**Conclusión:** el re-emparejamiento de los tres dispositivos (bomba + 2 sensores) está
+completo y limpio — no quedan dispositivos caídos de la §10.4. Pero la ruta hacia
+`luces medianera z` (25060) es un problema **de esa ruta específica**, no downstream de la
+bomba: no se movió con el regreso del router que la §10.3 sospechaba. Sigue sin causa
+identificada; candidato siguiente no explorado: la topología real del mesh (qué routers
+están entre el coordinador y 25060) más que el estado de la bomba.
+
+### 11.1 Topología real: el enlace Enchufe_1 ↔ 25060 es el más débil de la casa
+
+Se disparó un `networkmap` raw en vivo (dos scans, 12:48 y 12:53) para ver el enlace real en
+vez de inferirlo. Hallazgo: **`Enchufe_1` (20396) → `luces medianera z` (25060): LQI 93/255
+(~36%)**. `Enchufe_2` (54505) → 25060: LQI 33, peor todavía. Para contraste, el resto de los
+enlaces mains-powered de la casa están en 145-228 (`bomba agua z` ↔ coordinador: 228;
+`Porton levadizo` ↔ coordinador: 199). El coordinador **no ve a 25060 como vecino directo** —
+sólo llega vía Enchufe_1/Enchufe_2 — así que ese LQI 93 es, hoy, el mejor enlace disponible
+hacia ese dispositivo.
+
+No es un problema del modelo: `bomba agua z` es el mismo TS011F/Tongou y tiene uno de los
+mejores LQI de la flota (228 directo al coordinador). El enlace débil es específico de este
+par de nodos.
+
+### 11.2 Confirmado por el usuario: caja metálica embutida, 6 m de Enchufe_1, mismo muro
+
+`luces medianera z` está en una **caja metálica embutida en la pared**, a 6 m de `Enchufe_1`
+en el mismo muro — funcionando sin problemas durante meses **hasta hace un par de semanas**
+(≈ desde principios de septiembre).
+
+Esa fecha coincide, dentro del margen de la estimación, con la **recaída de LQI de toda la
+flota documentada en la §7**: 200 → 120-127 el 2026-09-05/06, tras la migración de
+zigbee2mqtt a CT206. Eso reordena la lectura: la caja metálica no es una falla nueva, es la
+razón por la que este enlace **nunca tuvo margen de sobra** (LQI 93 incluso ahora, con la
+flota ya recuperada del cambio de canal). Cuando el piso de ruido subió a nivel de flota en
+09-05/06, este fue el único enlace sin margen suficiente para absorberlo — no porque
+`luces medianera z` se haya roto, sino porque es el canario del problema de la §7-§9, no un
+caso aparte.
+
+**No hace falta ninguna acción de hardware sobre este dispositivo.** La causa raíz sigue
+siendo la de la §7-§9 (coordinador, sin resolver). Si se quiere margen local sin esperar a
+esa resolución: un router mains-powered nuevo entre `Enchufe_1` y la caja acortaría el salto
+débil — no reemplaza el diagnóstico, es un parche local.
 
 ## Apéndice: mapeo NWK ↔ dispositivo
 

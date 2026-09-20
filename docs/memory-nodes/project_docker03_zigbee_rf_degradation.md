@@ -1,11 +1,11 @@
 ---
 name: project_docker03_zigbee_rf_degradation
-description: "Zigbee coordinator RF degraded after the 2026-08-17 dongle move; fleet LQI 200→134; 08-25 fix lifted it to ~220; RELAPSED to ~120 after the 09-05 CT206 migration; 09-13: moved Zigbee ch 11→25 at zero re-pairing cost, and the real signal turns out to be ~1700-2000 route errors/day on a 10-device network — not the LQI, and not the dongle"
+description: "Zigbee coordinator RF degraded after the 2026-08-17 dongle move; fleet LQI 200→134→220→relapsed→now stable 130-165 since ch 11→25 move on 09-13; all 3 devices lost across the saga (pump + 2 sensors) re-paired clean by 09-19/20; but route errors to luces medianera z (25060) stayed flat ~1000/day, unmoved by the pump repair — that specific path's cause is still open"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 3a5d59b8-5617-4ea7-8442-e072c0e4686f
-  modified: 2026-09-13T22:00:00.000Z
+  modified: 2026-09-20T13:00:00.000Z
 ---
 
 The Zigbee coordinator's RF degraded after the 2026-08-17 dongle move to a bare chassis port
@@ -136,9 +136,33 @@ reference is historical), LQI 225-232. **No verdict yet** on whether that repair
 baseline to beat is 41.6 route errors/hour. Also found: this TS011F never honours its
 attribute-reporting config — [[project_bomba-agua_current-measurement]].
 
-**Now measuring.** Give it several days, compare like-for-like hours, and **change nothing else
-meanwhile** — especially don't move the dongle physically. Still to do: **re-pair the two lost
-sensors**.
+**2026-09-20 (§11 of the doc) — re-pairing done, route-error question answered (no):**
+Both lost sensors (`zigbee_temp_living`, `zigbee_temperatura_exterior_alt`) were manually
+re-paired 2026-09-19 ~15:00 and have been clean since (normal LQI, publishing). The pump
+(NWK 46746) also stays clean — zero route errors attributed to it. **All three devices lost
+across this saga are now recovered.** Fleet LQI is stable in the recovered 130-165 range
+(device-dependent), matching the ch-25 level since 09-14 — no further movement from this
+round of repairs, none expected.
+
+**But the open question from §10 is answered, and the answer is no:** restoring the pump did
+**not** fix the route to `luces medianera z` (NWK 25060). Rate stayed ~42/h on 09-20, same as
+the ~41.6/h baseline measured before the sensor/pump repairs; daily totals flat ~1000-1050
+across 09-18/19/20. 100% of route errors are still against 25060, none against any other NWK.
+**This is a problem with that specific path, not a downstream effect of the pump being
+unplugged** — the §10.3 hypothesis (repairing the pump-as-router would fix the shared route)
+did not hold. No new cause identified; next unexplored candidate is actual mesh topology
+(which routers sit between coordinator and 25060), not device state.
+
+**§11.1-11.2: the weak path is `luces medianera z`'s own link, and it's not new hardware.**
+A live networkmap scan measured `Enchufe_1`↔25060 at LQI 93/255 — the weakest mains link in
+the house (others run 145-228, including the *same model* pump at 228, so it's not a model
+issue). The user confirmed the device sits in a metal enclosure embedded in the wall, 6 m
+from Enchufe_1 on the same wall, working flawlessly for months **until ~2 weeks before
+2026-09-20** — i.e. right around the 09-05/06 fleet-wide LQI relapse in §7. **Read this as:
+the enclosure always left this link with near-zero margin; it's the canary for the
+still-unresolved coordinator RF cause, not an independent hardware fault.** No device-level
+fix needed; a local router between Enchufe_1 and the enclosure would buy margin without
+waiting on the root cause.
 
 Measuring this now goes through the collector on CT206, not through the z2m logs (~22 h of
 retention): [[project_zigbee_lqi_collector]].
