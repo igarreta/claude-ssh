@@ -500,21 +500,23 @@ He-class) at **$160–180**, from goHardDrive or ServerPartDeals.
 
 ## 11. Third drive — cold spare (decided 2026-09-26)
 
-Checked four eBay listings against the mirror candidates. Two were SAS (incompatible, §3) and one
-was a different model than searched for; the two SATA matches, both from **Louie's Electronics**
-(6,451 feedback, 99.4% positive), both **seller-refurbished** (not manufacturer-recertified —
-§10 rule 2), both listed as "wiped, ready for use" with no SMART/hour-count disclosure and no
+Checked five eBay listings against the mirror candidates. Two were SAS (incompatible, §3) and one
+was a different model than searched for; the three SATA matches, all from **Louie's Electronics**
+(6,451 feedback, 99.4% positive), all **seller-refurbished** (not manufacturer-recertified —
+§10 rule 2), all listed as "wiped, ready for use" with no SMART/hour-count disclosure and no
 warranty:
 
 | Drive | Interface | Price shipped | eBay item |
 |---|---|---|---|
-| **Toshiba MG06ACA600E** — chosen | SATA III, 7200 RPM | **$104.59** | 158310893844 |
-| Seagate ST6000NM021A — alternative | SATA III, 7200 RPM | $138.95 | 158311164495 |
+| **HGST Ultrastar 7K6000** (HUS726060ALE610) — chosen | SATA 6Gbps, 7200 RPM | **$103.73** | 158309533341 |
+| Toshiba MG06ACA600E — 1st alternative | SATA III, 7200 RPM | $104.59 | 158310893844 |
+| Seagate ST6000NM021A — 2nd alternative | SATA III, 7200 RPM | $138.95 | 158311164495 |
 
-**Decision: buy the Toshiba as the cold spare; keep the Seagate as the fallback pick** if the
-Toshiba listing falls through. Neither is bought as an active mirror member — the mirror still
-targets manufacturer-recertified drives per §10 (Ultrastar 7K6000 + Exos 7E8, $369.90 from
-goHardDrive).
+**Decision: buy the HGST Ultrastar 7K6000 as the cold spare** — same price as the Toshiba, but the
+model already vetted in §10.2 as the stronger of the two manufacturer-recert mirror candidates.
+Toshiba and Seagate kept as fallback picks, in that order, if the listing falls through. None of
+the three is bought as an active mirror member — the mirror still targets manufacturer-recertified
+drives per §10 (Ultrastar 7K6000 + Exos 7E8, $369.90 from goHardDrive).
 
 **Why a cold spare can use lower-provenance stock**: §7's different-lots concern is about drives
 spinning together 24/7 in the mirror; a shelved spare isn't in that failure population, and
@@ -523,6 +525,15 @@ you'd never RMA. What still matters: **burn it in yourself** (`badblocks -w` + a
 test) before shelving it, since the seller's "wiped" claim is not a tested claim.
 
 Capacity matches the mirror's 6 TB members, satisfying §7's same-or-larger replacement rule.
+
+**Local (MercadoLibre) sourcing checked and rejected, 2026-09-26.** A used WD Purple WD64PURZ 6TB
+at $110 looked competitive — local buys skip the entire import/hand-carry chain and MercadoLibre's
+built-in buyer protection is exercisable locally, unlike an eBay warranty from a US seller. But
+this specific listing had **no warranty and a low-reputation seller**, only a 14-day return window
+against that risk. Rejected in favor of the US route. The underlying idea (local sourcing could
+remove the need to pre-stock a cold spare at all, since it removes the "replacing a failed mirror
+half from Argentina is slow and expensive" problem from `memory_nas-project.md`) is still valid —
+worth re-checking if a reputable local listing turns up later, just not this one.
 
 ## Sources
 

@@ -1,6 +1,6 @@
 ---
 name: project_nas
-description: "NAS project — chassis decided 2026-09-10: TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB), $687, total $1,121.90; the 09-08 F4-425 Plus N150 pick rested on a $479.99 price that was never real (that was the N95/8 GB price — the N150/16 GB lists at $649.99); mirror disks still manufacturer-recert per goHardDrive; cold-spare third drive picked 09-26 (eBay Toshiba MG06ACA600E); nothing ordered"
+description: "NAS project — chassis decided 2026-09-10: TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB), $687, total $1,121.90; the 09-08 F4-425 Plus N150 pick rested on a $479.99 price that was never real (that was the N95/8 GB price — the N150/16 GB lists at $649.99); mirror disks still manufacturer-recert per goHardDrive; cold-spare third drive picked 09-26 (eBay HGST Ultrastar 7K6000); local MercadoLibre alternative rejected; nothing ordered"
 metadata: 
   node_type: memory
   type: project
@@ -33,12 +33,15 @@ than the 8 GB one, and why **waiting for the old price will not work**.
 sizing never depended on the NAS — but the **SATA bays cannot be tested until a drive is in**, so
 the chassis's own US return window depends on the drives arriving. Budget ≥1 week of US time.
 
-**Cold-spare third drive picked 2026-09-26**: eBay Toshiba MG06ACA600E, $104.59 shipped
-(seller-refurbished, "wiped" only, no warranty) — Seagate ST6000NM021A ($138.95, same seller) is
-the fallback if that listing falls through. Lower provenance than the mirror's manufacturer-recert
-pick is fine *for a spare*: it isn't in the mirror's correlated-failure population and the
-warranty was already worthless once in Argentina — but it must be burned in (`badblocks` + SMART
-long test) before being trusted, since "wiped" is not "tested."
+**Cold-spare third drive picked 2026-09-26**: eBay HGST Ultrastar 7K6000 (HUS726060ALE610),
+$103.73 shipped (seller-refurbished, "wiped" only, no warranty) — Toshiba MG06ACA600E ($104.59)
+then Seagate ST6000NM021A ($138.95), both same seller, are the fallbacks if that listing falls
+through. Lower provenance than the mirror's manufacturer-recert pick is fine *for a spare*: it
+isn't in the mirror's correlated-failure population and the warranty was already worthless once
+in Argentina — but it must be burned in (`badblocks` + SMART long test) before being trusted,
+since "wiped" is not "tested." **A local MercadoLibre WD Purple ($110) was checked and rejected**
+— no warranty, low-reputation seller, despite a 14-day return window; the local-sourcing idea
+itself remains worth revisiting for a better-rated listing.
 
 **The acceptance runbook was corrected 2026-09-10**, and the correction matters: as written it told
 the user to **return the box if the BIOS did not report 16 GB**, which would reject a correct 32 GB
