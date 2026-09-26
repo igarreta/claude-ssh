@@ -303,7 +303,9 @@ chassis is testable before the drives exist; note **TOS aborts long SMART tests 
 Sleep is set to Never**); and **how ceres' restic jobs reach BACKUP_A/B once it hangs off the NAS**, which is
 still undesigned. Last unverified purchase item: noise from the 7200 rpm recert drives — the
 datasheet dB(A) figure is standby-only, so it can only be judged in the USA, inside the return
-window.
+window. **Cold-spare third drive picked 2026-09-26**: Toshiba MG06ACA600E, eBay $104.59
+(seller-refurbished, not mfr-recert — acceptable for a shelved spare, not the mirror), Seagate
+ST6000NM021A ($138.95) as fallback if that listing falls through — see §11 of the disk-prices doc.
 
 - [2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md](2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md) — **open** — **the backup + recovery design**: cross-target PBS (each host backs up to the peer, no sync jobs and why local-first+sync was rejected), the 3–7 day local short-retention copy, PBS on the PVE host rather than in an LXC, exactly what host configuration a guest backup does **not** contain, the restore prerequisites that must live off both boxes (encryption key, API token, TLS fingerprint), and a recovery outline per direction. Also records that `backup_usb1` is a **Kingston XS1000 SSD**, never hot-plugged and unrelated to the BACKUP_A/B USB trouble
 - [2026-09-11_nas-gr-srv03_service-placement-rules.md](2026-09-11_nas-gr-srv03_service-placement-rules.md) — **open** — **the placement rulebook for the two-server fleet**: the one-week rule, split by volatility not capacity, **no clustering** (and why — ZFS, quorum coupling, self-fencing, irreversibility), one-way dependencies, DBs live with their service, PBS stays on the NAS with an off-box encryption key. **Its §7 dependency audit is a NAS-commissioning task** — and flags that the NAS frees no gr-srv03 RAM, so the VM 102 decommission is now a prerequisite
@@ -313,7 +315,7 @@ window.
 - [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md) — **open** — **§1 and its price targets are superseded by the 09-10 doc — do not act on them**; the rest stands: the 16 GB RAM allocation; the BACKUP_A/B cable spec and the chosen cable (UGREEN 10841, 1 m, 22 AWG — §3 updated 09-11, and its port-layout premise corrected); gr-srv03 hub reassessment; *why* the acceptance test is shaped as it is (§5 procedure moved to the runbook)
 - [2026-09-07_nas-software-stack.md](2026-09-07_nas-software-stack.md) — **open** — base OS, guests, share protocols, disk topology; **its two RAM sections are superseded by the 09-08 doc**, the rest is current; **restore source verified 2026-09-07** (BACKUP_B restic repo sound and complete — S3 Glacier is *not* the restore source)
 - [memory_nas-project.md](memory_nas-project.md) — **open** — scope, sizing, buy list, rejected options
-- [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc**; itself **corrected 2026-09-07 and again 2026-09-08** on the F4-425 Plus RAM (16 GB is the N150 SKU). Verify stock before ordering
+- [2026-08-20_nas-disk-prices-and-raid-options.md](2026-08-20_nas-disk-prices-and-raid-options.md) — *active* — prices, RAID layouts, recert sourcing. **Corrects §5/§9 of the 08-19 doc**; itself **corrected 2026-09-07 and again 2026-09-08** on the F4-425 Plus RAM (16 GB is the N150 SKU). Verify stock before ordering. **§11 added 09-26**: cold-spare third drive picked (Toshiba MG06ACA600E, eBay), Seagate ST6000NM021A as fallback
 - [2026-08-19_nas-hardware-research.md](2026-08-19_nas-hardware-research.md) — *active* — market context and OS choice. **§5 and §9 enclosure specs are wrong** — see above; §9's "buy RAM pre-installed" advice is void
 
 ## Tooling and workstation

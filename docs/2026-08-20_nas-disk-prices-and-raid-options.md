@@ -498,6 +498,32 @@ This is **$30 above** the $340 assumed in §8.4, so the builds become **P1 = $75
 **Target**: a **6 TB SATA manufacturer-recertified enterprise drive** (Exos 7E8, Ultrastar 7K6000 /
 He-class) at **$160–180**, from goHardDrive or ServerPartDeals.
 
+## 11. Third drive — cold spare (decided 2026-09-26)
+
+Checked four eBay listings against the mirror candidates. Two were SAS (incompatible, §3) and one
+was a different model than searched for; the two SATA matches, both from **Louie's Electronics**
+(6,451 feedback, 99.4% positive), both **seller-refurbished** (not manufacturer-recertified —
+§10 rule 2), both listed as "wiped, ready for use" with no SMART/hour-count disclosure and no
+warranty:
+
+| Drive | Interface | Price shipped | eBay item |
+|---|---|---|---|
+| **Toshiba MG06ACA600E** — chosen | SATA III, 7200 RPM | **$104.59** | 158310893844 |
+| Seagate ST6000NM021A — alternative | SATA III, 7200 RPM | $138.95 | 158311164495 |
+
+**Decision: buy the Toshiba as the cold spare; keep the Seagate as the fallback pick** if the
+Toshiba listing falls through. Neither is bought as an active mirror member — the mirror still
+targets manufacturer-recertified drives per §10 (Ultrastar 7K6000 + Exos 7E8, $369.90 from
+goHardDrive).
+
+**Why a cold spare can use lower-provenance stock**: §7's different-lots concern is about drives
+spinning together 24/7 in the mirror; a shelved spare isn't in that failure population, and
+warranty is already "close to worthless once in Argentina" (§10 rule 1) — irrelevant for a drive
+you'd never RMA. What still matters: **burn it in yourself** (`badblocks -w` + a full SMART long
+test) before shelving it, since the seller's "wiped" claim is not a tested claim.
+
+Capacity matches the mirror's 6 TB members, satisfying §7's same-or-larger replacement rule.
+
 ## Sources
 
 - [ListofDisks — live US retailer HDD price tracker](https://www.listofdisks.com/)
