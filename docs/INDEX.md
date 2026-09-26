@@ -43,6 +43,7 @@ turn raspberrypi1 into a thin radio head — **not scheduled, nothing built** �
 - [2026-08-01_..._ttato-manual-mode-phantom-zero-heating.md](2026-08-01_raspberrypi1_ttato-manual-mode-phantom-zero-heating.md) — *closed* — stale-sensor + HA unknown-state bugs in `CheckManual()`
 - [2026-07-23_..._ttato-manual-mode-and-ha-script-fix.md](2026-07-23_raspberrypi1_ttato-manual-mode-and-ha-script-fix.md) — *active* — mode-change contract (`changemode.json` / `TTato/command`), HA script payload fix, HA-session notes
 - [2026-07-20_..._ttato-granev-integration.md](2026-07-20_raspberrypi1_ttato-granev-integration.md) — *closed* — `granev/temp/*` subscription that was never wired up
+- [2026-09-20_raspberrypi1_power-supply-replacement.md](2026-09-20_raspberrypi1_power-supply-replacement.md) — *closed* — PSU swapped after sticky under-voltage flags (`0xd0000`); confirmed resolved 09-26 after 6 days clean
 
 ## USB, Zigbee and RF (gr-srv03 + docker03)
 
