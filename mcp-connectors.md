@@ -130,14 +130,15 @@ exec npx -y @notionhq/notion-mcp-server "$@"
 - Query databases
 - Manage comments
 
-## Home Assistant MCP Connector (ha-mcp)
+## Home Assistant MCP Connector (ha-mcp) — primary HA connector
 
-Provides semantic, entity/service-level access to Home Assistant: search/read entities,
-call any service, manage automations/scripts/dashboards/helpers/areas, read history and
-statistics, ZHA device info, backups, config-entry/registry management, etc. (~87 tools).
-This is separate from the `homeassistant` SSH connector above, which stays for
-shell/log/filesystem-level diagnostics (`/config` write access there has been broken
-since 2026-09-11 — see `docs/2026-09-13_homeassistant_config-write-path-lost.md`).
+**Use `ha-mcp` first for any Home Assistant task** (entities, automations, scripts,
+dashboards, helpers, areas, history, services, backups, etc. — ~87 tools). Verified
+working end-to-end 2026-09-27 (`ha_get_overview` returned live data: HA 2026.9.3,
+RUNNING, 500+ entities across 30 domains). Only fall back to the `homeassistant` SSH
+connector for shell/log/filesystem-level diagnostics that ha-mcp's tool surface doesn't
+cover — its `/config` write access has been broken since 2026-09-11 anyway (see
+`docs/2026-09-13_homeassistant_config-write-path-lost.md`).
 
 ### What it is
 

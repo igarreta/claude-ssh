@@ -6,6 +6,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 ## Working preferences
 
 - [feedback_docs_location.md](feedback_docs_location.md) — docs and memories go in `docs/` of the claude-ssh repo, not on the remote host
+- [feedback_ha-mcp-primary-connector.md](feedback_ha-mcp-primary-connector.md) — use `ha-mcp` first for HA work, `homeassistant` ssh connector is fallback-only
 - [feedback_pushover_errors_only.md](feedback_pushover_errors_only.md) — Pushover is for errors only, never success or routine status
 - [feedback_https_urls_only.md](feedback_https_urls_only.md) — always give HTTPS URLs; the browser refuses plain HTTP
 - [feedback_zed-agent-panel-breaks-ssh-mcp.md](feedback_zed-agent-panel-breaks-ssh-mcp.md) — Zed's embedded agent panel breaks every ssh-mcp connector; launch via `tmux-claude.sh`
