@@ -87,8 +87,9 @@ Finding a bad write in a hotel room is the one avoidable failure in this whole p
 
 ### A1. Fit the boot NVMe only
 
-Patriot P310 into M.2 slot 1 *(the F4-424 Pro has **2** M.2 slots, not 3)*. **Leave the drive
-bays empty** if the HDDs have not arrived.
+Intel 660p 512 GB (on hand, swapped in 2026-09-27 for the previously-planned Patriot P310) into
+M.2 slot 1 *(the F4-424 Pro has **2** M.2 slots, not 3)*. **Leave the drive bays empty** if the
+HDDs have not arrived.
 
 ### A2. Connect and enter the BIOS
 
@@ -100,7 +101,7 @@ splash (**F12** gives a one-time boot menu).
 | Check | Expected |
 |---|---|
 | **Total memory** | **32768 MB / 32 GB** *(F4-424 Pro)* |
-| NVMe | Patriot P310 listed |
+| NVMe | Intel 660p 512 GB listed |
 | SATA ports | 4 present (drives may be absent) |
 | M.2 | 2 slots *(F4-424 Pro)* |
 
@@ -127,7 +128,7 @@ RAM is *good* rather than merely *present*.
 Boot the **Proxmox** stick → **Install Proxmox VE (Graphical)**. If the graphical installer shows a
 black screen over HDMI, reboot and choose **Terminal UI** instead — it does the same job.
 
-- **Target disk: the Patriot P310 — nothing else.** If the HDDs happen to be fitted already, be
+- **Target disk: the Intel 660p — nothing else.** If the HDDs happen to be fitted already, be
   deliberate here.
 - Filesystem: **ext4** (the default; same layout as gr-srv03). **Do not choose ZFS** — the pool is
   built at home, on the HDDs, addressed by `/dev/disk/by-id/`.
@@ -331,7 +332,7 @@ properties are painful to retrofit onto 1.6 TB.
 | `smartctl`: *"device lacks SMART capability"* | You addressed a USB-bridged device. Use the SATA `/dev/sdX`, or add `-d sat` for a USB enclosure. |
 | Cannot find the NAS's IP | At the console `ip -brief a`, or check the router's DHCP leases for `nas-test`. |
 | `apt update` 401 on the enterprise repo | Expected without a subscription; harmless. Silence it with `Enabled: false` in `/etc/apt/sources.list.d/pve-enterprise.sources`. |
-| TOS SMART panel shows nothing for the NVMe | Long-standing TOS limitation. Check the P310 over SSH with `smartctl -a /dev/nvme0`. |
+| TOS SMART panel shows nothing for the NVMe | Long-standing TOS limitation. Check the 660p over SSH with `smartctl -a /dev/nvme0`. |
 
 ## Related
 

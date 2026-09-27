@@ -1,11 +1,11 @@
 ---
 name: project_nas
-description: "NAS project — chassis decided 2026-09-10: TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB), $687, total $1,121.90; the 09-08 F4-425 Plus N150 pick rested on a $479.99 price that was never real (that was the N95/8 GB price — the N150/16 GB lists at $649.99); mirror disks still manufacturer-recert per goHardDrive; cold-spare third drive picked 09-26 (eBay HGST Ultrastar 7K6000); local MercadoLibre alternative rejected; nothing ordered"
+description: "NAS project — chassis decided 2026-09-10: TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB), $687, total now $1,056.90; the 09-08 F4-425 Plus N150 pick rested on a $479.99 price that was never real (that was the N95/8 GB price — the N150/16 GB lists at $649.99); mirror disks still manufacturer-recert per goHardDrive; cold-spare third drive picked 09-26 (eBay HGST Ultrastar 7K6000), local MercadoLibre alternative rejected; boot NVMe swapped 09-27 for an on-hand Intel 660p 512GB, dropping the $65 Patriot P310 purchase; nothing else ordered"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 674728fe-657f-43ee-985f-f339c95e4974
-  modified: 2026-09-26T00:00:00.000Z
+  modified: 2026-09-27T00:00:00.000Z
 ---
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
@@ -13,15 +13,20 @@ Machine and PBS, plus Immich for family photo browsing. Hardware brought from ab
 day one. **Urgent since 2026-09-06**: the WDMyCloud it replaces is dead
 ([[project_ceres_wdmycloud-nas-dead]]), so this is no longer a nice-to-have.
 
-**Buy list (2026-09-10): TerraMaster F4-424 Pro — i3-N305 8-core, 32 GB, $687 Amazon → $1,121.90
+**Buy list (2026-09-10): TerraMaster F4-424 Pro — i3-N305 8-core, 32 GB, $687 Amazon → $1,056.90
 total.** The 4-bay fits the measured space. **The 09-08 F4-425 Plus N150 decision is dead**: its
 $479.99 was the **N95/8 GB** price, read off a store page that sells only the N95 and then applied
 to the N150, which actually lists at **$649.99**. So the 09-08 price-target table is void — its
 "walk away above $520" was that SKU's *best-ever* price. At $649 the N150 sat only **$38** below the
 Pro line, and the user chose RAM over LAN: everything is 1 GbE, and a future upgrade would be to
 2.5GbE anyway. Accepted and **not to be re-opened**: 2× 2.5GbE not 5GbE, 2 M.2 slots not 3 (one is
-needed, for the P310 boot NVMe), 32 GB is the ceiling with no upgrade path. Bonus over the 425 Plus:
+needed for the boot NVMe), 32 GB is the ceiling with no upgrade path. Bonus over the 425 Plus:
 a **published Proxmox install guide**, same BIOS menu names.
+
+**Boot NVMe swapped 2026-09-27**: an unused Intel 660p 512 GB (M.2 2280, PCIe 3.0 x4) turned up
+and is spec-compatible with the planned Patriot P310 — the slot only runs at PCIe 3.0 x1 regardless,
+so there's no reason to buy one. Drops the $65 line item; run a SMART health check before trusting
+it, since prior usage is unknown.
 
 **At 32 GB the RAM question is closed for good** — don't re-plan the ARC/Immich allocation before
 the box exists; tune ARC after the restore. Still true and still worth knowing when comparing SKUs:

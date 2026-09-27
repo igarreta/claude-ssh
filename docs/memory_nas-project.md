@@ -62,8 +62,13 @@
 > F4-424 Pro actually ships with, there is no allocation to argue about at all.
 >
 > Everything else on the hardware side is settled: **P1** (both drives now — secondhand, so the
-> mirror is complete from day one) and the **Patriot P310 480 GB** boot NVMe at $65. Nothing
-> bought yet.
+> mirror is complete from day one). **Boot NVMe swapped 2026-09-27**: an unused **Intel 660p
+> 512 GB** turned up (M.2 2280, PCIe 3.0 x4, ~100 TB TBW) — spec-compatible with the planned
+> Patriot P310 and the slot only runs at PCIe 3.0 x1 anyway, so it replaces that $65 line item.
+> Run a SMART health check before trusting it (unknown prior usage; "on hand" is not "tested").
+> Nothing left to buy for boot storage. **A second on-hand M.2, 256 GB, is kept as a cold spare
+> for the boot NVMe** (drop-in replacement if the 660p fails) — not assigned to the second M.2
+> slot, since L2ARC and a `special` vdev there are both already decided against (see below).
 
 ## Purchase list (prices verified 2026-08-20; CPU variant decided 2026-08-30 — re-check before ordering)
 
@@ -73,11 +78,12 @@
 | ~~TerraMaster F4-425 Plus (N150, 16 GB, 3× M.2, 2× 5GbE, 4 bays)~~ — **superseded 2026-09-10**, actually $649 not $479.99 | Newegg | ~~$479.99~~ |
 | **HGST Ultrastar 7K6000** HUS726060ALE610 6 TB SATA, cert. refurb, 3 yr | [goHardDrive g01-1079](https://www.goHardDrive.com/HGST-Ultrastar-0F23001-6TB-7200RPM-Hard-Drive-p/g01-1079.htm) | **$179.95** |
 | **Seagate Exos 7E8** ST6000NM0115 6 TB SATA, enterprise, 5 yr | [goHardDrive g01-1326](https://www.goHardDrive.com/Seagate-ST6000NM0115-6TB-128MB-SATA-Enterprise-HDD-p/g01-1326.htm) | **$189.95** |
-| **Patriot P310** 480 GB, M.2 2280 PCIe Gen3 x4 NVMe, 240 TB TBW — PVE boot | Amazon/Walmart/B&H | **$65** |
+| ~~Patriot P310 480 GB, M.2 2280 PCIe Gen3 x4 NVMe, 240 TB TBW — PVE boot~~ — **swapped 2026-09-27**, see below | ~~Amazon/Walmart/B&H~~ | ~~$65~~ |
+| **Intel 660p** 512 GB, M.2 2280 PCIe Gen3 x4 NVMe, ~100 TB TBW — PVE boot | **on hand (found unused, 2026-09-27)** | **$0** |
 
-**Total: $1,121.90** (chassis decided 2026-09-10 — see the Resume-here block. The old $914.89 total
-rested on a $479.99 price for the N150/16 GB that was never real; it lists at $649.99. **Re-check
-prices before ordering** —
+**Total: $1,056.90** (chassis decided 2026-09-10, boot NVMe swapped for on-hand hardware
+2026-09-27 — see the Resume-here block. The old $914.89 total rested on a $479.99 price for the
+N150/16 GB that was never real; it lists at $649.99. **Re-check prices before ordering** —
 [2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md).)
 Optional cold spare: a third 6 TB drive, ~$180, undecided.
 
@@ -127,11 +133,14 @@ machines actually being bought are not covered by them; everything below that is
 later) because the drives are secondhand — user wants mirror redundancy from day one rather than
 running an unprotected single disk during the interval before the second drive is added.
 
-**Boot NVMe decided 2026-08-30: Patriot P310 480 GB, $65.** PCIe Gen3 x4, M.2 2280 — fits the
-F2-425 Plus's M.2 2280 slots (runs at the slot's PCIe 3.0 ×1, well above what boot + Immich DB/
-thumbnails need). 240 TB TBW is ample for this workload (OS + a lightweight Postgres DB + thumbnail
-cache — light, steady writes, not sustained heavy I/O). Not required for P1 (Proxmox could boot off
-the HDD mirror instead), but keeps Immich's DB/thumbnail I/O off the secondhand HDDs.
+**Boot NVMe decided 2026-08-30: Patriot P310 480 GB, $65 — superseded 2026-09-27.** PCIe Gen3 x4,
+M.2 2280 — fits the M.2 2280 slots (runs at the slot's PCIe 3.0 ×1, well above what boot + Immich
+DB/thumbnails need). 240 TB TBW is ample for this workload (OS + a lightweight Postgres DB +
+thumbnail cache — light, steady writes, not sustained heavy I/O). Not required for P1 (Proxmox
+could boot off the HDD mirror instead), but keeps Immich's DB/thumbnail I/O off the secondhand
+HDDs. **Swapped for an on-hand Intel 660p 512 GB** (same form factor/interface, ~100 TB TBW —
+still ample for this workload) — no reason to buy a boot drive when a spec-compatible one was
+already owned. SMART health check still needed before relying on it.
 
 Two *different* manufacturers is deliberate: it satisfies the different-lots rule (§7 of the
 research doc) at no cost. Both carry longer warranties than any manufacturer-direct store

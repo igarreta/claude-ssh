@@ -47,6 +47,8 @@ there is nothing to be gained by holding out for $519.99.
 
 At the corrected prices the F4-425 Plus N150 is no longer the value pick it was chosen as. Disks and
 boot NVMe are unchanged throughout: $179.95 + $189.95 + $65.00 = **$434.90**.
+*(Boot NVMe line **superseded 2026-09-27**: an on-hand Intel 660p 512 GB replaced the $65 Patriot
+P310 purchase — see `memory_nas-project.md`. Totals below predate that swap by $65.)*
 
 | SKU | CPU | RAM | Bays | LAN | M.2 | Chassis | **Project total** |
 |---|---|---|---|---|---|---|---|
@@ -84,7 +86,7 @@ will make a much larger difference in the long term."**
 | | F4-424 Pro | Why it is acceptable |
 |---|---|---|
 | LAN | 2× 2.5GbE, not 5GbE | LAN is 1 GbE; a future upgrade would be to 2.5GbE anyway |
-| M.2 slots | 2, not 3 | One is needed (P310 boot). No L2ARC and no `special` vdev — already decided |
+| M.2 slots | 2, not 3 | One is needed (boot NVMe — on-hand Intel 660p, was P310). No L2ARC and no `special` vdev — already decided |
 | RAM ceiling | ships **at** its 32 GB max, single module, no upgrade path | It starts at double what the design needs |
 | Max drive | 22 TB/bay, 88 TB total | The pool is 2× 6 TB with a second mirror vdev as growth |
 | Generation | 2024 "424" line, not the 2025 "425" | Buys the Proxmox precedent; TOS is not being used anyway |

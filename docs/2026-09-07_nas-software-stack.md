@@ -32,8 +32,9 @@ directory on the pool, at the cost of mixing roles onto the hypervisor. Kept as 
 
 ## Base OS
 
-**Proxmox VE 9** on the Patriot P310 NVMe, ext4 + LVM-thin (installer default, same layout as
-gr-srv03). The two 6 TB HDDs are **not** touched by the installer.
+**Proxmox VE 9** on the boot NVMe (Intel 660p 512 GB, on hand — swapped 2026-09-27 for the
+previously-planned Patriot P310), ext4 + LVM-thin (installer default, same layout as gr-srv03).
+The two 6 TB HDDs are **not** touched by the installer.
 
 The ZFS mirror is created afterwards from the host, addressing disks by `/dev/disk/by-id/`,
 never `/dev/sdX` — the same lesson as the 2026-07-15 zigbee2mqtt USB re-enumeration outage
@@ -343,7 +344,7 @@ Immich rescans after the fact.
 Two consequences that do still apply:
 
 - **Thumbnails and transcodes for external assets land in `UPLOAD_LOCATION`**, not next to the
-  originals. That grows with library size and must be sized against the 480 GB boot NVMe.
+  originals. That grows with library size and must be sized against the 512 GB boot NVMe.
 - **Library watching uses inotify** — it works on local datasets and not over any network mount,
   which is a further argument for Immich living on the NAS rather than on cygnus.
 
