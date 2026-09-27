@@ -130,6 +130,70 @@ exec npx -y @notionhq/notion-mcp-server "$@"
 - Query databases
 - Manage comments
 
+## Home Assistant MCP Connector (ha-mcp)
+
+Provides semantic, entity/service-level access to Home Assistant: search/read entities,
+call any service, manage automations/scripts/dashboards/helpers/areas, read history and
+statistics, ZHA device info, backups, config-entry/registry management, etc. (~87 tools).
+This is separate from the `homeassistant` SSH connector above, which stays for
+shell/log/filesystem-level diagnostics (`/config` write access there has been broken
+since 2026-09-11 — see `docs/2026-09-13_homeassistant_config-write-path-lost.md`).
+
+### What it is
+
+The [homeassistant-ai/ha-mcp](https://github.com/homeassistant-ai/ha-mcp) add-on
+("app"), installed in Home Assistant. It runs an MCP server in-process inside HA and
+exposes it directly as an HTTP/JSON-RPC (Streamable HTTP) endpoint — no local process on
+comet reaches out to HA; comet connects **to** HA's endpoint as a remote MCP server.
+
+### Configuration
+
+Registered as a **local-scope** MCP server (`claude mcp add-json ha-mcp '{...}' -s
+local`), which Claude Code stores in `~/.claude.json` under this project's entry — **not**
+in this repo's git-tracked `.mcp.json`. This matters because the connection URL itself is
+the credential (see below), so it must stay out of git, matching the credential-security
+principle already used for the GitHub/Notion connectors.
+
+```bash
+claude mcp add-json ha-mcp '{"type":"http","url":"<see ~/.ssh/homeassistant-mcp-url>"}' -s local
+```
+
+### Authentication
+
+Token-in-URL: the add-on generates a random `/private_<token>` path segment that *is*
+the credential (no separate header/bearer token). The full URL is stored in
+`~/.ssh/homeassistant-mcp-url` (600 permissions), same rationale as the other
+`~/.ssh/`-stored credentials below.
+
+### Access mode
+
+Configured full read-write (no `read_only_mode`) — matches the access level of every
+other connector here (they're all full shell). The add-on does offer a `read_only_mode`
+toggle in its own config if write access ever needs to be revoked without removing the
+connector.
+
+### Webhook URL — not used
+
+The add-on's optional "Webhook Proxy" companion app also creates a
+`http://<ha-host>:8123/api/webhook/mcp_<id>` URL. That's for routing MCP traffic through
+Nabu Casa/a reverse proxy so *internet* clients (e.g. claude.ai web) can reach the
+server without port-forwarding. Not needed here — comet reaches the HA host directly
+(both its LAN IP and its Tailscale IP work), so this connector uses the add-on's direct
+`:9584/private_<token>` endpoint only.
+
+### homeassistant-ai/skills
+
+A companion best-practices Agent Skill (HA automation/dashboard/YAML conventions),
+unrelated to ha-mcp's runtime (no dependency between them). Installed project-level:
+
+```bash
+npx skills add homeassistant-ai/skills
+```
+
+Lands in `.agents/skills/` (universal format) with a symlink at
+`.claude/skills/home-assistant-best-practices` for Claude Code — both git-tracked, no
+secrets involved.
+
 ## Credential Security
 
 Credentials are stored in `~/.ssh/` because:
