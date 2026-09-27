@@ -37,3 +37,8 @@ baseline are in `docs/memory_gr-srv03_powered-hub-instability.md`; the standalon
 doc `docs/memory_gr-srv03_usb-hub-eval.md` is **superseded**, don't act on its
 "move to a powered hub" conclusion. Related:
 [[project_docker03_tailscale-key-expiry-2026-08-17]], [[project_docker03_zigbee_rf_degradation]].
+
+**Ferrites reminder**: still deprioritised as of 2026-09-27 (asked and re-checked — nothing
+changed). **Revisit once [[project_nas]] is commissioned and the staged trial runs** (extension
+cable + hub, `docs/2026-09-08_nas-chassis-decision-and-acceptance-test.md` § 4) — only buy
+ferrites if RTL-433 coverage still proves unusable after that.
