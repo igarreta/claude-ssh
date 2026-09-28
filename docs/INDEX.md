@@ -332,6 +332,7 @@ gr-srv03 and networkd `wait-online` timeouts on mosquitto (see the Proxmox and M
 **A stale `failed` unit escalates every day until `reset-failed`** — check whether the thing
 it names is actually running before investigating the report's hypothesis.
 
+- [memory_comet_emergency-access.md](memory_comet_emergency-access.md) — *active* — comet is CT 204 on gr-srv03 (LXC, shares its pinned kernel); Proxmox web GUI → host Shell → `pct enter 204` is a full alternate path in, no SSH key needed
 - [2026-06-30_log-monitor.md](2026-06-30_log-monitor.md) — *active* — daily log review from comet; architecture, `SUPPRESS_PATTERN`, adding a host
 - [2026-08-30_log-monitor_collect-sigpipe.md](2026-08-30_log-monitor_collect-sigpipe.md) — *closed* — 4-day contabo2 blackout reported as "(ssh error)"; was `head`+`pipefail`+`set -e`. Suppression now runs remotely before the cap
 - [2026-08-30_comet_homeassistant-mcp-ssh-mcp-v2-password-flag.md](2026-08-30_comet_homeassistant-mcp-ssh-mcp-v2-password-flag.md) — *closed* — unpinned `npx -y ssh-mcp` auto-updated to v2, dropped `--password`; only the password-auth `homeassistant` connector broke
