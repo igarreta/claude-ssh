@@ -47,7 +47,7 @@ expected. When ext_prom falls below 17 °C in the evening, the living rules take
 again. That is expected behavior.
 
 ## Commit
-`b5aeffd` in `igarreta/TTato` (local on the Pi, not pushed), a single commit that also
+`b5aeffd` in `igarreta/TTato` (pushed), a single commit that also
 includes the older unrelated `ext_prom` `type: I` → `E` fix.
 
 ## Side finding
