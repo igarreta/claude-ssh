@@ -112,7 +112,10 @@ in place (may take >2 months); existing local + S3 Glacier repos left untouched 
 passed, `restic check` clean) and its `restic-wdmycloud` copy verified intact (2026-08-31,
 1.462 TiB) — that closes the last unverified WDMyCloud copy, both local repos are now
 confirmed** →
-[2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md). **raspberrypi1's
+[2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md).
+**BACKUP_B's `restic-wdmycloud` re-checked 2026-09-30: same 14 snapshots as 09-07, nothing
+changed since the NAS died, `restic check` clean** →
+[2026-09-30_gr-srv03_backup-b-wdmycloud-recheck.md](2026-09-30_gr-srv03_backup-b-wdmycloud-recheck.md). **raspberrypi1's
 `backup.sh` (shared `igarreta/bin` repo with contabo2) was clobbered by a contabo2-only commit
 2026-09-06, breaking its 09-07 cron run — merged into one hostname-branched script, fixed and
 verified on both hosts 2026-09-07** →
@@ -132,9 +135,10 @@ re-run, check rewritten (and the same pattern fixed in three sibling scripts) �
 
 - [2026-09-13_ceres_restic-lock-deadlock.md](2026-09-13_ceres_restic-lock-deadlock.md) — *closed* — three nightly backups skipped by a 09-10 stale lock; the age check returned "hours since midnight" because the JSON pattern missed a space and `date -d ""` yields midnight rather than failing. Records what looked broken but was not (the 15:00–00:30 unmount window, `/mnt/backup_a` showing as `pve-root`)
 - [2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md) — *active* — the z2m state backup end to end: what is and is not copied, why it is gpg-encrypted and validated instead of quiesced, the **restore procedure**, plus the mosquitto `backup.sh` break and the `--group-by host,tags` retention trap that adding a path to a restic tag springs
+- [2026-09-30_gr-srv03_backup-b-wdmycloud-recheck.md](2026-09-30_gr-srv03_backup-b-wdmycloud-recheck.md) — *closed* — BACKUP_B WDMyCloud repo unchanged and `restic check` clean; how to query a repo from gr-srv03 after 15:00, when ceres's bind is gone
 - [2026-09-10_gr-srv03_backup-a-rotation-check.md](2026-09-10_gr-srv03_backup-a-rotation-check.md) — *closed* — post-rotation verification of BACKUP_A: mount/propagation, 7/7 tags with floors passed, `restic check` clean, SMART clean, and its WDMyCloud repo verified intact; also corrects the drive model in the mounting doc
 - [2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md](2026-09-07_raspberrypi1-contabo2_backup-sh-merge.md) — *closed* — shared-repo clobber; merged into one hostname-branched script
-- [2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md) — **open** — WD MyCloud dead/irrecoverable; found+fixed a live risk where the missing mount would let backup cron rotate out real snapshots; crons disabled, configs wiped, repos preserved — **both local copies now verified (B 09-07, A 09-10)**
+- [2026-09-06_ceres_wdmycloud-nas-dead.md](2026-09-06_ceres_wdmycloud-nas-dead.md) — **open** — WD MyCloud dead/irrecoverable; found+fixed a live risk where the missing mount would let backup cron rotate out real snapshots; crons disabled, configs wiped, repos preserved — **both local copies now verified (B 09-07 + 09-30, A 09-10)**
 - [2026-08-14_backup-health-monitor-design.md](2026-08-14_backup-health-monitor-design.md) — *active* — design + deployed implementation; finishing tests
 - [2026-08-14_ceres-empty-snapshots-probe.md](2026-08-14_ceres-empty-snapshots-probe.md) — *closed* — 7 months of empty snapshots; `pct reboot 203` fixed it, cause never proven after 3 probe readings, probe removed 2026-08-26
 - [memory_backup_schedule.md](memory_backup_schedule.md) — *active* — **read before adding any job**: disk-wake window 02:25–03:30

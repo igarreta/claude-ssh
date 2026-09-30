@@ -38,6 +38,11 @@ dailies in a 1.457–1.462 TiB band matching B's. Both local copies are now conf
 08-31 vs 09-05 gap is just the rotation, and since the NAS died 09-06 nothing was lost by
 disabling the crons. See [[project_backup_a_rotation_check]].
 
+**BACKUP_B re-checked 2026-09-30**: same 14 snapshots, no repo file changed since 09-06,
+`restic check` clean. After 15:00, ceres has no bind to the drive, so run restic on gr-srv03
+with `--password-command 'pct exec 203 -- cat /home/rsi/etc/restic-password-local'` and
+don't reboot ceres — see [[docs/2026-09-30_gr-srv03_backup-b-wdmycloud-recheck.md]].
+
 Full writeup: [docs/2026-09-06_ceres_wdmycloud-nas-dead.md](../2026-09-06_ceres_wdmycloud-nas-dead.md).
 Related: [[project_ceres_wdmycloud_glacier]] (the S3 Glacier job's exclusion/retention
 details, now paused).
