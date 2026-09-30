@@ -3,7 +3,7 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§1, its price-target table, and §3's USB port layout only)
-**Superseded-by:** —
+**Superseded-by:** 2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md (§4's "all LXCs and no VMs" and "do not re-plan the allocation" only)
 
 **Date**: 2026-09-10. The user went to order and found street prices nothing like the ones on the
 buy list. Checking them turned up the **fifth price/spec error on this chassis** — and this one is
@@ -102,6 +102,11 @@ will make a much larger difference in the long term."**
 - Nothing has been ordered.
 
 ## 4. What this does *not* change
+
+> **REVISED 2026-09-30** — two items below no longer stand: "all LXCs and no VMs" is narrowed
+> (VMs allowed for self-contained guests), and the allocation *was* re-planned for 32 GB as
+> starting values →
+> [2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md](2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md).
 
 The software stack, the guest layout and every architectural decision stand — they were designed
 against 16 GB and only get easier at 32 GB. Specifically unchanged: all LXCs and no VMs; Samba as an

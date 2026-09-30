@@ -3,13 +3,18 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** —
-**Superseded-by:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§ *The RAM budget is the binding constraint* and § *The 16 GB question is OPEN* only), 2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md (the `pbs` LXC row of § *Guests* only)
+**Superseded-by:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§ *The RAM budget is the binding constraint* and § *The 16 GB question is OPEN* only), 2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md (the `pbs` LXC row of § *Guests* only), 2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md (§ *Decided: everything is an LXC, no VMs* — narrowed to pool/iGPU guests; and the fleet-wide "no Docker" scope of the Immich section — Immich itself stays on podman)
 
 **Date**: 2026-09-07. Hardware buy list and sizing are in
 [memory_nas-project.md](memory_nas-project.md); this doc covers only what runs on the box
 once it exists. Nothing purchased, nothing built.
 
 ## Decided 2026-09-07: everything is an LXC, no VMs
+
+> **NARROWED 2026-09-30.** Reason 2 (RAM) is gone at 32 GB. The rule is now: *guests that touch
+> the pool or the iGPU are LXCs; VMs are allowed for self-contained guests* — see
+> [2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md](2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md).
+> Reason 1 still holds for `smb` and `immich`.
 
 Two independent reasons, either of which is sufficient:
 
@@ -264,6 +269,10 @@ Background: [Proxmox_unpriviedged_LXC_mount_permissions.md](Proxmox_unpriviedged
 Prior art in the fleet: samba03 is a TurnKey fileserver appliance whose quirks are already known.
 
 ## Decided 2026-09-07 — Immich runs under podman, no Docker in the fleet
+
+> **SCOPE REVISED 2026-09-30.** Immich still runs under podman in its LXC. "No Docker in the
+> fleet" is replaced by *Docker only inside VMs; inside an LXC, use podman* — see
+> [2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md](2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md) §4.
 
 Investigated against the **actual** upstream compose files and the **actual** podman-compose
 source on cygnus (podman 5.4.2, podman-compose 1.3.0), rather than from general reputation.

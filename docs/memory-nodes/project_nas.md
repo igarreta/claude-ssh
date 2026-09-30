@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 674728fe-657f-43ee-985f-f339c95e4974
-  modified: 2026-09-27T00:00:00.000Z
+  modified: 2026-09-30T00:00:00.000Z
 ---
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
@@ -28,8 +28,9 @@ and is spec-compatible with the planned Patriot P310 — the slot only runs at P
 so there's no reason to buy one. Drops the $65 line item; run a SMART health check before trusting
 it, since prior usage is unknown.
 
-**At 32 GB the RAM question is closed for good** — don't re-plan the ARC/Immich allocation before
-the box exists; tune ARC after the restore. Still true and still worth knowing when comparing SKUs:
+**RAM was re-allocated for 32 GB on 2026-09-30** as starting values (tune ARC after the restore),
+including a 6 GB VM that will take over cygnus and run Docker — table and open items in
+[[docs/2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md]]. Still true and still worth knowing when comparing SKUs:
 **the F2 is 2 bays, the F4-425 Plus N95 is 8 GB**, "F4 N95 with 16 GB" is not a factory SKU, and a
 bare 16 GB DDR5 SODIMM is ~$209 in the shortage — which is exactly why the 16 GB SKU costs $170 more
 than the 8 GB one, and why **waiting for the old price will not work**.
@@ -60,13 +61,15 @@ preinstalled, where Ubuntu Live needs internet and `apt` before it can test anyt
 
 **Decisions not to re-derive** (each cost real investigation):
 
-- **All LXCs, no VMs** — forced by shared data (Samba writes what Immich reads; only LXCs
-  bind-mount) as much as by RAM. Host owns the disks, guests get bind mounts.
+- **Pool/iGPU guests are LXCs; VMs allowed for self-contained guests** (narrowed 09-30 from
+  "all LXCs, no VMs"). `smb` and `immich` stay LXCs because of shared data, not RAM — don't
+  propose moving them into a VM. Host owns the disks, guests get bind mounts.
 - **Samba: unprivileged LXC with `idmap=passthrough`.** The user leaned *privileged* after past
   idmap pain; the option that removes that pain is ignored on privileged containers, which
   reversed it. See [[project_proxmox_lxc_idmap_passthrough]].
-- **Immich: podman, no Docker.** Verified feature-by-feature against podman-compose's source.
-  Traps in [[project_podman_compose_gotchas]].
+- **Docker only inside VMs; podman inside LXCs** (09-30, replaces "no Docker in the fleet").
+  Immich stays on podman — verified feature-by-feature against podman-compose's source. Traps in
+  [[project_podman_compose_gotchas]].
 - **Growth is a second mirror vdev in the spare bays, never RAIDZ** (a mirror pool cannot be
   converted). No L2ARC and no `special` vdev on the spare M.2 slots — and a `special` vdev would
   have to exist *before* the 1.6 TB restore or never, so don't propose it afterwards.

@@ -284,7 +284,7 @@ datasheet matched to the exact SKU — and only a price the same page will actua
 fallback is dead *on RAM grounds* — **but it was revived 2026-09-12 on recovery grounds**, see the
 cross-backup design below. Growth path is a second mirror vdev in the spare bays (→10.9 TiB), never RAIDZ;
 the spare M.2 slots get no L2ARC and no `special` vdev. **Service placement settled 2026-09-11** — one-week rule, **no clustering**, critical services and the radios stay on gr-srv03, NAS takes the data-heavy load; see the placement rulebook, whose dependency audit runs at commissioning. **Backup design settled 2026-09-12: a PBS on *each* host, each backing up the other** — no sync jobs, plus a 3–7 day local copy on gr-srv03 so neither box's death erases the other's history; host config needs a separate `proxmox-backup-client` job (guest backups carry the guest config only), and the share data is never in PBS at all. **Stack design otherwise unchanged** —
-PVE + ZFS mirror, all LXCs, host owns the disks and bind-mounts them; **Samba: unprivileged LXC
+PVE + ZFS mirror, all LXCs (narrowed 09-30, see end of this block), host owns the disks and bind-mounts them; **Samba: unprivileged LXC
 with `idmap=passthrough`** (privileged containers cannot use the option at all); **Immich: podman,
 no Docker**.
 **BACKUP_A/B cable settled 2026-09-11: UGREEN 10841, 1 m, 22 AWG** — 1 m *deliberately*, because
@@ -309,6 +309,14 @@ window. **Cold-spare third drive picked 2026-09-26**: HGST Ultrastar 7K6000, eBa
 MG06ACA600E ($104.59) then Seagate ST6000NM021A ($138.95) as fallbacks if that listing falls
 through. A local MercadoLibre WD Purple was checked and rejected — no warranty, low-reputation
 seller. See §11 of the disk-prices doc.
+**Revised 2026-09-30 for 32 GB:** "all LXCs" is narrowed to *pool/iGPU guests are LXCs, VMs
+allowed for self-contained guests*; RAM re-allocated as starting values (ARC 8 GB, Immich 8 GB,
+~5 GB headroom); **cygnus is to move to the NAS as a 6 GB VM running Docker** (not scheduled —
+events API and caddy dealt with later, may stay on gr-srv03); fleet rule is now *Docker only in
+VMs, podman in LXCs*, so Immich stays on podman →
+[2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md](2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md)
+
+- [2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md](2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md) — **open** — **current guest rule, RAM allocation and container-runtime rule**: why `smb`/`immich` stay LXCs without the RAM argument, the 32 GB table, the cygnus → Docker VM plan with its open items, and Docker-in-VM / podman-in-LXC
 
 - [2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md](2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md) — **open** — **the backup + recovery design**: cross-target PBS (each host backs up to the peer, no sync jobs and why local-first+sync was rejected), the 3–7 day local short-retention copy, PBS on the PVE host rather than in an LXC, exactly what host configuration a guest backup does **not** contain, the restore prerequisites that must live off both boxes (encryption key, API token, TLS fingerprint), and a recovery outline per direction. Also records that `backup_usb1` is a **Kingston XS1000 SSD**, never hot-plugged and unrelated to the BACKUP_A/B USB trouble
 - [2026-09-11_nas-gr-srv03_service-placement-rules.md](2026-09-11_nas-gr-srv03_service-placement-rules.md) — **open** — **the placement rulebook for the two-server fleet**: the one-week rule, split by volatility not capacity, **no clustering** (and why — ZFS, quorum coupling, self-fencing, irreversibility), one-way dependencies, DBs live with their service, PBS stays on the NAS with an off-box encryption key. **Its §7 dependency audit is a NAS-commissioning task** — and flags that the NAS frees no gr-srv03 RAM, so the VM 102 decommission is now a prerequisite

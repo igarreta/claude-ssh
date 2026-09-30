@@ -3,7 +3,7 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** 2026-09-07_nas-software-stack.md (§ *The 16 GB question is OPEN* and § *The RAM budget is the binding constraint* only)
-**Superseded-by:** 2026-09-08_nas-us-acceptance-test-runbook.md (§ 5 only — the procedure moved there); 2026-09-10_nas-chassis-price-correction-f4-424-pro.md (§ 1, the price-target table, and § 3's USB port layout only)
+**Superseded-by:** 2026-09-08_nas-us-acceptance-test-runbook.md (§ 5 only — the procedure moved there); 2026-09-10_nas-chassis-price-correction-f4-424-pro.md (§ 1, the price-target table, and § 3's USB port layout only); 2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md (§ 2's RAM allocation table only)
 
 **Date**: 2026-09-08. The user measured the space and **the 4-bay chassis fits** on a new shelf,
 choosing it for the RAM rather than the bays. That closes item 5 of
@@ -139,6 +139,11 @@ until it arrives. The trip is the cheap moment to buy insurance, and the F4 now 
 hold it. User's call; not assumed in the total above.
 
 ## 2. Software stack at 16 GB — the compromises are withdrawn
+
+> **ALLOCATION SUPERSEDED 2026-09-30** — the 32 GB allocation (ARC 8 GB, Immich 8 GB, a 6 GB
+> Docker VM, PBS on the host) is in
+> [2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md](2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md) §2.
+> The Immich per-service breakdown and the bay/M.2 subsections below still apply.
 
 The 09-07 budget totalled 7.5–9 GB against 8 GB and did not fit, forcing a choice between capping
 ARC at 1 GB and disabling Immich ML. **Neither is needed now.**
