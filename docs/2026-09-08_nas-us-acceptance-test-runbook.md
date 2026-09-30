@@ -123,6 +123,31 @@ Boot the **SystemRescue** stick and pick **memtest86+** from its boot menu. One 
 **32 GB** takes ~**30–40 min** *(F4-424 Pro — twice the RAM, twice the wait)*. **Zero errors.** Do it while unpacking; it is the only test that proves the
 RAM is *good* rather than merely *present*.
 
+### A3.5. Check the boot NVMe health *(reused hardware — the Intel 660p is on-hand, not new)*
+
+"On hand" is not "tested" — unknown prior usage, so check before trusting it. From the
+**SystemRescue** shell (still booted from A3):
+
+```sh
+smartctl -a /dev/nvme0 | tee /root/nvme-660p-before.txt
+```
+
+| Check | Accept | Reject |
+|---|---|---|
+| Percentage Used | low / near 0 | high → treat like a failed drive |
+| Media Errors | 0 | > 0 → treat like a failed drive |
+| Available Spare vs threshold | spare well above threshold | close to/below → treat like a failed drive |
+| Power On Hours / Power Cycles | sanity-check against "unused" | wildly inconsistent → investigate |
+
+If it fails any check, swap in the **256 GB on-hand M.2 cold spare** instead and re-run this check
+on it.
+
+Then clear any leftover partition table from its prior use so the Proxmox installer starts clean:
+
+```sh
+wipefs -a /dev/nvme0n1
+```
+
 ### A4. Install Proxmox VE 9.2 to the NVMe
 
 Boot the **Proxmox** stick → **Install Proxmox VE (Graphical)**. If the graphical installer shows a
