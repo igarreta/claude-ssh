@@ -21,8 +21,9 @@ What still forces LXC for `smb` and `immich`, independent of RAM:
 - **Shared data.** Samba writes the tree Immich reads; an LXC bind mount gives both the same files
   through one cache (ARC). The VM alternative is virtiofs, which the 09-07 doc did not consider.
   It is worse here: a second cache in the guest, and host-side changes are not expected to raise
-  inotify events in the guest, which Immich's library watching needs. *(The virtiofs inotify
-  behaviour is from general knowledge, not tested on this PVE version.)*
+  inotify events in the guest, which Immich's library watching needs. *(Verified 2026-09-30 from
+  upstream, not tested here: virtiofsd issue #203 "Inotify support" states it is unsupported and
+  that the 2021 kernel RFC "Inotify support in FUSE and virtiofs" was never merged.)*
 - **iGPU.** `/dev/dri` into an LXC is a device entry; into a VM it is whole-device passthrough and
   the host loses it.
 - **`idmap=passthrough`** is an LXC mount option; the Samba decision depends on it.
@@ -55,9 +56,11 @@ About 31 GB is usable after the iGPU's share.
   running VM are the only items that actually hold RAM.
 - **The Home Assistant emergency VM has no standing reservation.** It comes out of the headroom;
   if more is needed, `zfs_arc_max` can be lowered at runtime.
-- **ARC must still be set explicitly** in `/etc/modprobe.d/zfs.conf`. The 09-08 doc says ZFS
-  defaults to half of RAM; recent OpenZFS may default to far more on Linux. **Not verified on
-  ZFS 2.4.4** — either way, do not rely on the default.
+- **ARC must be set explicitly** in `/etc/modprobe.d/zfs.conf`. The 09-08 doc's "ZFS defaults
+  to half of RAM" is **wrong for this generation**. Measured on gr-srv03 2026-09-30 (ZFS
+  2.4.4-pve1, `zfs_arc_max=0`, no `zfs.conf`): `c_max` = 11,202,084,864 against `MemTotal`
+  12,275,826,688 — **all RAM minus exactly 1 GiB**. On the NAS the default would be ~30 GB and
+  would collide with every guest.
 - **Why 8 GB and not more.** One SODIMM slot, 32 GB is the ceiling, and Linux ARC shrinks slowly
   under sudden pressure. Raise it after the restore if `arc_summary` hit rates justify it; raising
   is the safe direction.
