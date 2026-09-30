@@ -35,8 +35,12 @@ commit `b24d961`); Manual-mode phantom-zero bugs fixed 2026-08-01 →
 [2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md](2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md).
 A **long-term plan** exists to split TTato into a gr-srv03 brain + an ESP32 at the boiler, and to
 turn raspberrypi1 into a thin radio head — **not scheduled, nothing built** →
-[2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md](2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md)
+[2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md](2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md).
+2026-09-30: outdoor cutoff `EXT_LIM2` extended to 24:00 and evening living setpoints lowered by 0.5 °C;
+config is live, **commit pending** →
+[2026-09-30_raspberrypi1_ttato-evening-outdoor-cutoff.md](2026-09-30_raspberrypi1_ttato-evening-outdoor-cutoff.md)
 
+- [2026-09-30_..._ttato-evening-outdoor-cutoff.md](2026-09-30_raspberrypi1_ttato-evening-outdoor-cutoff.md) — **open** — rule-order semantics, config only reloads hourly, commit pending
 - [2026-09-12_..._radio-head-and-ttato-split.md](2026-09-12_raspberrypi1-gr-srv03_radio-head-and-ttato-split.md) — **open** — long-term architecture: TTato split, z2m state stays on gr-srv03, Pi runs `ser2net`; full GPIO map + 7 open questions
 - [2026-08-15_..._ttato-mqtt-resubscribe-fix.md](2026-08-15_raspberrypi1_ttato-mqtt-resubscribe-fix.md) — *closed* — permanent fix
 - [2026-08-01_..._ttato-mqtt-subscription-drop.md](2026-08-01_raspberrypi1_ttato-mqtt-subscription-drop.md) — **superseded** by the above; its "restart the container" remedy is not the fix
