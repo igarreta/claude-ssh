@@ -91,7 +91,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_raspberrypi1_ttato_mqtt_drop.md](project_raspberrypi1_ttato_mqtt_drop.md) — command subscription dropped on reconnect; fixed with `on_connect` resubscribe
 - [project_raspberrypi1_ttato_manual_heating.md](project_raspberrypi1_ttato_manual_heating.md) — Manual mode fired the boiler on phantom 0 °C readings
 - [project_raspberrypi1_ttato_granev.md](project_raspberrypi1_ttato_granev.md) — TTato never subscribed to HA's `granev/temp/*`; fixed 07-20
-- [project_raspberrypi1_ttato_rules.md](project_raspberrypi1_ttato_rules.md) — mode-A rules: last match wins; outdoor cutoff 24h since 09-30; config edits need restart (hourly reload); TTato commit pending
+- [project_raspberrypi1_ttato_rules.md](project_raspberrypi1_ttato_rules.md) — mode-A rules: last match wins; outdoor cutoff 24h since 09-30; config edits need restart (hourly reload)
 - [project_homeassistant_stale_sensor_chain.md](project_homeassistant_stale_sensor_chain.md) — guard on `last_reported`, not `last_changed`; z2m entities never go `unavailable`; third local source added 09-13
 - [project_homeassistant_config_write_path.md](project_homeassistant_config_write_path.md) — HA `/config` unwritable from the ssh-mcp connector since 09-11; write via `qm guest exec 104`, protection mode is not the fix
 - [project_homeassistant_battery-sensors-zigbee-swap.md](project_homeassistant_battery-sensors-zigbee-swap.md) — rtl_433 battery sensors → `binary_sensor`; exterior Zigbee sensor swapped, same friendly_name, zero config changes needed

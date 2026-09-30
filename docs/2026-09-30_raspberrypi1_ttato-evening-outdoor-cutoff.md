@@ -1,7 +1,6 @@
 # raspberrypi1 TTato: evening heating despite warm outdoors — outdoor cutoff extended (2026-09-30)
 
-**Status:** open
-**Status detail:** config change live since 18:33; commit to `igarreta/TTato` still pending (see §Commit)
+**Status:** closed
 **Host:** raspberrypi1
 **Supersedes:** —
 **Superseded-by:** —
@@ -48,11 +47,8 @@ expected. When ext_prom falls below 17 °C in the evening, the living rules take
 again. That is expected behavior.
 
 ## Commit
-Pending. The working tree also holds an older uncommitted, unrelated change: `ext_prom`
-`type: I` → `E` (backup `var/config.yaml.bak-ext_prom-type`). It should go in its own
-commit (the precedent is `5f7616a`/`c6bfb1a`). Splitting it would temporarily rewrite
-the live config, and the auto-mode classifier blocked that from MCP, so the user
-has to run it.
+`b5aeffd` in `igarreta/TTato` (local on the Pi, not pushed), a single commit that also
+includes the older unrelated `ext_prom` `type: I` → `E` fix.
 
 ## Side finding
 `www/heat.csv` logged `Error: pocas lecturas: 0` every day from 09-25 to 09-29 (daily
