@@ -135,8 +135,12 @@ script could never clear** — its staleness check parsed `restic cat lock`'s pr
 with a compact-JSON pattern, and `date -d ""` returns *today at midnight*, so the computed age
 was permanently `3h` at the 03:00 cron and never reached the 6 h threshold. Lock cleared, backup
 re-run, check rewritten (and the same pattern fixed in three sibling scripts) →
-[2026-09-13_ceres_restic-lock-deadlock.md](2026-09-13_ceres_restic-lock-deadlock.md)
+[2026-09-13_ceres_restic-lock-deadlock.md](2026-09-13_ceres_restic-lock-deadlock.md).
+**raspberrypi1's monthly `pi-backup.sh` failed 2026-10-01: its `sudo dd` had no password after
+the 09-06 NOPASSWD removal — fixed with an exact-args sudoers rule; next run 11-01** →
+[2026-10-01_raspberrypi1_pi-backup-sudo-failure.md](2026-10-01_raspberrypi1_pi-backup-sudo-failure.md)
 
+- [2026-10-01_raspberrypi1_pi-backup-sudo-failure.md](2026-10-01_raspberrypi1_pi-backup-sudo-failure.md) — *closed* — SD-image backup broken by sudo hardening; `/etc/sudoers.d/020_pi-backup-dd` pinned to the script's `dd` line, why not root's crontab
 - [2026-09-13_ceres_restic-lock-deadlock.md](2026-09-13_ceres_restic-lock-deadlock.md) — *closed* — three nightly backups skipped by a 09-10 stale lock; the age check returned "hours since midnight" because the JSON pattern missed a space and `date -d ""` yields midnight rather than failing. Records what looked broken but was not (the 15:00–00:30 unmount window, `/mnt/backup_a` showing as `pve-root`)
 - [2026-09-12_ct206_zigbee2mqtt-backup.md](2026-09-12_ct206_zigbee2mqtt-backup.md) — *active* — the z2m state backup end to end: what is and is not copied, why it is gpg-encrypted and validated instead of quiesced, the **restore procedure**, plus the mosquitto `backup.sh` break and the `--group-by host,tags` retention trap that adding a path to a restic tag springs
 - [2026-09-30_gr-srv03_backup-b-wdmycloud-recheck.md](2026-09-30_gr-srv03_backup-b-wdmycloud-recheck.md) — *closed* — BACKUP_B WDMyCloud repo unchanged and `restic check` clean; how to query a repo from gr-srv03 after 15:00, when ceres's bind is gone

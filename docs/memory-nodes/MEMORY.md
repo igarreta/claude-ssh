@@ -43,7 +43,6 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_ttato-split-and-radio-head.md](project_ttato-split-and-radio-head.md) — long-term plan, not scheduled: TTato → gr-srv03 brain + ESP32, raspberrypi1 as radio head; radio and compute placement are separable
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
 - [project_docker03_rtl-test.md](project_docker03_rtl-test.md) — garage-remote 433 MHz capture, unfinished
-- [project_raspberrypi1_sudo-hardening.md](project_raspberrypi1_sudo-hardening.md) — passwordless sudo removal requested 09-06, blocked from MCP, user needs to run it
 
 ## Backups and storage
 
@@ -81,6 +80,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_raspberrypi2z_setup.md](project_raspberrypi2z_setup.md) — Pi Zero W for 433 MHz sensors; hardened SSH and sudo
 - [project_gr-srv03_vm100_stopped.md](project_gr-srv03_vm100_stopped.md) — VM 100 is stopped on purpose; ignore it in outage checks
 - [project_raspberrypi1_watchdog.md](project_raspberrypi1_watchdog.md) — BCM2835 hardware watchdog armed since 06-25; closes the Jun 2026 hard-freeze gap
+- [project_raspberrypi1_sudo-hardening.md](project_raspberrypi1_sudo-hardening.md) — passwordless sudo removed 09-06; broke cron `sudo` in pi-backup.sh, fixed 10-01 with a pinned-args `dd` rule
 - [project_raspberrypi1_psu-replacement.md](project_raspberrypi1_psu-replacement.md) — PSU swapped 09-20 after sticky under-voltage flags; confirmed resolved 09-26
 - [project_cygnus_caddy_tls.md](project_cygnus_caddy_tls.md) — Tailscale cert via root cron; the 08-04 ARI renewal failure self-resolved 08-10
 - [project_beszel-disk-alerting.md](project_beszel-disk-alerting.md) — fleet disk-space alerting reuses existing beszel-agent instead of a new tool; check it before proposing new monitoring
