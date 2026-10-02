@@ -76,8 +76,11 @@ Finding a bad write in a hotel room is the one avoidable failure in this whole p
 - The two USB sticks
 - A small USB keyboard
 - **Your own HDMI cable** — a hotel TV's is usually captive behind the panel
-- An Ethernet cable (or two, for the dual-NIC check)
-- A USB-C → Ethernet adapter for the MacBook, for the direct-cable alternative
+- **Intel 660p 512 GB NVMe**: the boot drive, fitted in A1
+- **256 GB M.2 cold spare**: the fallback if the 660p fails A3.5
+- **Two Ethernet cables**: NAS + Mac, or one per NAS port for the Phase C dual-port check
+- **USB-C hub with Ethernet** for the MacBook, for the direct-cable alternative. Check at home
+  that macOS sees its Ethernet port.
 - The new **1 m** USB 3.0 A→Micro-B cable — UGREEN 10841, 22 AWG (Phase C tests it). Bring both if
   the spare was bought.
 - This runbook, on the phone or printed
@@ -96,8 +99,8 @@ laptop cannot reach the NAS (client isolation), or when the router reassigns the
 power-off (B1) and it clashes with another device.
 
 - **Cable:** any standard Ethernet patch cable. Both 2.5GbE ports and any modern laptop adapter do
-  Auto-MDI/X, so you do not need a crossover cable. A MacBook needs a **USB-C → Ethernet adapter**
-  (pack it).
+  Auto-MDI/X, so you do not need a crossover cable. A MacBook needs the **USB-C hub with Ethernet**
+  from the Pack list.
 - **The MacBook stays on the home Wi-Fi at the same time.** The Ethernet side has **no router**
   set, so macOS keeps its default route (internet) on Wi-Fi and uses the cable only for the NAS's
   subnet.
