@@ -29,4 +29,5 @@ matching dolarapi.com (`https://dolarapi.com/v1/dolares/oficial`, a usable fallb
 - **Every scraper writes 0.0 for a value it can't read**, usually with no error logged.
   This needs a general fix later (log a clear error for each unread value, and decide
   between empty, last value, or a marked value in the CSV/email).
-- The 0.0 rows for 09-28 → 10-01 are not backfilled.
+- 10-01 row backfilled on 10-02 (before the market opened) with that morning's value, 1545.0.
+  Backup: `var/findata.csv.bak-20261002`. Rows 09-28 → 09-30 are still 0.0.
