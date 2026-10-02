@@ -43,6 +43,7 @@ full write-ups live in `docs/` of the claude-ssh repo (start at `docs/INDEX.md`)
 - [project_ttato-split-and-radio-head.md](project_ttato-split-and-radio-head.md) — long-term plan, not scheduled: TTato → gr-srv03 brain + ESP32, raspberrypi1 as radio head; radio and compute placement are separable
 - [project_raspberrypi2z_pool-thermometer.md](project_raspberrypi2z_pool-thermometer.md) — WT0124 bought, not yet integrated
 - [project_docker03_rtl-test.md](project_docker03_rtl-test.md) — garage-remote 433 MHz capture, unfinished
+- [project_findata_zero-on-failure.md](project_findata_zero-on-failure.md) — findata writes 0.0 silently for any unread value; Oficial fixed 10-02, general fix pending
 
 ## Backups and storage
 

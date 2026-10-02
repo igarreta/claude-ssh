@@ -369,6 +369,10 @@ it names is actually running before investigating the report's hypothesis.
 
 - [2026-08-31_contabo2_openclaw-heartbeat-cost.md](2026-08-31_contabo2_openclaw-heartbeat-cost.md) — *closed* — 20-min heartbeat + Aug 11 anthropic.env wiring drove ~$1/day Haiku cost; disabled via `config unset`
 
+## findata (contabo2)
+
+- [2026-10-02_contabo2_findata-dolar-oficial.md](2026-10-02_contabo2_findata-dolar-oficial.md) — *open* — dolarhoy dropped the Oficial tile 09-28; fixed. General "unread value → silent 0.0" still pending
+
 ## Other hosts
 
 - [2026-06-25_raspberrypi2z_setup-and-security.md](2026-06-25_raspberrypi2z_setup-and-security.md) — *active* — sudo needs a password; no SSH password auth
