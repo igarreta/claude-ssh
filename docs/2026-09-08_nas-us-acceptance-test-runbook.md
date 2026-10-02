@@ -77,9 +77,46 @@ Finding a bad write in a hotel room is the one avoidable failure in this whole p
 - A small USB keyboard
 - **Your own HDMI cable** — a hotel TV's is usually captive behind the panel
 - An Ethernet cable (or two, for the dual-NIC check)
+- A USB-C → Ethernet adapter for the MacBook, for the direct-cable alternative
 - The new **1 m** USB 3.0 A→Micro-B cable — UGREEN 10841, 22 AWG (Phase C tests it). Bring both if
   the spare was bought.
 - This runbook, on the phone or printed
+
+---
+
+## Network — pick one before A4
+
+**Default: NAS on the house router.** If the rented home has a free Ethernet port on its router,
+plug the NAS in and follow A4 as written. The installer takes the address DHCP offers and saves it
+as **static** config. That is fine for a one-week SSH target: SSH does not depend on
+`pve-cluster`/web UI, which are the parts that care about `/etc/hosts` matching the live IP.
+
+**Alternative: direct cable laptop ↔ NAS.** Use it when there is no free router port, when the
+laptop cannot reach the NAS (client isolation), or when the router reassigns the address after a
+power-off (B1) and it clashes with another device.
+
+- **Cable:** any standard Ethernet patch cable. Both 2.5GbE ports and any modern laptop adapter do
+  Auto-MDI/X, so you do not need a crossover cable. A MacBook needs a **USB-C → Ethernet adapter**
+  (pack it).
+- **The MacBook stays on the home Wi-Fi at the same time.** The Ethernet side has **no router**
+  set, so macOS keeps its default route (internet) on Wi-Fi and uses the cable only for the NAS's
+  subnet.
+- **NAS (A4 network screen):** IP `192.168.2.2/24`, gateway `192.168.2.1`, DNS `192.168.2.1`,
+  hostname `nas-test`.
+- **MacBook**, choose either:
+  - **SSH only:** System Settings → Network → *USB LAN adapter* → Details → TCP/IP →
+    Configure IPv4 **Manually**, IP `192.168.2.1`, mask `255.255.255.0`, **Router empty**.
+  - **SSH + internet for the NAS:** System Settings → General → Sharing → **Internet Sharing**,
+    share from Wi-Fi to the USB LAN adapter. The Mac becomes `192.168.2.1` and routes the NAS out
+    through its Wi-Fi. Confirm the address with `ifconfig bridge100`. If it is not `192.168.2.1`,
+    change the NAS's gateway/DNS in `/etc/network/interfaces` and `/etc/resolv.conf` to match.
+- **Clash check:** if the home Wi-Fi itself is `192.168.2.x` (`ipconfig getifaddr en0`), use
+  `192.168.77.x` instead with the SSH-only setup. Internet Sharing is then unavailable.
+- **Without NAS internet** the A5 `apt install` is skipped. Everything else works because
+  `smartctl`, `dd`, `lsblk` and `dmidecode` ship with Proxmox. For Phase C link speed, use
+  `cat /sys/class/net/<iface>/speed` instead of `ethtool`. The Phase C second-port check is the
+  same cable moved to the other port, with the NAS IP moved to that interface or a quick
+  `ip addr add 192.168.2.3/24 dev <iface2>`.
 
 ---
 
@@ -159,7 +196,8 @@ black screen over HDMI, reboot and choose **Terminal UI** instead — it does th
   built at home, on the HDDs, addressed by `/dev/disk/by-id/`.
 - Country / timezone / keyboard: anything; corrected at home.
 - Password + email: something you will remember for one week.
-- Network: pick the NIC with the cable in it. Accept the DHCP-prefilled address, hostname
+- Network (direct-cable alternative: use the static values from **Network — pick one before A4**
+  instead): pick the NIC with the cable in it. Accept the DHCP-prefilled address, hostname
   `nas-test`.
 
 Install (~5 min), reboot, **remove the stick**.
@@ -356,6 +394,7 @@ properties are painful to retrofit onto 1.6 TB.
 | SMART test returns `aborted by host` | Something spun the drive down. Re-run B3, then B4. Under TOS: `Hardware & Power → Hard Drive Sleep → Never`. |
 | `smartctl`: *"device lacks SMART capability"* | You addressed a USB-bridged device. Use the SATA `/dev/sdX`, or add `-d sat` for a USB enclosure. |
 | Cannot find the NAS's IP | At the console `ip -brief a`, or check the router's DHCP leases for `nas-test`. |
+| IP known but `ssh` times out on the house network | Client isolation, or the router gave the old address to another device after a power-off. Switch to the direct-cable alternative: at the console, edit `/etc/network/interfaces` (`address 192.168.2.2/24`, `gateway 192.168.2.1`), `/etc/hosts` to the same IP, then `ifreload -a`. |
 | `apt update` 401 on the enterprise repo | Expected without a subscription; harmless. Silence it with `Enabled: false` in `/etc/apt/sources.list.d/pve-enterprise.sources`. |
 | TOS SMART panel shows nothing for the NVMe | Long-standing TOS limitation. Check the 660p over SSH with `smartctl -a /dev/nvme0`. |
 
