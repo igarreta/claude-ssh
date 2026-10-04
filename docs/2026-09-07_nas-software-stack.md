@@ -3,7 +3,7 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** —
-**Superseded-by:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§ *The RAM budget is the binding constraint* and § *The 16 GB question is OPEN* only), 2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md (the `pbs` LXC row of § *Guests* only), 2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md (§ *Decided: everything is an LXC, no VMs* — narrowed to pool/iGPU guests; and the fleet-wide "no Docker" scope of the Immich section — Immich itself stays on podman)
+**Superseded-by:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§ *The RAM budget is the binding constraint* and § *The 16 GB question is OPEN* only), 2026-09-12_nas-gr-srv03_pbs-cross-backup-design.md (the `pbs` LXC row of § *Guests* only), 2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md (§ *Decided: everything is an LXC, no VMs* — narrowed to pool/iGPU guests; and the fleet-wide "no Docker" scope of the Immich section — Immich itself stays on podman), 2026-10-04_nas_boot-nvme-mirror.md (§ *Base OS* filesystem choice only)
 
 **Date**: 2026-09-07. Hardware buy list and sizing are in
 [memory_nas-project.md](memory_nas-project.md); this doc covers only what runs on the box
@@ -36,6 +36,10 @@ proxmox-backup-server` **on the PVE host itself** — documented by Proxmox, dat
 directory on the pool, at the cost of mixing roles onto the hypervisor. Kept as a fallback.
 
 ## Base OS
+
+> **UPDATED 2026-10-04:** the boot disk is a **ZFS RAID1 `rpool` across the 660p and the on-hand
+> 256 GB M.2** (~238 GiB usable), not ext4 + LVM-thin on the 660p alone. Guest roots on `rpool`,
+> bulk data on `tank` → [2026-10-04_nas_boot-nvme-mirror.md](2026-10-04_nas_boot-nvme-mirror.md)
 
 **Proxmox VE 9** on the boot NVMe (Intel 660p 512 GB, on hand — swapped 2026-09-27 for the
 previously-planned Patriot P310), ext4 + LVM-thin (installer default, same layout as gr-srv03).
@@ -353,7 +357,8 @@ Immich rescans after the fact.
 Two consequences that do still apply:
 
 - **Thumbnails and transcodes for external assets land in `UPLOAD_LOCATION`**, not next to the
-  originals. That grows with library size and must be sized against the 512 GB boot NVMe.
+  originals. That grows with library size — **decided 2026-10-04: it lives on `tank`**, not the
+  NVMe (the boot mirror is ~238 GiB; see 2026-10-04_nas_boot-nvme-mirror.md).
 - **Library watching uses inotify** — it works on local datasets and not over any network mount,
   which is a further argument for Immich living on the NAS rather than on cygnus.
 

@@ -14,6 +14,12 @@
 > install guide. Why the chassis changed →
 > [2026-09-10_nas-chassis-price-correction-f4-424-pro.md](2026-09-10_nas-chassis-price-correction-f4-424-pro.md)
 
+> **UPDATED 2026-10-04 — the boot disk is now a ZFS mirror of both NVMe drives** (Intel 660p 512 GB
+> + the on-hand 256 GB), not ext4 on the 660p with the 256 GB as a cold spare. Changed in place:
+> Pack, A1, A2, A3.5, A4, the new A4.5 check, B1, B5, B6, troubleshooting. Also fixed: A5 `free -g`
+> expected ~31, not ~16. Why →
+> [2026-10-04_nas_boot-nvme-mirror.md](2026-10-04_nas_boot-nvme-mirror.md)
+
 **Date**: 2026-09-08. Written to be followed **offline, in a hotel room, on a phone or a printout**.
 Nothing here needs the rest of the repo. Why each test exists is in
 [2026-09-08_nas-chassis-decision-and-acceptance-test.md](2026-09-08_nas-chassis-decision-and-acceptance-test.md);
@@ -76,8 +82,8 @@ Finding a bad write in a hotel room is the one avoidable failure in this whole p
 - The two USB sticks
 - A small USB keyboard
 - **Your own HDMI cable** — a hotel TV's is usually captive behind the panel
-- **Intel 660p 512 GB NVMe**: the boot drive, fitted in A1
-- **256 GB M.2 cold spare**: the fallback if the 660p fails A3.5
+- **Intel 660p 512 GB NVMe** and the **256 GB M.2**: the two halves of the boot mirror, both
+  fitted in A1. There is no boot-disk spare any more
 - **Two Ethernet cables**: NAS + Mac, or one per NAS port for the Phase C dual-port check
 - **USB-C hub with Ethernet** for the MacBook, for the direct-cable alternative. Check at home
   that macOS sees its Ethernet port.
@@ -125,11 +131,11 @@ power-off (B1) and it clashes with another device.
 
 ## Phase A — the evening the NAS arrives *(no hard drives needed, ~25 min)*
 
-### A1. Fit the boot NVMe only
+### A1. Fit both boot NVMe drives
 
-Intel 660p 512 GB (on hand, swapped in 2026-09-27 for the previously-planned Patriot P310) into
-M.2 slot 1 *(the F4-424 Pro has **2** M.2 slots, not 3)*. **Leave the drive bays empty** if the
-HDDs have not arrived.
+Intel 660p 512 GB into **M.2 slot 1**, the 256 GB M.2 into **M.2 slot 2** *(the F4-424 Pro has
+**2** M.2 slots, not 3)*. Filling slot 2 is also the only test of that slot inside the return
+window. **Leave the drive bays empty** if the HDDs have not arrived.
 
 ### A2. Connect and enter the BIOS
 
@@ -141,7 +147,7 @@ splash (**F12** gives a one-time boot menu).
 | Check | Expected |
 |---|---|
 | **Total memory** | **32768 MB / 32 GB** *(F4-424 Pro)* |
-| NVMe | Intel 660p 512 GB listed |
+| NVMe | **Both** listed: Intel 660p 512 GB and the 256 GB |
 | SATA ports | 4 present (drives may be absent) |
 | M.2 | 2 slots *(F4-424 Pro)* |
 
@@ -163,13 +169,15 @@ Boot the **SystemRescue** stick and pick **memtest86+** from its boot menu. One 
 **32 GB** takes ~**30–40 min** *(F4-424 Pro — twice the RAM, twice the wait)*. **Zero errors.** Do it while unpacking; it is the only test that proves the
 RAM is *good* rather than merely *present*.
 
-### A3.5. Check the boot NVMe health *(reused hardware — the Intel 660p is on-hand, not new)*
+### A3.5. Check both boot NVMe drives *(reused hardware — both are on-hand, not new)*
 
-"On hand" is not "tested" — unknown prior usage, so check before trusting it. From the
-**SystemRescue** shell (still booted from A3):
+"On hand" is not "tested" — unknown prior usage, so check before trusting either. From the
+**SystemRescue** shell (still booted from A3). Confirm which is which with `lsblk -d -o NAME,SIZE,MODEL`
+first — enumeration order is not guaranteed to follow slot order:
 
 ```sh
-smartctl -a /dev/nvme0 | tee /root/nvme-660p-before.txt
+smartctl -a /dev/nvme0 | tee /root/nvme0-before.txt
+smartctl -a /dev/nvme1 | tee /root/nvme1-before.txt
 ```
 
 | Check | Accept | Reject |
@@ -179,24 +187,27 @@ smartctl -a /dev/nvme0 | tee /root/nvme-660p-before.txt
 | Available Spare vs threshold | spare well above threshold | close to/below → treat like a failed drive |
 | Power On Hours / Power Cycles | sanity-check against "unused" | wildly inconsistent → investigate |
 
-If it fails any check, swap in the **256 GB on-hand M.2 cold spare** instead and re-run this check
-on it.
+**If one fails any check**, pull it and install on the good one alone as **ZFS (RAID0)** — a
+single-disk ZFS pool — in A4. A replacement is `zpool attach`ed at home to make the mirror.
+**Do not fall back to ext4**: it cannot be turned into a mirror without a reinstall.
 
-Then clear any leftover partition table from its prior use so the Proxmox installer starts clean:
+Then clear leftover partition tables from prior use so the Proxmox installer starts clean:
 
 ```sh
 wipefs -a /dev/nvme0n1
+wipefs -a /dev/nvme1n1
 ```
 
-### A4. Install Proxmox VE 9.2 to the NVMe
+### A4. Install Proxmox VE 9.2 to the NVMe mirror
 
 Boot the **Proxmox** stick → **Install Proxmox VE (Graphical)**. If the graphical installer shows a
 black screen over HDMI, reboot and choose **Terminal UI** instead — it does the same job.
 
-- **Target disk: the Intel 660p — nothing else.** If the HDDs happen to be fitted already, be
-  deliberate here.
-- Filesystem: **ext4** (the default; same layout as gr-srv03). **Do not choose ZFS** — the pool is
-  built at home, on the HDDs, addressed by `/dev/disk/by-id/`.
+- Target: **Options → Filesystem: `zfs (RAID1)`**, then select **both NVMe drives and nothing
+  else** (set any HDD to `-- do not use --` if they happen to be fitted). Advanced: `ashift` **12**,
+  `compress` **on** (default), leave `hdsize` at its default.
+- **The HDDs never go in the installer.** Their pool (`tank`) is built at home, addressed by
+  `/dev/disk/by-id/`.
 - Country / timezone / keyboard: anything; corrected at home.
 - Password + email: something you will remember for one week.
 - Network (direct-cable alternative: use the static values from **Network — pick one before A4**
@@ -204,6 +215,18 @@ black screen over HDMI, reboot and choose **Terminal UI** instead — it does th
   `nas-test`.
 
 Install (~5 min), reboot, **remove the stick**.
+
+### A4.5. Check the mirror *(2 min, at the console or after A5 over SSH)*
+
+```sh
+zpool status rpool                              # mirror-0, both NVMe ONLINE, no errors
+lsblk -o NAME,SIZE /dev/nvme0n1 /dev/nvme1n1    # compare partition 3 on each
+proxmox-boot-tool status                        # two ESPs listed → boots from either disk
+```
+
+**Record the partition-3 sizes.** If the 660p's was sized down to match the 256 GB disk, that is
+not a fault and not a return reason — it can be grown later (it is the last partition). A pull-one-
+disk boot test is **not** part of the trip: it tests configuration, not hardware — do it at home.
 
 ### A5. Move to SSH — the monitor goes away here
 
@@ -219,7 +242,7 @@ First inventory — **save this output**, it is the acceptance record:
 
 ```sh
 pveversion
-free -g                                              # ~16 total
+free -g                                              # ~31 total *(F4-424 Pro)*
 dmidecode -t memory | grep -E 'Size|Speed|Part Number|Manufacturer'
 lsblk -d -o NAME,SIZE,MODEL,SERIAL
 lspci | grep -iE 'ethernet|vga'
@@ -250,7 +273,7 @@ minute, SSH back in.
 lsblk -d -o NAME,SIZE,MODEL,SERIAL
 ```
 
-Expect `sda` and `sdb` at **5.5T** each (6 TB decimal = 5.46 TiB), plus `nvme0n1`.
+Expect `sda` and `sdb` at **5.5T** each (6 TB decimal = 5.46 TiB), plus `nvme0n1` and `nvme1n1`.
 **Write down both serial numbers** — they are what a warranty claim keys on, and what the fleet's
 SMART monitoring will trend for the rest of the drives' life.
 
@@ -300,10 +323,12 @@ smartctl -a /dev/sda | tee /root/acceptance/sda-after.txt
 diff /root/acceptance/sda-before.txt /root/acceptance/sda-after.txt
 ```
 
-Repeat for `sdb`, and check the boot NVMe while you are here:
+Repeat for `sdb`, and check both boot NVMe drives against their A3.5 baseline while you are here
+(`Media and Data Integrity Errors` still 0, `Available Spare` unchanged):
 
 ```sh
 smartctl -a /dev/nvme0
+smartctl -a /dev/nvme1
 ```
 
 | Attribute | Accept | Reject |
@@ -327,7 +352,7 @@ re-run rather than returning the drive.
 The self-test is read-only and drive-internal. This is the only check that loads **the backplane
 and the PSU with both drives writing at once**, which is where a marginal chassis shows up.
 
-> **Verify with `lsblk` that `sda`/`sdb` are the HDDs and the NVMe is `nvme0n1` before running
+> **Verify with `lsblk` that `sda`/`sdb` are the HDDs and the NVMe drives are `nvme0n1`/`nvme1n1` before running
 > this.** It destroys whatever is on the target. The HDDs are empty; getting the device wrong
 > would wipe the Proxmox install.
 
@@ -399,7 +424,8 @@ properties are painful to retrofit onto 1.6 TB.
 | Cannot find the NAS's IP | At the console `ip -brief a`, or check the router's DHCP leases for `nas-test`. |
 | IP known but `ssh` times out on the house network | Client isolation, or the router gave the old address to another device after a power-off. Switch to the direct-cable alternative: at the console, edit `/etc/network/interfaces` (`address 192.168.2.2/24`, `gateway 192.168.2.1`), `/etc/hosts` to the same IP, then `ifreload -a`. |
 | `apt update` 401 on the enterprise repo | Expected without a subscription; harmless. Silence it with `Enabled: false` in `/etc/apt/sources.list.d/pve-enterprise.sources`. |
-| TOS SMART panel shows nothing for the NVMe | Long-standing TOS limitation. Check the 660p over SSH with `smartctl -a /dev/nvme0`. |
+| TOS SMART panel shows nothing for the NVMe | Long-standing TOS limitation. Check both over SSH with `smartctl -a /dev/nvme0` and `/dev/nvme1`. |
+| Installer shows only one NVMe | Reseat the missing one; check the BIOS lists it (A2). If slot 2 is dead, that is a **chassis return** reason. |
 
 ## Related
 

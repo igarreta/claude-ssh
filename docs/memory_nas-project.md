@@ -3,7 +3,7 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** —
-**Superseded-by:** —
+**Superseded-by:** 2026-10-04_nas_boot-nvme-mirror.md (the "256 GB kept as a cold spare" sentence only)
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
@@ -69,6 +69,8 @@
 > Nothing left to buy for boot storage. **A second on-hand M.2, 256 GB, is kept as a cold spare
 > for the boot NVMe** (drop-in replacement if the 660p fails) — not assigned to the second M.2
 > slot, since L2ARC and a `special` vdev there are both already decided against (see below).
+> **Changed 2026-10-04: the 256 GB goes in slot 2 as the second half of a ZFS boot mirror** →
+> [2026-10-04_nas_boot-nvme-mirror.md](2026-10-04_nas_boot-nvme-mirror.md)
 
 ## Purchase list (prices verified 2026-08-20; CPU variant decided 2026-08-30 — re-check before ordering)
 

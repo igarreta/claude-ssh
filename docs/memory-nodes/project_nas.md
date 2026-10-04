@@ -1,11 +1,11 @@
 ---
 name: project_nas
-description: "NAS project — chassis decided 2026-09-10: TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB), $687, total now $1,056.90; the 09-08 F4-425 Plus N150 pick rested on a $479.99 price that was never real (that was the N95/8 GB price — the N150/16 GB lists at $649.99); mirror disks still manufacturer-recert per goHardDrive; cold-spare third drive picked 09-26 (eBay HGST Ultrastar 7K6000), local MercadoLibre alternative rejected; boot NVMe swapped 09-27 for an on-hand Intel 660p 512GB, dropping the $65 Patriot P310 purchase; nothing else ordered"
+description: "NAS project — chassis decided 2026-09-10: TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB), $687, total now $1,056.90; the 09-08 F4-425 Plus N150 pick rested on a $479.99 price that was never real (that was the N95/8 GB price — the N150/16 GB lists at $649.99); mirror disks still manufacturer-recert per goHardDrive; cold-spare third drive picked 09-26 (eBay HGST Ultrastar 7K6000), local MercadoLibre alternative rejected; boot NVMe swapped 09-27 for an on-hand Intel 660p 512GB, dropping the $65 Patriot P310 purchase; 10-04 boot disk becomes a ZFS mirror of 660p + on-hand 256 GB; nothing else ordered"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 674728fe-657f-43ee-985f-f339c95e4974
-  modified: 2026-09-30T00:00:00.000Z
+  modified: 2026-10-04T00:00:00.000Z
 ---
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
@@ -27,6 +27,12 @@ a **published Proxmox install guide**, same BIOS menu names.
 and is spec-compatible with the planned Patriot P310 — the slot only runs at PCIe 3.0 x1 regardless,
 so there's no reason to buy one. Drops the $65 line item; run a SMART health check before trusting
 it, since prior usage is unknown.
+
+**Boot disk is a ZFS mirror since 2026-10-04**: the 660p + the on-hand 256 GB M.2 as `zfs (RAID1)`
+(~238 GiB usable), so there is no boot spare left. Why it matters: NVMe drives often die suddenly
+with no SMART warning, and only a second copy covers that. How to apply: guest roots on `rpool`,
+bulk data **and Immich thumbnails** on `tank`; don't re-propose cache uses for the 256 GB; when
+`rpool` fills, weigh the upgrade paths in [[docs/2026-10-04_nas_boot-nvme-mirror.md]].
 
 **RAM was re-allocated for 32 GB on 2026-09-30** as starting values (tune ARC after the restore),
 including a 6 GB VM that will take over cygnus and run Docker — table and open items in
