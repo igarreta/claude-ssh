@@ -225,8 +225,8 @@ proxmox-boot-tool status                        # two ESPs listed → boots from
 ```
 
 **Record the partition-3 sizes.** If the 660p's was sized down to match the 256 GB disk, that is
-not a fault and not a return reason — it can be grown later (it is the last partition). A pull-one-
-disk boot test is **not** part of the trip: it tests configuration, not hardware — do it at home.
+not a fault and not a return reason — it can be grown later (it is the last partition). A pull-one-disk
+boot test is **not** part of the trip: it tests configuration, not hardware — do it at home.
 
 ### A5. Move to SSH — the monitor goes away here
 
@@ -242,7 +242,7 @@ First inventory — **save this output**, it is the acceptance record:
 
 ```sh
 pveversion
-free -g                                              # ~31 total *(F4-424 Pro)*
+free -g                                              # ~31 total (F4-424 Pro)
 dmidecode -t memory | grep -E 'Size|Speed|Part Number|Manufacturer'
 lsblk -d -o NAME,SIZE,MODEL,SERIAL
 lspci | grep -iE 'ethernet|vga'
