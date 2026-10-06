@@ -1,11 +1,11 @@
 ---
 name: project_nas
-description: "NAS project — chassis decided 2026-09-10: TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB), $687, total now $1,056.90; the 09-08 F4-425 Plus N150 pick rested on a $479.99 price that was never real (that was the N95/8 GB price — the N150/16 GB lists at $649.99); mirror disks still manufacturer-recert per goHardDrive; cold-spare third drive picked 09-26 (eBay HGST Ultrastar 7K6000), local MercadoLibre alternative rejected; boot NVMe swapped 09-27 for an on-hand Intel 660p 512GB, dropping the $65 Patriot P310 purchase; 10-04 boot disk becomes a ZFS mirror of 660p + on-hand 256 GB; nothing else ordered"
+description: "NAS project — BOUGHT 2026-10-06: Minisforum N5 Air, $519 Amazon, barebone with the user's own 2× Kingston 16 GB (two SO-DIMM slots → 32 GB), 5 bays, 3 M.2; F4-424 Pro (decided 09-10) never ordered; N5-family JMB585 SATA silent corruption is NOT a return reason (user, 10-06) — Hawk Point is affected, kernel fixes exist, runbook Phase D verifies the mitigation before data lands; boot is a ZFS mirror of on-hand 660p + 256 GB; mirror disks still manufacturer-recert; cold-spare HGST picked 09-26"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 674728fe-657f-43ee-985f-f339c95e4974
-  modified: 2026-10-04T00:00:00.000Z
+  modified: 2026-10-06T00:00:00.000Z
 ---
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
@@ -13,7 +13,22 @@ Machine and PBS, plus Immich for family photo browsing. Hardware brought from ab
 day one. **Urgent since 2026-09-06**: the WDMyCloud it replaces is dead
 ([[project_ceres_wdmycloud-nas-dead]]), so this is no longer a nice-to-have.
 
-**Buy list (2026-09-10): TerraMaster F4-424 Pro — i3-N305 8-core, 32 GB, $687 Amazon → $1,056.90
+**BOUGHT 2026-10-06: Minisforum N5 Air, $519 Amazon** — chosen because its **two** SO-DIMM slots
+take the user's own 2× Kingston 16 GB for 32 GB at no RAM cost, and Ryzen 8C/16T beats the N305.
+The 09-30 allocation stands unchanged. Why it matters:
+- **JMB585 SATA silent corruption — not a return reason (user, 10-06).** Root cause is the BIOS
+  enabling root-port "enhanced atomics"; **Hawk Point (the Ryzen 7 255) is an affected platform**,
+  so never assume the Air is immune. Mitigations: 7.0 32-bit quirk (`forcing 32bit` in dmesg),
+  7.3 root-cause quirk, `amd_iommu=pgtbl_v2`. How to apply: run runbook **Phase D before any real
+  data goes on `tank`**; on a kernel bump, check which fix is live before dropping the boot param.
+- **Amazon's 30-day return is the only recourse** — Minisforum's warranty excludes Amazon units.
+- **It's bigger than the F4-424 Pro the shelf was measured for** (199×202×252 mm, 4.0 kg) — re-check fit.
+- The purchase brief was written outside the repo; its §9 conventions (`chmod 777`, Docker in LXC,
+  docs in `/root`) contradict repo decisions — the banner there wins.
+Detail: [[docs/2026-10-06_nas_minisforum-n5-air-purchase.md]], procedure:
+[[docs/2026-09-08_nas-us-acceptance-test-runbook.md]].
+
+**History — previous buy list (2026-09-10), never ordered: TerraMaster F4-424 Pro — i3-N305 8-core, 32 GB, $687 Amazon → $1,056.90
 total.** The 4-bay fits the measured space. **The 09-08 F4-425 Plus N150 decision is dead**: its
 $479.99 was the **N95/8 GB** price, read off a store page that sells only the N95 and then applied
 to the N150, which actually lists at **$649.99**. So the 09-08 price-target table is void — its

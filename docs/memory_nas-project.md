@@ -7,6 +7,12 @@
 
 **Started**: 2026-08-19. **Status**: investigation only — no hardware chosen, nothing purchased.
 
+> **BOUGHT 2026-10-06: Minisforum N5 Air** (Ryzen 7 255/H255 8C/16T, barebone, 2 SO-DIMM slots
+> filled with the user's own 2× Kingston 16 GB = 32 GB, 5 bays, 3 M.2), **$519 Amazon**. The
+> F4-424 Pro below was never ordered. Purchase brief, corrections and the JMB585 SATA-corruption
+> risk → [2026-10-06_nas_minisforum-n5-air-purchase.md](2026-10-06_nas_minisforum-n5-air-purchase.md).
+> The rest of this banner is history for the chassis choice; scope and stack below still apply.
+>
 > **Resume here** (updated 2026-09-10). **The chassis is DECIDED: TerraMaster F4-424 Pro,
 > i3-N305 8-core, 32 GB, $687 (Amazon) — project total $1,121.90.** Nothing ordered yet.
 >

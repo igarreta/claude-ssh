@@ -3,7 +3,7 @@
 **Status:** open
 **Host:** (project)
 **Supersedes:** 2026-09-08_nas-chassis-decision-and-acceptance-test.md (§1, its price-target table, and §3's USB port layout only)
-**Superseded-by:** 2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md (§4's "all LXCs and no VMs" and "do not re-plan the allocation" only)
+**Superseded-by:** 2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md (§4's "all LXCs and no VMs" and "do not re-plan the allocation" only), 2026-10-06_nas_minisforum-n5-air-purchase.md (§3 chassis decision — the F4-424 Pro was never ordered)
 
 **Date**: 2026-09-10. The user went to order and found street prices nothing like the ones on the
 buy list. Checking them turned up the **fifth price/spec error on this chassis** — and this one is
