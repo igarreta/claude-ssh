@@ -257,6 +257,7 @@ not just the default `always` →
 - [2026-04-25_gr-srv03_lvm-monitor-and-docker03-discard.md](2026-04-25_gr-srv03_lvm-monitor-and-docker03-discard.md) — *closed* — thin-pool monitor + discard
 - [2026-05-13_gr-srv03_disable-apt-timers.md](2026-05-13_gr-srv03_disable-apt-timers.md) — *closed*
 - [2026-09-11_gr-srv03_stale-pve-container-debug-unit.md](2026-09-11_gr-srv03_stale-pve-container-debug-unit.md) — *closed* — a failed `pct start --debug` leaves a `failed` unit that log-monitor escalates daily; check `pct status <id>` first, then `reset-failed`
+- [2026-10-09_gr-srv03_ct101-memcg-thrash-high-temp.md](2026-10-09_gr-srv03_ct101-memcg-thrash-high-temp.md) — *open* — high-temp alert was CT101 (Samba03) thrashing at its 512 MiB limit (load 34, io pressure 99%); raised to 1 GiB + restarted; stacking cron `smbclient` jobs not yet investigated
 
 ## Database — castor
 
