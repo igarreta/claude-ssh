@@ -78,6 +78,10 @@
 > **Changed 2026-10-04: the 256 GB goes in slot 2 as the second half of a ZFS boot mirror** →
 > [2026-10-04_nas_boot-nvme-mirror.md](2026-10-04_nas_boot-nvme-mirror.md)
 
+> **CORRECTED 2026-10-13 — the two goHardDrive drive lines below were not bought.** The data
+> disks are 2 HGST 7K6000 + 1 Seagate ST6000NM021A (cold spare included) from eBay, $428.70 —
+> [2026-10-13_nas_data-disks-purchase.md](2026-10-13_nas_data-disks-purchase.md).
+
 ## Purchase list (prices verified 2026-08-20; CPU variant decided 2026-08-30 — re-check before ordering)
 
 | Item | Source | Price |

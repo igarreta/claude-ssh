@@ -3,7 +3,7 @@
 **Status:** active
 **Host:** (project)
 **Supersedes:** 2026-08-19_nas-hardware-research.md (§5 and §9 only)
-**Superseded-by:** —
+**Superseded-by:** 2026-10-13_nas_data-disks-purchase.md (§4 layout choice and buy list only)
 
 **Date**: 2026-08-20. Continues [[docs/2026-08-19_nas-hardware-research.md]].
 Prices are **US street, USD, August 2026**, for import (see [[docs/memory_nas-project.md]]).

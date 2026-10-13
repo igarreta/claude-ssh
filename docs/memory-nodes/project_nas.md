@@ -1,6 +1,6 @@
 ---
 name: project_nas
-description: "NAS project — BOUGHT 2026-10-06: Minisforum N5 Air, $519 Amazon, barebone with the user's own 2× Kingston 16 GB (two SO-DIMM slots → 32 GB), 5 bays, 3 M.2; F4-424 Pro (decided 09-10) never ordered; N5-family JMB585 SATA silent corruption is NOT a return reason (user, 10-06) — Hawk Point is affected, kernel fixes exist, runbook Phase D verifies the mitigation before data lands; boot is a ZFS mirror of on-hand 660p + 256 GB; mirror disks still manufacturer-recert; cold-spare HGST picked 09-26"
+description: "NAS project — BOUGHT 2026-10-06: Minisforum N5 Air, $519 Amazon, barebone with the user's own 2× Kingston 16 GB (two SO-DIMM slots → 32 GB), 5 bays, 3 M.2; F4-424 Pro (decided 09-10) never ordered; N5-family JMB585 SATA silent corruption is NOT a return reason (user, 10-06) — Hawk Point is affected, kernel fixes exist, runbook Phase D verifies the mitigation before data lands; boot is a ZFS mirror of on-hand 660p + 256 GB; data disks bought 10-13 (3× 6 TB eBay, mirror + cold spare, $428.70, burn-in pending)"
 metadata: 
   node_type: memory
   type: project
@@ -62,7 +62,13 @@ than the 8 GB one, and why **waiting for the old price will not work**.
 sizing never depended on the NAS — but the **SATA bays cannot be tested until a drive is in**, so
 the chassis's own US return window depends on the drives arriving. Budget ≥1 week of US time.
 
-**Cold-spare third drive picked 2026-09-26**: eBay HGST Ultrastar 7K6000 (HUS726060ALE610),
+**DATA DISKS BOUGHT 2026-10-13: 3× 6 TB from eBay, $428.70** (2 HGST 7K6000 + 1 Seagate ST6000NM021A,
+three sellers) — 2×6 TB mirror + off-chassis cold spare; RAIDZ lost on cost at this size. Why it
+matters: burn-in (scterc, `badblocks`, `ashift=12`) must finish before leaving the US and the
+Seagate may carry Lenovo OEM firmware. How to apply: [[docs/2026-10-13_nas_data-disks-purchase.md]].
+The goHardDrive picks and the 09-26 cold-spare pick below are superseded.
+
+**Cold-spare third drive picked 2026-09-26 (superseded 10-13)**: eBay HGST Ultrastar 7K6000 (HUS726060ALE610),
 $103.73 shipped (seller-refurbished, "wiped" only, no warranty) — Toshiba MG06ACA600E ($104.59)
 then Seagate ST6000NM021A ($138.95), both same seller, are the fallbacks if that listing falls
 through. Lower provenance than the mirror's manufacturer-recert pick is fine *for a spare*: it

@@ -286,6 +286,7 @@ fix, `amd_iommu=pgtbl_v2`), so **not a return reason** (user, 10-06). Runbook Ph
 mitigation before real data lands. 09-30 RAM allocation
 stands unchanged (still 32 GB). **Re-check the shelf fit** — 199×202×252 mm vs the F4-424 Pro it
 was measured for. → [2026-10-06_nas_minisforum-n5-air-purchase.md](2026-10-06_nas_minisforum-n5-air-purchase.md).
+**Data disks bought 2026-10-13: 3× 6 TB from eBay ($428.70) — 2×6 TB mirror + off-chassis cold spare, delivery 15–20 Oct, burn-in must finish before leaving the US** → [2026-10-13_nas_data-disks-purchase.md](2026-10-13_nas_data-disks-purchase.md).
 **History — previous decision, never ordered:** chassis DECIDED 2026-09-10 — TerraMaster F4-424 Pro (i3-N305 8-core, 32 GB),
 $687 Amazon → $1,056.90 total** (chassis + 2× 6 TB recert from goHardDrive; boot NVMe is an
 on-hand Intel 660p 512 GB, swapped 2026-09-27 for the previously-planned $65 Patriot P310;
@@ -343,6 +344,7 @@ VMs, podman in LXCs*, so Immich stays on podman →
 
 - [2026-10-13_nas_n5-air-acceptance-test-results.md](2026-10-13_nas_n5-air-acceptance-test-results.md) — **open** — **acceptance-test results log for the N5 Air**: BIOS 1.01/EC 0.14, drive inventory, NVMe SMART baselines (660p 6% used clean; 960 EVO 16% used, 2,758 benign Invalid-Field/Log-Page entries, 0 media errors); Secure Boot toggle not found; **memtest PASS** (32 GB, 62/67 °C); later phases still to record
 - [2026-10-06_nas_minisforum-n5-air-purchase.md](2026-10-06_nas_minisforum-n5-air-purchase.md) — **open** — **the chassis actually bought**: Minisforum N5 Air, $519, own RAM in 2 slots; verified specs, the **JMB585 SATA silent-corruption** risk — §3 banner has the real root cause (BIOS enhanced atomics; Hawk Point affected), the fixes by kernel version, and the not-a-return-reason decision, Proxmox/NIC notes, owner-reported quirks. Its §9 conventions carry a correction banner where they contradict repo decisions
+- [2026-10-13_nas_data-disks-purchase.md](2026-10-13_nas_data-disks-purchase.md) — **open** — **data disks bought 2026-10-13**: 2×6 TB mirror + cold spare, 2 HGST 7K6000 + 1 Seagate ST6000NM021A from three eBay sellers, $428.70; why RAIDZ lost on cost, why not goHardDrive (15-day replace-only returns), arrival checklist incl. Seagate OEM-firmware `scterc` check and `ashift=12`
 - [2026-10-04_nas_boot-nvme-mirror.md](2026-10-04_nas_boot-nvme-mirror.md) — *active* — **boot disk = ZFS RAID1 of 660p + 256 GB** (no boot spare left): why mirror beats cache or a second pool (NVMe sudden failure), the ~100 GB guest-root budget vs ~190 GiB usable and what must stay on `tank`, the installer partition-size caveat, and the two upgrade paths for when `rpool` fills
 - [2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md](2026-09-30_nas_32gb-allocation-vm-and-docker-revision.md) — **open** — **current guest rule, RAM allocation and container-runtime rule**: why `smb`/`immich` stay LXCs without the RAM argument, the 32 GB table, the cygnus → Docker VM plan with its open items, and Docker-in-VM / podman-in-LXC
 
