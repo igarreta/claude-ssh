@@ -25,6 +25,8 @@ The 09-30 allocation stands unchanged. Why it matters:
 - **It's bigger than the F4-424 Pro the shelf was measured for** (199×202×252 mm, 4.0 kg) — re-check fit.
 - The purchase brief was written outside the repo; its §9 conventions (`chmod 777`, Docker in LXC,
   docs in `/root`) contradict repo decisions — the banner there wins.
+Acceptance test run 2026-10-13 — results log (both boot NVMe healthy, Secure Boot toggle not found):
+[[docs/2026-10-13_nas_n5-air-acceptance-test-results.md]].
 Detail: [[docs/2026-10-06_nas_minisforum-n5-air-purchase.md]], procedure:
 [[docs/2026-09-08_nas-us-acceptance-test-runbook.md]].
 
