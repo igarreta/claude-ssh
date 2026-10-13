@@ -1,7 +1,7 @@
 # N5 Air — Acceptance Test Results (2026-10-13)
 
 **Status:** open
-**Status detail:** in progress — Phase A (BIOS/inventory/SMART baseline) recorded; memtest running, later phases not yet recorded
+**Status detail:** in progress — Phase A (BIOS/inventory/SMART baseline, memtest) recorded; later phases not yet recorded
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —
@@ -73,8 +73,13 @@ benign. 48 of 64 stored entries were not read.
 **Endurance:** the 960 EVO has written 50 TB against a ~100 TBW rating (SMART "used" 16%); the 660p
 18.7 TB against ~100 TBW (6%). Both fit the mirror role; neither is a concern for the 09-30 allocation.
 
-## 4. Pending
+## 4. Memtest86+ (runbook A3)
 
-- Memtest86+ — running 2026-10-13, result not yet recorded
+**PASS, zero errors** — one full pass over 32 GB (own 2× Kingston 16 GB). Temperatures during the
+test: 62 / 67 °C (as shown on the memtest screen; normal under full load for this Ryzen).
+Memtest was left looping after the PASS and stopped manually.
+
+## 5. Pending
+
 - Remaining runbook phases (Proxmox install on the mirror, overnight SMART on the bay drives,
   Phase D JMB585 corruption test)
