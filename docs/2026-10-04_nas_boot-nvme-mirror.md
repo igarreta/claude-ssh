@@ -51,6 +51,11 @@ Conditions that keep this true:
 
 ## Installer caveat — check on day one
 
+> **CORRECTED 2026-10-13:** the PVE 9.2-1 installer does not resize — it **refuses** a ZFS RAID1 of
+> unequal disks ("mirrored disks must have the same size"), even with `hdsize` below the smaller disk.
+> Install RAID0 on the 960 EVO and `zpool attach` the 660p by hand. See
+> [2026-10-13_nas_n5-air-boot-mirror-handout.md](2026-10-13_nas_n5-air-boot-mirror-handout.md).
+
 With two different-size disks the PVE installer may size partition 3 (ZFS) on the 660p to match
 the 256 GB disk. Compare with `lsblk` right after install (runbook A4.5). If the 660p's partition
 is small it is still fixable later — it is the last partition, so it can be grown in place.
