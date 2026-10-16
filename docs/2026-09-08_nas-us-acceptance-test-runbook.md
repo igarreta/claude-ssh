@@ -572,6 +572,8 @@ properties are painful to retrofit onto 1.6 TB.
 |---|---|
 | Will not boot from USB | **Del** → Secure Boot Disabled, USB first in boot order. Try another USB port. If still nothing, rewrite the stick in **DD mode**. |
 | Boots into MinisCloud after install | BIOS boot order: Proxmox (`Linux Boot Manager` / the 660p) first. |
+| N5 Air ignores the UEFI BootOrder | NVMe boot priority is a **separate BIOS menu**; set it there. `efibootmgr --bootnext` still works for one-off tests. |
+| `proxmox-boot-tool format` refuses: "contains a filesystem" on a reused disk | Stale vfat from the disk's previous life: `--force` (after confirming the disk by model). If `init` then warns the UUID "does not exist": `udevadm settle`, `proxmox-boot-tool clean`, `init` again. |
 | HDDs not listed after fitting RAM | Reseat the internal drive-slot connector (known N5 quirk); check `Offboard SATA Controller Driver = Enabled`. |
 | Proxmox graphical installer is a black screen | Reboot, pick **Terminal UI** from the installer menu. |
 | SMART test returns `aborted by host` | Something spun the drive down. Re-run B3, then B4. |

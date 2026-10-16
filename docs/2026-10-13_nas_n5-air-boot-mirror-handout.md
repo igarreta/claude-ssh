@@ -1,7 +1,7 @@
 # N5 Air — Boot Mirror Install Hand-out (2026-10-13)
 
-**Status:** open
-**Status detail:** hand-off mid-install — Proxmox on the 960 EVO only; boot-order problem resolved in BIOS (§2.5); mirror not built
+**Status:** closed
+**Status detail:** mirror built and boot-tested 2026-10-16 — results in 2026-10-13_nas_n5-air-acceptance-test-results.md §7
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —

@@ -1,7 +1,7 @@
 # N5 Air — Acceptance Test Results (2026-10-13)
 
 **Status:** open
-**Status detail:** in progress — Phase A (BIOS/inventory/SMART baseline, memtest) recorded; later phases not yet recorded
+**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); B, D pending — no data drives yet
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —
@@ -81,5 +81,98 @@ Memtest was left looping after the PASS and stopped manually.
 
 ## 5. Pending
 
-- Remaining runbook phases (Proxmox install on the mirror, overnight SMART on the bay drives,
-  Phase D JMB585 corruption test)
+- Remaining runbook phases (overnight SMART on the bay drives,
+  Phase C, Phase D JMB585 corruption test)
+- apt repos: `apt-get update` fails nightly (enterprise repo, no subscription); PVE 9.2.2 / kernel 7.0.2-6
+- BIOS 1.01 is the latest available (user, 2026-10-16) — no update pending.
+
+## 6. Power-off at idle (2026-10-16)
+
+Proxmox on the 960 EVO ran from 10-13 21:02 until the journal stopped mid-routine at
+**10-16 10:17:01** (hourly cron; 11:17 never ran). Found with power LED and fan **off**.
+No shutdown sequence, no MCE/EDAC, no lockup/watchdog, no NVMe resets, no thermal events,
+empty pstore; NVMe "Unsafe Shutdowns" +2 each since §3 (660p 82, 960 EVO 179). Temps after
+restart: CPU 26 °C, NVMe 24–34 °C.
+
+**Verdict: power outage at the test location** — BIOS AC-restore was set to *Always Off*, so it
+stayed off when power returned. Restore is now **Previous**. Not a hardware fault unless it recurs.
+
+## 7. Boot mirror built (2026-10-16, A4/A4.5)
+
+Two-stage install per [2026-10-13_nas_n5-air-boot-mirror-handout.md](2026-10-13_nas_n5-air-boot-mirror-handout.md) §6,
+660p attached to the 960 EVO's single-disk `rpool`:
+
+1. `sgdisk -R <660p> <960>` + `sgdisk -G <660p>` — identical p1/p2/p3; 244 GiB left unpartitioned.
+2. `proxmox-boot-tool format <660p-part2>` refused: **a stale vfat from the disk's previous life sat
+   at the ESP offset** (whole-disk `wipefs -n` doesn't see it) → `--force`. `init` then registered the
+   **old** UUID (udev not refreshed) → `udevadm trigger` + `settle`, `proxmox-boot-tool clean`, `init` again.
+3. `zpool attach rpool nvme-eui.0025385671b10d47-part3 /dev/disk/by-id/nvme-INTEL_SSDPEKNW512G8_PHNH12340B4Z512A-part3`
+   — resilvered 2.09 G in 3 s, scrub 0 errors.
+
+Result: `mirror-0` ONLINE; ESPs `15B8-093B` (960) + `DB2D-166F` (660p) both synced, kernel 7.0.2-6.
+UEFI entries: Boot0006 = 660p, Boot0002 = 960 (systemd-boot), Boot0005 = 960 `\EFI\BOOT\BOOTX64.EFI`.
+
+**Boot tests:** normal reboot → BootCurrent **0005** (960) — the firmware ignores the NVRAM BootOrder
+(0006 first) in favour of the BIOS NVMe priority menu; `--bootnext 0006` → BootCurrent **0006**, booted
+from the 660p ESP. Both healthy. Not tested: boot with the 960 physically removed.
+
+## 8. A5 inventory (2026-10-16)
+
+| Item | Result |
+|---|---|
+| PVE / kernel | 9.2.2 / 7.0.2-6-pve |
+| CPU | AMD Ryzen 7 255 w/ Radeon 780M |
+| RAM | 29 GiB visible of 32; 2× Kingston 9905790-068.A00G 16 GB @ 4800 MT/s (both report `Locator: DIMM 0` — firmware label quirk) |
+| NICs | RTL8127 10GbE (03:00.0), RTL8126 5GbE (04:00.0) |
+| SATA | **JMicron JMB58x [197b:0585]** at 06:00.0 |
+| smartctl | 7.5 |
+
+**M.2 link widths (actual):**
+
+| Drive | Link | Speed |
+|---|---|---|
+| Intel 660p 512 GB | **x2** (drive max x4) | 8 GT/s (Gen3) |
+| Samsung 960 EVO 250 GB | x4 | 8 GT/s (Gen3) |
+| BAYHUB 64 GB (factory) | x1 | 5 GT/s (Gen2) |
+
+So the 660p's slot is x2 — irrelevant for a boot mirror.
+
+**JMB585 / Phase D input:** dmesg `ahci 0000:06:00.0: controller can't do 64bit DMA, forcing 32bit`
+— **the running kernel already carries the 32-bit DMA quirk**; Phase D runs without the extra
+workaround. Kernel cmdline has no `amd_iommu` override.
+
+Toolbox installed (`nvme-cli ethtool hdparm lm-sensors`); enterprise repos 401 as expected.
+
+## 9. Updates (2026-10-16)
+
+Enterprise repos disabled (`Enabled: false` in `pve-enterprise.sources`, `ceph.sources`);
+`proxmox.sources` added with `pve-no-subscription`. `dist-upgrade` (170 pkgs, run detached via
+`systemd-run`): PVE 9.2.2 → **9.2.21**, kernel 7.0.2-6 → **7.0.14-24-pve**, ZFS 2.4.2 → **2.4.4**.
+Both ESPs carry both kernels. After reboot: pool healthy, no failed units, **JMB585 32-bit DMA
+quirk still active**. Phase D will run on this kernel.
+
+## 10. Phase C (no data drives — they had not arrived)
+
+| Check | Result |
+|---|---|
+| 5GbE RTL8126 (`nic1`, 04:00.0, `38:05:25:38:65:56`, in `vmbr0`) | **link 1000 Mb/s** |
+| 10GbE RTL8127 (`nic0`, 03:00.0, `38:05:25:38:65:57`) | driver bound (`r8169`); link test pending |
+| USB Type-A ports | **working** (user, 2026-10-16) |
+| PSU | **100–240 V** (user) |
+| iGPU VAAPI (Mesa 25.0.7 radeonsi, phoenix) | **PASS** — HEVC Main/Main10, H.264 and AV1: decode + encode; VP9 decode |
+| Drive temps / fan with HDDs | pending (no drives) |
+
+## 11. CPU/memory soak (2026-10-16, kernel 7.0.14-24)
+
+`stress-ng --cpu 0 --vm 2 --vm-bytes 8G --timeout 60m` (16 threads + 2×8 GB VM workers), sampled
+every minute (`/root/acceptance/soak.csv` on the NAS). **PASS — 18/18 stressors passed, 0 failed,
+no kernel warnings during the run.**
+
+| | Idle | Load (60 min) | 5 min after |
+|---|---|---|---|
+| CPU Tctl | 34 °C | peak **70 °C** (min 2), plateau 66–68 °C | 28 °C |
+| All-core clock | — | **4.14–4.29 GHz**, never dropped (no throttling) | — |
+| NVMe max | 34 °C | 38 °C | 34 °C |
+
+The only kernel warnings in this boot predate the run (amdgpu `REG_WAIT timeout` at boot — cosmetic,
+also on 10-13 — and `nvme0: using unchecked data buffer`).
