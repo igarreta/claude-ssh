@@ -10,6 +10,9 @@ metadata:
 
 **Hostname `saturn`** (user, 2026-10-22) — PVE node and Tailscale name; why in
 [[docs/memory_nas-project.md]]. Use it, not "the NAS" or `pve`, in configs and docs.
+**Home IP `192.168.1.4`** (user, 10-22). How to apply: when the US tests finish, **remind the user and
+set it as the last step before `poweroff`** — edit only, never apply live (cuts the lab link);
+checklist in §16 of [[docs/2026-10-13_nas_n5-air-acceptance-test-results.md]].
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
 Machine and PBS, plus Immich for family photo browsing. Hardware brought from abroad, ~3.1 TB

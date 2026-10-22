@@ -1,7 +1,7 @@
 # N5 Air — Acceptance Test Results (2026-10-13)
 
 **Status:** open
-**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13; **hostname now `saturn` (§15)**
+**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13; **hostname now `saturn` (§15)**; **pre-shutdown checklist incl. IP → 192.168.1.4 (§16)**
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —
@@ -253,3 +253,25 @@ remove the empty `/etc/pve/nodes/pve`. Backups: `/root/hosts.bak-rename`,
 `/root/postfix-main.cf.bak-rename`. Result: node `saturn` **online**, no warnings, writes unaffected.
 New web-UI cert fingerprint `31:C0:47:AB:…:CB:96:58`. **A reboot to confirm is still pending** —
 not before the writes finish. Old RRD graphs (`pve2-node/pve`) are orphaned, cosmetic.
+
+## 16. Before the final shutdown — checklist (decided 2026-10-22)
+
+Write progress at 20:49 −03 (46 min in): sda 721 GB, sdb 608 GB, sdc 607 GB — averaging
+~260 / ~220 MB/s, on track.
+
+When the writes finish, in this order:
+
+1. **Write verdict:** each `wipe-sd*` unit ended with `No space left on device` at the full
+   6,001,175,126,016 bytes (not earlier); SMART reject attributes still 0; no `ata` errors in dmesg.
+   Save `smartctl -x` as `/root/acceptance/sd{a,b,c}-afterwrite.txt`.
+2. **Phase D** only if the 18 h budget allows; otherwise it runs at home.
+3. `scp -r root@192.168.1.129:/root/acceptance ./nas-acceptance/` to the Mac.
+4. **Change the IP to the home address `192.168.1.4/24`** (user, 2026-10-22) — **last step, edit
+   only, do not apply** (`ifreload` would cut the Mac link, whose route covers only .128–.131):
+   - `/etc/network/interfaces`: `address 192.168.1.129/24` → `address 192.168.1.4/24`
+   - `/etc/hosts`: `192.168.1.129 saturn.lan saturn` → `192.168.1.4 saturn.lan saturn`
+   - gateway/DNS `192.168.1.1` already match the home router — unchanged.
+   - Then `poweroff`. First boot at home comes up on .4 and doubles as the rename-confirmation reboot.
+   - **.4 checked free from gr-srv03 on 2026-10-22** (no ping/ARP reply, no gr-srv03 guest uses it);
+     still **reserve it or keep it outside the router's DHCP pool**.
+5. At home: SCT ERC is lost at power-off → re-set it (and write the boot-time unit) before `tank`.
