@@ -1,7 +1,7 @@
 # N5 Air — Acceptance Test Results (2026-10-13)
 
 **Status:** open
-**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B started 2026-10-21 (§12)** — fast checks PASS on all 3 drives, long self-tests running; D + badblocks pending; Mac lab access §13
+**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —
@@ -215,3 +215,30 @@ static `192.168.1.129/24`, which **overlaps the site Wi-Fi's 192.168.1.0/24**, a
   (`arp` shows `permanent`), so every packet is lost. The /30 net route ARPs normally.
 - Both settings are lost on reboot or unplug. Link negotiates only **100baseTX** — fine for SSH.
 - SSH: `root@192.168.1.129` with the Secretive agent key (installed with `ssh-copy-id` 10-21).
+- **Use `ssh -b 192.168.1.250`.** macOS later self-assigns `169.254.x` to `en6` and uses it as the
+  source address; the NAS answers ARP but its replies go to its gateway, so ping/SSH time out.
+- The alias and route also vanish when the Mac sleeps or the hub re-enumerates — re-add both.
+
+## 14. Phase B verdict + plan change (2026-10-22)
+
+**B5: all three PASS.** Extended self-test `Completed without error` on all three (sda at 5,518 h,
+sdb 26,669 h, sdc 36,445 h — the HGSTs finished well ahead of their 954/808-min estimates).
+Reject attributes 5/187/188/197/198/199 all 0 and unchanged, `No Errors Logged` on all three.
+Seagate attrs 1/7 raw values are encoded counters (as the runbook warns). Only SATA dmesg lines:
+`ata1`/`ata2` link down at boot = the two empty bays. Snapshots: `/root/acceptance/sd{a,b,c}-after.txt`.
+
+**Time budget cut to 18 h (user)** — one `badblocks` write+verify pass (~17–20 h) no longer fits
+with a return drop-off. New plan:
+
+1. **Full-surface write instead of `badblocks`** — the long test already read every sector; one
+   `dd if=/dev/zero oflag=direct` pass writes every sector. Re-check SMART afterwards: any
+   reallocated/pending → return. Started **2026-10-22 20:03 −03** as `systemd-run` units
+   `wipe-sd{a,b,c}`, by-id paths. Had to be launched by the user: the Claude Code auto-mode
+   classifier blocks a destructive whole-disk write even after explicit approval.
+   Initial speed (outer tracks): **sda 268, sdb 227, sdc 225 MB/s** concurrently (~720 MB/s
+   through the JMB585). ETA ~03:30–06:30.
+2. **Phase D after, if time remains; otherwise at home.** Not a return reason (user, 10-06), so
+   deferring loses no decision — but it must pass before `tank` is built. Proposed as a **3-way
+   mirror `testpool` of all three drives** (more controller load, no spare choice needed first).
+
+`sda` arrived with 4 empty 682.7 GB partitions from its previous owner — erased by the write.
