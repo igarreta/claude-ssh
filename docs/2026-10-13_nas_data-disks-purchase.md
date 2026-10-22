@@ -1,7 +1,7 @@
 # NAS data disks — layout decision and purchase (3× 6 TB, eBay)
 
 **Status:** open
-**Status detail:** bought 2026-10-13, not yet delivered; burn-in and return decision pending
+**Status detail:** all 3 delivered and fitted 2026-10-21; burn-in in progress (results in 2026-10-13_nas_n5-air-acceptance-test-results.md §12) — both HGSTs had ERC disabled; return decision pending
 **Host:** (project)
 **Supersedes:** 2026-08-20_nas-disk-prices-and-raid-options.md (§4 layout choice and the goHardDrive buy list only)
 **Superseded-by:** —

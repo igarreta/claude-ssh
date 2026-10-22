@@ -1,7 +1,7 @@
 # N5 Air — Acceptance Test Results (2026-10-13)
 
 **Status:** open
-**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); B, D pending — no data drives yet
+**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B started 2026-10-21 (§12)** — fast checks PASS on all 3 drives, long self-tests running; D + badblocks pending; Mac lab access §13
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —
@@ -176,3 +176,42 @@ no kernel warnings during the run.**
 
 The only kernel warnings in this boot predate the run (amdgpu `REG_WAIT timeout` at boot — cosmetic,
 also on 10-13 — and `nvme0: using unchecked data buffer`).
+
+## 12. Phase B — data drives (2026-10-21, kernel 7.0.14-24)
+
+All three drives fitted (sda–sdc), every SATA link **6.0 Gbps**. JMB585 `forcing 32bit` still in
+dmesg. Baselines (`smartctl -x`) in `/root/acceptance/sd{a,b,c}-before.txt` on the NAS; the script
+that produced them is `/root/fast-tests.sh`.
+
+| Dev | Drive | Serial | FW | POH | 5 / 187 / 188 / 197 / 198 / 199 | Error log | ERC as found |
+|---|---|---|---|---|---|---|---|
+| sda | Seagate ST6000NM021A (Lenovo OEM `00MX141LEN`) | WSE0HDDV | LBB8 | 5,510 | all 0 | none | 7.5 s |
+| sdb | HGST HUS726060ALE610 | K8JWLGJD | APGNTD05 | 26,654 | all 0 (187/188 not reported) | none | **disabled** |
+| sdc | HGST HUS726060ALE610 | K1KUV90N | APGNTD05 | 36,432 | all 0 (187/188 not reported) | none | **disabled** |
+
+- Sector size identical on all three: 512 logical / 4096 physical → `ashift=12`.
+- **ERC set to 7.0 s** (`scterc,70,70`) on sdb/sdc — **lost at power-off**; a boot-time unit is
+  needed before `tank` is built. The Seagate's OEM firmware already had it on (7.5 s).
+- `hdparm -B 255 -S 0` applied to all three (APM "not supported" on the Seagate — harmless).
+- **Short self-test: `Completed without error` on all three.**
+- **Long self-test started 2026-10-21 ~22:45 −03** on all three in parallel. Drive-estimated finish
+  (−03): sda Thu 22 07:43, sdc 12:15, **sdb 14:41** (954 min).
+- Cold-spare choice deferred to after burn-in — **the least reliable drive** (user). On hours
+  alone sdc (36k h) is the early candidate.
+
+**Remaining sequence (user: in order, no overlap):** B5 verdict → Phase D → one destructive
+`badblocks` pass (`-b 4096`, ~20 h) via `systemd-run`. ~35 h total against 48 h left in the US.
+
+## 13. Lab access from the MacBook (2026-10-21)
+
+No LAN at this site: MacBook → USB → UGREEN hub (AX88179B, `en6`) → NAS `nic1`. The NAS keeps its
+static `192.168.1.129/24`, which **overlaps the site Wi-Fi's 192.168.1.0/24**, and has no internet
+(tmux/screen not installed — long jobs go through `systemd-run`).
+
+- Internet Sharing **off** (its 192.168.2.x DHCP is useless to a static host).
+- `sudo ifconfig en6 inet 192.168.1.250 netmask 255.255.255.255 alias`
+- `sudo route -n add -net 192.168.1.128/30 -interface en6`
+- **Do not use `route add -host … -interface en6`**: macOS pins the host to `en6`'s *own* MAC
+  (`arp` shows `permanent`), so every packet is lost. The /30 net route ARPs normally.
+- Both settings are lost on reboot or unplug. Link negotiates only **100baseTX** — fine for SSH.
+- SSH: `root@192.168.1.129` with the Secretive agent key (installed with `ssh-copy-id` 10-21).
