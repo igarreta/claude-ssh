@@ -1,7 +1,7 @@
 # N5 Air — Acceptance Test Results (2026-10-13)
 
 **Status:** open
-**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13
+**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13; **hostname now `saturn` (§15)**
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —
@@ -242,3 +242,14 @@ with a return drop-off. New plan:
    mirror `testpool` of all three drives** (more controller load, no spare choice needed first).
 
 `sda` arrived with 4 empty 682.7 GB partitions from its previous owner — erased by the write.
+
+## 15. Hostname `pve` → `saturn` (2026-10-22)
+
+Name chosen by the user (see `memory_nas-project.md`). Done live with `/root/rename-saturn.sh`
+while the `wipe-sd*` writes ran — safe because the node had **no guests and no cluster**:
+`hostnamectl`, `/etc/hosts` → `192.168.1.129 saturn.lan saturn`, postfix `myhostname`, restart
+`pve-cluster`, `pvecm updatecerts --force`, restart pvedaemon/pveproxy/pvestatd/pve-firewall/postfix,
+remove the empty `/etc/pve/nodes/pve`. Backups: `/root/hosts.bak-rename`,
+`/root/postfix-main.cf.bak-rename`. Result: node `saturn` **online**, no warnings, writes unaffected.
+New web-UI cert fingerprint `31:C0:47:AB:…:CB:96:58`. **A reboot to confirm is still pending** —
+not before the writes finish. Old RRD graphs (`pve2-node/pve`) are orphaned, cosmetic.

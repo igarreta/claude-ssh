@@ -13,6 +13,11 @@
 > risk → [2026-10-06_nas_minisforum-n5-air-purchase.md](2026-10-06_nas_minisforum-n5-air-purchase.md).
 > The rest of this banner is history for the chassis choice; scope and stack below still apply.
 >
+> **Name: `saturn` (user, 2026-10-22)** — PVE hostname and the Tailscale name. Space theme, *S* for
+> server; chosen over Sirius (rings ≈ platters, moons ≈ guests; pairs with `ceres`, and avoids a
+> third star name beside `castor`/`cygnus`). FQDN `saturn.lan`; rename record in
+> [2026-10-13_nas_n5-air-acceptance-test-results.md](2026-10-13_nas_n5-air-acceptance-test-results.md) §15.
+>
 > **Resume here** (updated 2026-09-10). **The chassis is DECIDED: TerraMaster F4-424 Pro,
 > i3-N305 8-core, 32 GB, $687 (Amazon) — project total $1,121.90.** Nothing ordered yet.
 >

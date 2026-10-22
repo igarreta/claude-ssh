@@ -1,12 +1,15 @@
 ---
 name: project_nas
-description: "NAS project — BOUGHT 2026-10-06: Minisforum N5 Air, $519 Amazon, barebone with the user's own 2× Kingston 16 GB (two SO-DIMM slots → 32 GB), 5 bays, 3 M.2; F4-424 Pro (decided 09-10) never ordered; N5-family JMB585 SATA silent corruption is NOT a return reason (user, 10-06) — Hawk Point is affected, kernel fixes exist, runbook Phase D verifies the mitigation before data lands; boot is a ZFS mirror of on-hand 660p + 256 GB; data disks bought 10-13 (3× 6 TB eBay, mirror + cold spare, $428.70), burn-in started 10-21"
+description: "NAS project — hostname saturn (10-22); BOUGHT 2026-10-06: Minisforum N5 Air, $519 Amazon, barebone with the user's own 2× Kingston 16 GB (two SO-DIMM slots → 32 GB), 5 bays, 3 M.2; F4-424 Pro (decided 09-10) never ordered; N5-family JMB585 SATA silent corruption is NOT a return reason (user, 10-06) — Hawk Point is affected, kernel fixes exist, runbook Phase D verifies the mitigation before data lands; boot is a ZFS mirror of on-hand 660p + 256 GB; data disks bought 10-13 (3× 6 TB eBay, mirror + cold spare, $428.70), burn-in started 10-21"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 674728fe-657f-43ee-985f-f339c95e4974
   modified: 2026-10-06T00:00:00.000Z
 ---
+
+**Hostname `saturn`** (user, 2026-10-22) — PVE node and Tailscale name; why in
+[[docs/memory_nas-project.md]]. Use it, not "the NAS" or `pve`, in configs and docs.
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
 Machine and PBS, plus Immich for family photo browsing. Hardware brought from abroad, ~3.1 TB
