@@ -290,7 +290,7 @@ block device, not a fault).
 
 No `ata`/I/O errors in dmesg since boot. Snapshots: `/root/acceptance/sd{a,b,c}-afterwrite.txt`.
 **No returns needed.** Burn-in shows no reliability difference between the HGSTs, so the cold spare
-falls to hours: **K1KUV90N** (36k h) — pending the user's confirmation.
+falls to hours: **K1KUV90N** (36k h) — confirmed by the user 2026-10-23.
 
 **Phase D started 08:25 −03** as `systemd-run --unit=phaseD bash /root/acceptance/phaseD.sh`:
 **3-way mirror** `testpool` (all three by-id, `ashift=12`, compression off), runbook D3–D4 (4×50 GB
