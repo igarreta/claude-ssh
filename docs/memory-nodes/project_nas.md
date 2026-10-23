@@ -75,7 +75,9 @@ Seagate may carry Lenovo OEM firmware. How to apply: [[docs/2026-10-13_nas_data-
 The goHardDrive picks and the 09-26 cold-spare pick below are superseded.
 **Burn-in started 2026-10-21** (results §12 of the acceptance log): both HGSTs shipped with ERC
 **disabled** — set to 7 s but lost at power-off, so a boot-time `scterc` unit is a prerequisite for
-`tank`. Cold spare = the least reliable drive after burn-in (user).
+`tank`. Cold spare = the least reliable drive after burn-in (user) — burn-in PASS on all three 10-23, so it
+falls to hours: K1KUV90N. **Notion mirror:** Hardware DB entry `saturn` (+ Hardware / Configuración
+inicial / Discos de datos subpages) is the user's condensed reference — update it when facts change.
 
 **Cold-spare third drive picked 2026-09-26 (superseded 10-13)**: eBay HGST Ultrastar 7K6000 (HUS726060ALE610),
 $103.73 shipped (seller-refurbished, "wiped" only, no warranty) — Toshiba MG06ACA600E ($104.59)

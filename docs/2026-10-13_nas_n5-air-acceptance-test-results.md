@@ -1,7 +1,7 @@
 # N5 Air — Acceptance Test Results (2026-10-13)
 
 **Status:** open
-**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13; **hostname now `saturn` (§15)**; **pre-shutdown checklist incl. IP → 192.168.1.4 (§16)**
+**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13; **hostname now `saturn` (§15)**; **pre-shutdown checklist incl. IP → 192.168.1.4 (§16)**; **full write PASS on all three (§17)**; Phase D running 2026-10-23
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —
@@ -275,3 +275,30 @@ When the writes finish, in this order:
    - **.4 checked free from gr-srv03 on 2026-10-22** (no ping/ARP reply, no gr-srv03 guest uses it);
      still **reserve it or keep it outside the router's DHCP pool**.
 5. At home: SCT ERC is lost at power-off → re-set it (and write the boot-time unit) before `tank`.
+
+## 17. Full-surface write verdict + Phase D start (2026-10-23)
+
+**Write pass: PASS on all three.** Every `wipe-sd*` unit wrote the full 6,001,175,126,016 bytes and
+ended with `No space left on device` (systemd shows `failed`/exit 1 — that is `dd`'s normal end on a
+block device, not a fault).
+
+| Drive | Finished (−03) | Avg | 5/187/188/197/198/199 | Error log | POH |
+|---|---|---|---|---|---|
+| sda Seagate WSE0HDDV | 04:01 | 210 MB/s | 0 | none | 5,544 |
+| sdb HGST K8JWLGJD | 05:31 | 176 MB/s | 0 | none | 26,688 |
+| sdc HGST K1KUV90N | 05:33 | 176 MB/s | 0 | none | 36,465 |
+
+No `ata`/I/O errors in dmesg since boot. Snapshots: `/root/acceptance/sd{a,b,c}-afterwrite.txt`.
+**No returns needed.** Burn-in shows no reliability difference between the HGSTs, so the cold spare
+falls to hours: **K1KUV90N** (36k h) — pending the user's confirmation.
+
+**Phase D started 08:25 −03** as `systemd-run --unit=phaseD bash /root/acceptance/phaseD.sh`:
+**3-way mirror** `testpool` (all three by-id, `ashift=12`, compression off), runbook D3–D4 (4×50 GB
+hashed in memory → scrub + verify; scrub while writing 2×50 GB more → final scrub → verify all),
+with `zpool export/import` before each verify so reads come from disk, not ARC. Verdict line
+`PHASE D RESULT: PASS|FAIL` in `/root/acceptance/phaseD.log`; dmesg before/after diffed for
+`ata`/`ahci`/reset/IOMMU lines. `testpool` is left for D5 (destroy + `labelclear` + `wipefs`).
+JMB585 `forcing 32bit` confirmed at start, kernel 7.0.14-24.
+
+Mac access note: the Secretive agent can fail a signature intermittently
+(`communication with agent failed`) — retry; not a NAS problem.
