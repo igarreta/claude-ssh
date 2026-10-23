@@ -1,7 +1,7 @@
 # N5 Air — Acceptance Test Results (2026-10-13)
 
 **Status:** open
-**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13; **hostname now `saturn` (§15)**; **pre-shutdown checklist incl. IP → 192.168.1.4 (§16)**; **full write PASS on all three (§17)**; Phase D running 2026-10-23
+**Status detail:** in progress — Phase A done incl. A4 boot mirror (§7, 2026-10-16); A5 done (§8); updated (§9); Phase C partial (§10); soak PASS (§11); **Phase B PASS on all 3 drives (§12, §14)**; full-surface write running 2026-10-22 (replaces badblocks — 18 h budget); Phase D deferred unless time remains; Mac lab access §13; **hostname now `saturn` (§15)**; **pre-shutdown checklist incl. IP → 192.168.1.4 (§16)**; **full write PASS on all three (§17)**; **Phase D PASS, disks wiped, IP set to .4, powered off 2026-10-23 (§18)** — acceptance complete; open only for the at-home items (ERC unit, 10GbE, `tank`)
 **Host:** (project)
 **Supersedes:** —
 **Superseded-by:** —
@@ -302,3 +302,29 @@ JMB585 `forcing 32bit` confirmed at start, kernel 7.0.14-24.
 
 Mac access note: the Secretive agent can fail a signature intermittently
 (`communication with agent failed`) — retry; not a NAS problem.
+
+## 18. Phase D verdict, wipe, home IP, shutdown (2026-10-23)
+
+**Phase D: PASS** (08:25 → 10:13 −03). All six 50 GB files (300 GB) read back with the
+sha256 computed in memory on the way in — including the two written during a scrub. Both
+scrubs: 0 B repaired, 0 errors; every READ/WRITE/CKSUM counter 0; `No known data errors`; no new
+`ata`/`ahci`/reset/IOMMU/I/O lines in dmesg. The JMB585 32-bit DMA quirk on kernel 7.0.14-24 is
+confirmed effective — `tank` may be built.
+
+Script bug, result still valid: `phaseD.sh` had `cd /testpool`, so both `zpool export` calls failed
+(`pool or dataset is busy`) and the pool stayed imported. ARC was ~3 GiB against 300 GB of data,
+so the read-back came almost entirely from disk, and scrubs always read every copy from disk.
+Fix for any rerun: `cd /` before export.
+
+**D5 done:** `zpool destroy testpool`, `labelclear -f` on each `-part1`, `wipefs -a` on the three
+disks — no partitions or signatures left, only `rpool` imported.
+
+**Logs** copied to the MacBook: `~/saturn-acceptance-2026-10/` (22 files, 176 K).
+
+**Home IP set, edit only (§16 step 4):** `/etc/network/interfaces` `address 192.168.1.4/24`,
+`/etc/hosts` `192.168.1.4 saturn.lan saturn`; gateway/DNS `192.168.1.1` unchanged. Backups:
+`/root/interfaces.bak-homeip`, `/root/hosts.bak-homeip`. Not applied live — first boot at home
+comes up on .4. Then `poweroff`.
+
+**Left for home:** SCT ERC 70,70 boot-time unit (lost at power-off), 10GbE link test, `tank`
+(mirror WSE0HDDV + K8JWLGJD; K1KUV90N off-chassis spare), Tailscale.

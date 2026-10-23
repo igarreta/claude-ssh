@@ -1,6 +1,6 @@
 ---
 name: project_nas
-description: "NAS project — hostname saturn (10-22); BOUGHT 2026-10-06: Minisforum N5 Air, $519 Amazon, barebone with the user's own 2× Kingston 16 GB (two SO-DIMM slots → 32 GB), 5 bays, 3 M.2; F4-424 Pro (decided 09-10) never ordered; N5-family JMB585 SATA silent corruption is NOT a return reason (user, 10-06) — Hawk Point is affected, kernel fixes exist, runbook Phase D verifies the mitigation before data lands; boot is a ZFS mirror of on-hand 660p + 256 GB; data disks bought 10-13 (3× 6 TB eBay, mirror + cold spare, $428.70), burn-in started 10-21"
+description: "NAS project — hostname saturn (10-22); BOUGHT 2026-10-06: Minisforum N5 Air, $519 Amazon, barebone with the user's own 2× Kingston 16 GB (two SO-DIMM slots → 32 GB), 5 bays, 3 M.2; F4-424 Pro (decided 09-10) never ordered; N5-family JMB585 SATA silent corruption is NOT a return reason (user, 10-06) — Hawk Point is affected, kernel fixes exist, runbook Phase D verifies the mitigation before data lands; boot is a ZFS mirror of on-hand 660p + 256 GB; data disks bought 10-13 (3× 6 TB eBay, mirror + cold spare, $428.70), burn-in + Phase D PASS 10-23, IP .4 set, powered off for transport"
 metadata: 
   node_type: memory
   type: project
@@ -10,9 +10,9 @@ metadata:
 
 **Hostname `saturn`** (user, 2026-10-22) — PVE node and Tailscale name; why in
 [[docs/memory_nas-project.md]]. Use it, not "the NAS" or `pve`, in configs and docs.
-**Home IP `192.168.1.4`** (user, 10-22). How to apply: when the US tests finish, **remind the user and
-set it as the last step before `poweroff`** — edit only, never apply live (cuts the lab link);
-checklist in §16 of [[docs/2026-10-13_nas_n5-air-acceptance-test-results.md]].
+**Home IP `192.168.1.4`** (user, 10-22) — **set (edit only) and powered off 2026-10-23**; first boot at
+home comes up on .4. US acceptance complete incl. **Phase D PASS** — `tank` may be built; still due at
+home: ERC boot unit, 10GbE test. §18 of [[docs/2026-10-13_nas_n5-air-acceptance-test-results.md]].
 
 NAS to absorb the WDMyCloud live shares, backup_usb1's *backup* role, a future MacBook's Time
 Machine and PBS, plus Immich for family photo browsing. Hardware brought from abroad, ~3.1 TB
